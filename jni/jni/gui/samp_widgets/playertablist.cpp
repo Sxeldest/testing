@@ -86,11 +86,14 @@ std::string int_to_hex(int val)
 
 void PlayerTabList::assemble()
 {
-	if (!m_tabList) return;
-	m_tabList->removeAllItems(); // Clear existing items to prevent duplicates or empty state
+	if (!m_tabList || !pNetGame) return;
+	m_tabList->removeAllItems();
 
 	CPlayerPool* pPlayerPool = pNetGame->GetPlayerPool();
+	if (!pPlayerPool) return;
+
 	CLocalPlayer* pLocalPlayer = pPlayerPool->GetLocalPlayer();
+	if (!pLocalPlayer) return;
 
 	float w = UISettings::scoreboardSize().x;
 	float x_id = 10.0f;
@@ -119,7 +122,7 @@ void PlayerTabList::assemble()
 		}
 	}
 
-	m_tabList->assemble(data.str(), { x_id, x_name, x_score, x_ping });
+	m_tabList->assemble(data.str(), { x_id, x_name, x_score, x_ping }, false, UISettings::smallFontSize(), true);
 }
 
 void PlayerTabList::performLayout()
@@ -134,14 +137,15 @@ void PlayerTabList::performLayout()
 	m_lTotalPlayers->performLayout();
 	m_lTotalPlayers->setPosition(ImVec2(this->width() - m_lTotalPlayers->width() - 5.0f, 5.0f));
 
-	// PC/Dialog Style: Gap from ServerName area (5+14) + 2px = 21px
-	float headerY = 21.0f;
+	// PC Style: No padding between server name (y:5 + h:14 = 19) and columns
+	float headerY = 19.0f;
 	m_header->setFixedSize(ImVec2(this->width(), headerItemHeight));
 	m_header->performLayout();
 	m_header->setPosition(ImVec2(0.0f, headerY));
 
-	// PC/Dialog Style: HeaderY(21) + HeaderHeight(25) + 15px gap = 61px
-	float listY = 61.0f;
+	// Gap Kolom ke Player List = 15px (Consistent with Dialog Style 5)
+	// headerY(19) + headerHeight(25) + gap(15) = 59.0f
+	float listY = 59.0f;
 	m_tabList->setMinSize(ImVec2(this->width(), this->height() - listY));
 	m_tabList->setMaxSize(ImVec2(this->width(), this->height() - listY));
 	m_tabList->performLayout();

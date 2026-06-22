@@ -117,10 +117,10 @@ void Dialog::performLayout()
 	float clientWidth = preferredWidth;
 
 	// PC Total Height Logic Refined:
-	// Caption 25 + TopMargin 2 + MidGap 15 + ButtonArea 30 + BottomPadding 5 = 77px overhead
+	// Caption 25 + TopMargin 0 + MidGap 15 + ButtonArea 30 + BottomPadding 5 = 75px overhead
 	float clientHeight = listHeight + staticHeaderHeight + columnGap;
 	float dialogWidth = clientWidth + sidePadding;
-	float dialogHeight = clientHeight + 77.0f;
+	float dialogHeight = clientHeight + 75.0f;
 
 	this->setSize(ImVec2(dialogWidth, dialogHeight));
 
@@ -144,8 +144,8 @@ void Dialog::performLayout()
 
 	m_content->setFixedSize(ImVec2(containerWidth, clientHeight));
 	m_content->performLayout();
-	// PC Precise: Caption(25) + TopMargin(2) = 27.0f (Rapat ke Header)
-	m_content->setPosition(ImVec2(contentX, 27.0f));
+	// PC Precise: Caption(25) + TopMargin(0) = 25.0f (Strictly below header)
+	m_content->setPosition(ImVec2(contentX, 25.0f));
 
 	m_buttonPanel->setFixedSize(ImVec2(dialogWidth, 30.0f));
 	m_buttonPanel->performLayout();
@@ -199,12 +199,11 @@ void DialogButtonPanel::performLayout() {
 	m_button2->performLayout();
 	float centerX = width() / 2.0f;
 	if (m_button2->visible()) {
-		// PC: (m_iWidth / 2) - (m_i20 - 10) = centerX - 90
-		m_button1->setPosition(ImVec2(centerX - 90.0f, (height() - m_button1->height()) / 2.0f));
-		// PC: (m_iWidth / 2) + 10
+		// PC Centered Logic: Button1 ends at -10, Button2 starts at +10 (20px gap)
+		m_button1->setPosition(ImVec2(centerX - 110.0f, (height() - m_button1->height()) / 2.0f));
 		m_button2->setPosition(ImVec2(centerX + 10.0f, (height() - m_button2->height()) / 2.0f));
 	} else {
-		// PC: (m_iWidth / 2) - (m_i20 / 2) = centerX - 50
+		// Single button centered (Width 100)
 		m_button1->setPosition(ImVec2(centerX - 50.0f, (height() - m_button1->height()) / 2.0f));
 	}
 }
