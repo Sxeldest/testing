@@ -60,7 +60,7 @@ bool UI::initialize()
 	m_spawn->setPosition(UISettings::spawnPos());
 	m_spawn->setVisible(false);
 
-	m_dialog = new Dialog();
+	m_dialog = new CDialog();
 	this->addChild(m_dialog);
 	m_dialog->setVisible(false);
 	m_dialog->setMinSize(UISettings::dialogMinSize());

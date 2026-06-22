@@ -37,7 +37,7 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 		std::string s_item;
 		while (std::getline(ss_row, s_item, '\t'))
 		{
-			Label* label = new Label(s_item, ImColor(1.0f, 1.0f, 1.0f), outlined, fSize);
+			Label* label = new Label(s_item, ImColor(1.0f, 1.0f, 1.0f), false, fSize);
 			label->performLayout();
 			vRowItems.push_back(label);
 		}
@@ -69,9 +69,9 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 		{
 			Label* l = vRows[r_idx][c_idx];
 			item->add(l, pos_x);
-			pos_x += vColumnsWidth[c_idx] + UISettings::padding();
-			max_width = std::max(max_width, pos_x);
+			pos_x += vColumnsWidth[c_idx] + 30.0f; // PC Style Column Gap
 		}
+		max_width = std::max(max_width, pos_x + 20.0f); // Extra right-side margin
 	}
 
 	m_itemSize.x = max_width;

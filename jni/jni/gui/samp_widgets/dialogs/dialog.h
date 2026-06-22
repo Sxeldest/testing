@@ -2,77 +2,79 @@
 
 #include "content.h"
 
-class DialogButtonPanel : public Layout
+class CDialogButton : public Layout
 {
 public:
-	DialogButtonPanel();
+	CDialogButton();
 
-	void setButton1Caption(const std::string& caption);
-	void setButton2Caption(const std::string& caption);
+	void SetButton1Caption(const std::string& szCaption);
+	void SetButton2Caption(const std::string& szCaption);
 
 	virtual void performLayout() override;
 
 private:
-	class DialogButton1 : public Button
+	class CDialogButton1 : public Button
 	{
 	public:
-		DialogButton1();
+		CDialogButton1();
 
 		virtual void touchPopEvent() override;
 	};
 
-	class DialogButton2 : public Button
+	class CDialogButton2 : public Button
 	{
 	public:
-		DialogButton2();
+		CDialogButton2();
 
 		virtual void touchPopEvent() override;
 	};
 
-	DialogButton1* m_button1;
-	DialogButton2* m_button2;
-	friend class Dialog;
+	CDialogButton1* m_pButton1;
+	CDialogButton2* m_pButton2;
+	friend class CDialog;
 };
 
-class DialogTitle : public Widget
+class CDialogTitle : public Widget
 {
 public:
-	DialogTitle();
+	CDialogTitle();
 
-	void setTitle(const std::string& caption);
+	void SetTitle(const std::string& szTitle);
 
 	virtual void performLayout() override;
 	virtual void draw(ImGuiRenderer* renderer) override;
 
 private:
-	Label* m_label;
+	Label* m_pLabel;
 };
 
-class Dialog : public Widget
+class CDialog : public Widget
 {
 public:
-	Dialog();
+	CDialog();
 
-	void show(int16_t wDialogID, DialogStyle dialog_style, const std::string& title, const std::string& message, const std::string& button1, const std::string& button2);
-	void hide();
+	void Show(int16_t iID, DialogStyle iStyle, const std::string& szTitle, const std::string& szInfo, const std::string& szButton1, const std::string& szButton2);
+	void Hide();
 
 	virtual void performLayout() override;
 	virtual void draw(ImGuiRenderer* renderer) override;
 
 	virtual void touchEvent(const ImVec2& pos, TouchType type) override;
 
-	Content* content() const { return m_content; }
-	int16_t dialogID() const { return m_dialogID; }
+	CDialogContent* GetContent() const { return m_pContent; }
+	int16_t GetID() const { return m_iID; }
 
 private:
-	void setTitleCaption(const std::string& caption);
-	void setButton1Caption(const std::string& caption);
-	void setButton2Caption(const std::string& caption);
+	void SetTitleCaption(const std::string& szCaption);
+	void SetButton1Caption(const std::string& szCaption);
+	void SetButton2Caption(const std::string& szCaption);
 
 private:
-	DialogTitle* m_title;
-	Content* m_content;
-	DialogButtonPanel* m_buttonPanel;
+	CDialogTitle* m_pTitle;
+	CDialogContent* m_pContent;
+	CDialogButton* m_pButton;
 
-	int16_t m_dialogID;
+	int16_t m_iID;
+	float m_fWidth;
+	float m_fHeight;
 };

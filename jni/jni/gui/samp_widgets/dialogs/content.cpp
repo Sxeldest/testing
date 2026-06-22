@@ -1,115 +1,112 @@
 #include "../../gui.h"
 
-Content::Content()
+CDialogContent::CDialogContent()
 {
     m_activeWidgetStyle = DialogStyle::NONE;
-    m_activeWidget = nullptr;
-    m_staticHeader = nullptr;
+    m_pActiveWidget = nullptr;
+    m_pStaticHeader = nullptr;
 }
 
-void Content::performLayout()
+void CDialogContent::performLayout()
 {
-    if (m_activeWidget == nullptr) return;
+    if (m_pActiveWidget == nullptr) return;
 
-    float headerOffset = 0.0f;
-    if (m_staticHeader && m_staticHeader->visible()) {
-        m_staticHeader->setFixedSize(ImVec2(this->width(), UISettings::dialogListItemHeight()));
-        m_staticHeader->performLayout();
-        m_staticHeader->setPosition(ImVec2(0.0f, 0.0f));
-        headerOffset = m_staticHeader->height() + 15.0f; // Gap between header and list (Identical to columnGap)
+    float fHeaderOffset = 0.0f;
+    if (m_pStaticHeader && m_pStaticHeader->visible()) {
+        m_pStaticHeader->setFixedSize(ImVec2(this->width(), UISettings::dialogListItemHeight()));
+        m_pStaticHeader->performLayout();
+        m_pStaticHeader->setPosition(ImVec2(0.0f, 0.0f));
+        fHeaderOffset = m_pStaticHeader->height() + 15.0f; // Gap between header and list (Identical to columnGap)
     }
 
-    m_activeWidget->setFixedSize(ImVec2(this->width(), this->height() - headerOffset));
-    m_activeWidget->performLayout();
-    m_activeWidget->setPosition(ImVec2(0.0f, headerOffset));
+    m_pActiveWidget->setFixedSize(ImVec2(this->width(), this->height() - fHeaderOffset));
+    m_pActiveWidget->performLayout();
+    m_pActiveWidget->setPosition(ImVec2(0.0f, fHeaderOffset));
 }
 
-void Content::setActive(DialogStyle style, const std::string& data)
+void CDialogContent::SetActive(DialogStyle iStyle, const std::string& szInfo)
 {
-    removeActiveWidget();
+    RemoveActiveWidget();
 
-    switch (style)
+    switch (iStyle)
     {
     case DialogStyle::MSGBOX:
     {
-        MsgBoxWidget* msgbox = new MsgBoxWidget();
-        this->addChild(msgbox);
-        msgbox->setMessage(data);
-        m_activeWidget = msgbox;
+        MsgBoxWidget* pMsgBox = new MsgBoxWidget();
+        this->addChild(pMsgBox);
+        pMsgBox->setMessage(szInfo);
+        m_pActiveWidget = pMsgBox;
         break;
     }
     case DialogStyle::PASSWORD:
     case DialogStyle::INPUT:
     {
-        InputWidget* input = new InputWidget();
-        this->addChild(input);
-        input->setMessage(data);
-        if (style == DialogStyle::PASSWORD) input->setPasswordMode(true);
-        m_activeWidget = input;
+        InputWidget* pInput = new InputWidget();
+        this->addChild(pInput);
+        pInput->setMessage(szInfo);
+        if (iStyle == DialogStyle::PASSWORD) pInput->setPasswordMode(true);
+        m_pActiveWidget = pInput;
         break;
     }
     case DialogStyle::LIST:
     case DialogStyle::TABLIST:
     {
-        ListWidget* list = new ListWidget();
-        this->addChild(list);
-        // PC Style: Outlined, Bold, Besar (+2)
-        list->assemble(data, UISettings::fontSize() + 2.0f, true);
-        m_activeWidget = list;
+        ListWidget* pList = new ListWidget();
+        this->addChild(pList);
+        pList->assemble(szInfo, UISettings::fontSize() + 2.0f, false);
+        m_pActiveWidget = pList;
         break;
     }
     case DialogStyle::TABLIST_HEADERS:
     {
-        TabListWidget* list = new TabListWidget();
-        this->addChild(list);
+        TabListWidget* pTabList = new TabListWidget();
+        this->addChild(pTabList);
 
-        // TABLIST ITEMS: Tetap Besar & Bold (+2)
-        std::vector<float> offsets = list->assemble(data, {}, true, UISettings::fontSize() + 2.0f, true);
-        m_activeWidget = list;
+        // Tablist items
+        std::vector<float> fOffsets = pTabList->assemble(szInfo, {}, true, UISettings::fontSize() + 2.0f, false);
+        m_pActiveWidget = pTabList;
 
-        // Create Static Header (Column Titles) using the first row
-        std::string headerStr = TabListWidget::getFirstRow(data);
-        m_staticHeader = new TabListWidget::ItemWidget(false);
-        this->addChild(m_staticHeader);
+        std::string szHeaderStr = TabListWidget::getFirstRow(szInfo);
+        m_pStaticHeader = new TabListWidget::ItemWidget(false);
+        this->addChild(m_pStaticHeader);
 
-        std::stringstream ss(headerStr);
-        std::string item;
-        int col = 0;
-        while (std::getline(ss, item, '\t')) {
-            if (col < (int)offsets.size()) {
-                // Teks Kolom/Title di bawah header: Menggunakan Small Font & Normal (PC Style)
-                m_staticHeader->add(new Label(item, ImColor(0x95, 0xB0, 0xD0), false, UISettings::smallFontSize()), offsets[col]);
+        std::stringstream ss(szHeaderStr);
+        std::string szItem;
+        int iCol = 0;
+        while (std::getline(ss, szItem, '\t')) {
+            if (iCol < (int)fOffsets.size()) {
+                m_pStaticHeader->add(new Label(szItem, ImColor(0x95, 0xB0, 0xD0), false, UISettings::smallFontSize()), fOffsets[iCol]);
             }
-            col++;
+            iCol++;
         }
         break;
     }
 	}
 
-    m_activeWidgetStyle = style;
-    m_activeWidget->setVisible(true);
+    m_activeWidgetStyle = iStyle;
+    m_pActiveWidget->setVisible(true);
 }
 
-void Content::removeActiveWidget()
+void CDialogContent::RemoveActiveWidget()
 {
-    if (m_activeWidget != nullptr) this->removeChild(m_activeWidget);
-    if (m_staticHeader != nullptr) this->removeChild(m_staticHeader);
+    if (m_pActiveWidget != nullptr) this->removeChild(m_pActiveWidget);
+    if (m_pStaticHeader != nullptr) this->removeChild(m_pStaticHeader);
 
-    m_activeWidget = nullptr;
-    m_staticHeader = nullptr;
+    m_pActiveWidget = nullptr;
+    m_pStaticHeader = nullptr;
     m_activeWidgetStyle = DialogStyle::NONE;
 }
 
-const std::string& Content::inputString() const
+const std::string& CDialogContent::GetInputString() const
 {
     if (m_activeWidgetStyle == DialogStyle::INPUT || m_activeWidgetStyle == DialogStyle::PASSWORD)
-        return dynamic_cast<InputWidget*>(m_activeWidget)->inputString();
+        return dynamic_cast<InputWidget*>(m_pActiveWidget)->inputString();
     return "";
 }
 
-int Content::listItem() const
+int CDialogContent::GetListItem() const
 {
     if (m_activeWidgetStyle == DialogStyle::LIST || m_activeWidgetStyle == DialogStyle::TABLIST || m_activeWidgetStyle == DialogStyle::TABLIST_HEADERS)
-        return dynamic_cast<ListBox*>(m_activeWidget)->activeItemIndex();
+        return dynamic_cast<ListBox*>(m_pActiveWidget)->activeItemIndex();
     return -1;
 }

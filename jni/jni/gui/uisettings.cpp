@@ -40,7 +40,7 @@ int UISettings::m_chatMaxMessages = 20;
 ImVec2 UISettings::m_chatPos = ImVec2(20.0f, 20.0f);
 ImVec2 UISettings::m_chatPosNoRadar = ImVec2(20.0f, 20.0f);
 ImVec2 UISettings::m_chatSize = ImVec2(420.0f, 0.0f);
-ImVec2 UISettings::m_chatItemSize = ImVec2(420.0f, 14.0f);
+ImVec2 UISettings::m_chatItemSize = ImVec2(420.0f, 15.0f);
 
 /* spawn */
 ImVec2 UISettings::m_spawnPos = ImVec2(200.0f, 420.0f);
@@ -50,10 +50,10 @@ ImVec2 UISettings::m_spawnSize = ImVec2(240.0f, 50.0f);
 ImVec2 UISettings::m_nametagBarSize = ImVec2(25.0f, 6.0f);
 
 /* dialog (EXACT PC VALUES FROM CDialog.cpp) */
-ImVec2 UISettings::m_dialogButtonPanelSize = ImVec2(100.0f, 30.0f); // m_i20, m_i24
+ImVec2 UISettings::m_dialogButtonSize = ImVec2(100.0f, 30.0f); // m_i20, m_i24
 ImVec2 UISettings::m_dialogMinSize = ImVec2(230.0f, 150.0f);
 ImVec2 UISettings::m_dialogMaxSize = ImVec2(2000.0f, 2000.0f);
-float UISettings::m_dialogTitleHeight = 25.0f;
+float UISettings::m_dialogTitleHeight = 20.0f;
 float UISettings::m_dialogListItemHeight = 18.0f;
 float UISettings::m_dialogInputHeight = 40.0f;
 
@@ -89,7 +89,7 @@ void UISettings::Initialize(const ImVec2& display_size)
 	}
 
 	m_smallFontSize = m_fontSize - 2.0f;
-	m_chatItemSize.y = m_fontSize + 2.0f;
+	m_chatItemSize.y = m_fontSize;
 	m_chatSize.y = m_chatItemSize.y * (float)m_chatDispMesssages;
 
 	if (display_size.x > 800.0f) {

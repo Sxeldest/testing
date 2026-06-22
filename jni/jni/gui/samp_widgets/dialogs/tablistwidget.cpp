@@ -52,7 +52,7 @@ std::vector<float> TabListWidget::assemble(const std::string& data, const std::v
 		std::string s_item;
 		while (std::getline(ss_row, s_item, '\t'))
 		{
-			Label* label = new Label(s_item, ImColor(1.0f, 1.0f, 1.0f), outlined, fSize);
+			Label* label = new Label(s_item, ImColor(1.0f, 1.0f, 1.0f), false, fSize);
 			label->performLayout();
 			vRowItems.push_back(label);
 		}
@@ -98,7 +98,7 @@ std::vector<float> TabListWidget::assemble(const std::string& data, const std::v
 		float current_x = UISettings::padding();
 		for(float w : vColumnsWidth) {
 			columnOffsets.push_back(current_x);
-			current_x += w + UISettings::padding();
+			current_x += w + 30.0f; // PC Style Column Gap (Increased)
 		}
 
 		for (int r_idx = (skipFirstRow ? 1 : 0); r_idx < (int)vRows.size(); r_idx++)
@@ -111,7 +111,7 @@ std::vector<float> TabListWidget::assemble(const std::string& data, const std::v
 				float pos_x = columnOffsets[c_idx];
 				Label* l = vRows[r_idx][c_idx];
 				item->add(l, pos_x);
-				max_width = std::max(max_width, pos_x + l->width());
+				max_width = std::max(max_width, pos_x + l->width() + 30.0f); // Extra right-side padding (PC style)
 			}
 		}
 	}

@@ -41,7 +41,7 @@ public:
 	static ImVec2 nametagBarSize() { return m_nametagBarSize; }
 
 	/* dialog */
-	static ImVec2 dialogButtonPanelSize() { return m_dialogButtonPanelSize; }
+	static ImVec2 dialogButtonSize() { return m_dialogButtonSize; }
 	static ImVec2 dialogMinSize() { return m_dialogMinSize; }
 	static ImVec2 dialogMaxSize() { return m_dialogMaxSize; }
 	static float dialogTitleHeight() { return m_dialogTitleHeight; }
@@ -118,7 +118,7 @@ private:
 	static ImVec2 m_nametagBarSize;
 
 	/* dialog */
-	static ImVec2 m_dialogButtonPanelSize;
+	static ImVec2 m_dialogButtonSize;
 	static ImVec2 m_dialogMinSize;
 	static ImVec2 m_dialogMaxSize;
 	static float m_dialogTitleHeight;

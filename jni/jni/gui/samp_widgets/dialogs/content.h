@@ -16,25 +16,25 @@ enum class DialogStyle
 	NONE = -1
 };
 
-class Content : public Widget
+class CDialogContent : public Widget
 {
 public:
-	Content();
+	CDialogContent();
 	virtual void performLayout() override;
 
-	void setActive(DialogStyle style, const std::string& data);
+	void SetActive(DialogStyle iStyle, const std::string& szInfo);
 
-	Widget* activeWidget() const { return m_activeWidget; }
-	DialogStyle activeStyle() const { return m_activeWidgetStyle; }
+	Widget* GetActiveWidget() const { return m_pActiveWidget; }
+	DialogStyle GetActiveStyle() const { return m_activeWidgetStyle; }
 
-	const std::string& inputString() const;
-	int listItem() const;
-
-private:
-	void removeActiveWidget();
+	const std::string& GetInputString() const;
+	int GetListItem() const;
 
 private:
-	Widget* m_activeWidget;
-	TabListWidget::ItemWidget* m_staticHeader;
+	void RemoveActiveWidget();
+
+private:
+	Widget* m_pActiveWidget;
+	TabListWidget::ItemWidget* m_pStaticHeader;
 	DialogStyle m_activeWidgetStyle;
 };

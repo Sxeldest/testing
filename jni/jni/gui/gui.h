@@ -40,7 +40,7 @@ public:
 	Chat* chat() const { return m_chat; }
 	Spawn* spawn() const { return m_spawn; }
 	Keyboard* keyboard() const { return m_keyboard; }
-	Dialog* dialog() const { return m_dialog; }
+	CDialog* dialog() const { return m_dialog; }
 	ButtonPanel* buttonpanel() const { return m_buttonPanel; }
 	PlayerTabList* playertablist() const { return m_playerTabList; }
 	VoiceButton* voicebutton() const { return m_voiceButton; }
@@ -76,7 +76,7 @@ private:
 	SplashScreen* m_splashScreen;
 	Chat* m_chat;
 	Spawn* m_spawn;
-	Dialog* m_dialog;
+	CDialog* m_dialog;
 	ButtonPanel* m_buttonPanel;
 	PlayerTabList* m_playerTabList;
 	VoiceButton* m_voiceButton;

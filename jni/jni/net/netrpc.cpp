@@ -163,7 +163,7 @@ void DialogBox(RPCParameters *rpcParams)
 	}
 
 	if (wDialogID == 0xFFFF) {
-		if (pUI) pUI->dialog()->hide();
+		if (pUI) pUI->dialog()->Hide();
 		return;
 	}
 
@@ -171,7 +171,7 @@ void DialogBox(RPCParameters *rpcParams)
 
 	if (pUI) 
 	{
-		pUI->dialog()->show(wDialogID, style,
+		pUI->dialog()->Show(wDialogID, style,
 			Encoding::cp2utf(szTitle),
 			Encoding::cp2utf(szBuff),
 			Encoding::cp2utf(szButton1),
