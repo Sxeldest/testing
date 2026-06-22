@@ -87,7 +87,8 @@ void CDialog::performLayout()
 			Widget* pPanel = pActive->children()[0];
 			float fMinContentWidth = 360.0f;
 
-			cx = ImMax(fMinContentWidth, pPanel->width());
+			// Add 20px extra to content width to create internal right padding (PC Style)
+			cx = ImMax(fMinContentWidth, pPanel->width() + 20.0f);
 			cy = pPanel->height();
 		}
 	}
@@ -115,11 +116,8 @@ void CDialog::performLayout()
 
 	/* 2. PC Dimension Values (1:1 CDialog.cpp) */
 	float fHeaderHeight = 20.0f;    // PC Caption height (approx size.cy + 4)
-	float fSidePadding = 40.0f;     // Default side padding
-
-	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST || iStyle == DialogStyle::TABLIST_HEADERS) {
-		fSidePadding = 60.0f; // More right-side breathing room for lists
-	}
+	float fSidePadding = 40.0f;     // Default side padding (20px left + 20px right)
+	float fContentX = 20.0f;        // Always 20px from left for symmetry
 
 	float fStaticHeaderHeight = 0.0f;
 	float fColumnGap = 0.0f;
@@ -128,7 +126,7 @@ void CDialog::performLayout()
 		fColumnGap = 15.0f;
 	}
 
-	float fMaxListHeight = 350.0f;
+	float fMaxListHeight = 380.0f;
 	float fMinListHeight = 0.0f;
 	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST || iStyle == DialogStyle::TABLIST_HEADERS) {
 		fMinListHeight = 230.0f; // PC Default height 300 - 70 overhead
@@ -150,7 +148,6 @@ void CDialog::performLayout()
 	m_pTitle->performLayout();
 	m_pTitle->setPosition(ImVec2(0.0f, 0.0f));
 
-	float fContentX = 15.0f;
 	float fContainerWidth = fClientWidth;
 
 	if (iStyle == DialogStyle::INPUT || iStyle == DialogStyle::PASSWORD) {
