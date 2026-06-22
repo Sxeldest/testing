@@ -144,8 +144,13 @@ void Dialog::performLayout()
 
 	m_content->setFixedSize(ImVec2(containerWidth, clientHeight));
 	m_content->performLayout();
-	// PC Precise: Caption(25) - 2px Offset to eliminate label internal padding = 23.0f
-	m_content->setPosition(ImVec2(contentX, 23.0f));
+
+	// y positioning: LIST/TABLIST stays tight (23.0f), MSGBOX/INPUT moves down (28.0f)
+	float contentY = 23.0f;
+	if (style == DialogStyle::MSGBOX || style == DialogStyle::INPUT || style == DialogStyle::PASSWORD) {
+		contentY = 28.0f;
+	}
+	m_content->setPosition(ImVec2(contentX, contentY));
 
 	m_buttonPanel->setFixedSize(ImVec2(dialogWidth, 30.0f));
 	m_buttonPanel->performLayout();
