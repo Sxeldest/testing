@@ -18,10 +18,11 @@ void InputWidget::performLayout()
 	Widget* label = m_msgbox->children()[0];
 	label->performLayout();
 
-	// PC Style: Message has more side padding (20px total) than EditBox (5px total)
-	// InputWidget is placed at x=5 in Dialog, so we indent message by another 15px.
+	// PC Style: Match MSGBOX padding.
+	// Di Dialog::performLayout, contentX untuk INPUT sudah diset 20.0f (sama dengan MSGBOX),
+	// jadi messageIndent diset 0 agar sejajar sempurna.
 	float messageIndent = 15.0f;
-	float messageWidth = this->width() - (messageIndent * 2.0f);
+	float messageWidth = this->width();
 	float contentHeight = label->height();
 
 	// Set msgbox (ScrollPanel) width to be indented

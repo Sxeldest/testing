@@ -4,7 +4,7 @@ extern UI* pUI;
 
 EditBox::EditBox()
 {
-	m_label = new Label(" ", ImColor(1.0f, 1.0f, 1.0f), false, UISettings::fontSize());//...
+	m_label = new Label(" ", ImColor(1.0f, 1.0f, 1.0f), true, UISettings::fontSize()); // PC Style: Outlined/Bold + Large
 	this->addChild(m_label);
 	m_passwordMode = false;
 }

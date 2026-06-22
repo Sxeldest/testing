@@ -53,8 +53,8 @@ void Content::setActive(DialogStyle style, const std::string& data)
     {
         ListWidget* list = new ListWidget();
         this->addChild(list);
-        // PC TABLIST Style: Outlined, Small Font
-        list->assemble(data, UISettings::smallFontSize(), true);
+        // PC Style: Outlined, Bold, Besar (+2)
+        list->assemble(data, UISettings::fontSize() + 2.0f, true);
         m_activeWidget = list;
         break;
     }
@@ -63,12 +63,11 @@ void Content::setActive(DialogStyle style, const std::string& data)
         TabListWidget* list = new TabListWidget();
         this->addChild(list);
 
-        // Assemble ALL rows first to calculate widths, but SKIP first row for addition to list
-        // PC TABLIST Style: Outlined, Small Font
-        std::vector<float> offsets = list->assemble(data, {}, true, UISettings::smallFontSize(), true);
+        // TABLIST ITEMS: Tetap Besar & Bold (+2)
+        std::vector<float> offsets = list->assemble(data, {}, true, UISettings::fontSize() + 2.0f, true);
         m_activeWidget = list;
 
-        // Create Static Header using the first row
+        // Create Static Header (Column Titles) using the first row
         std::string headerStr = TabListWidget::getFirstRow(data);
         m_staticHeader = new TabListWidget::ItemWidget(false);
         this->addChild(m_staticHeader);
@@ -78,8 +77,8 @@ void Content::setActive(DialogStyle style, const std::string& data)
         int col = 0;
         while (std::getline(ss, item, '\t')) {
             if (col < (int)offsets.size()) {
-                // PC Header: Color 0x95B0D0, Outlined, Small Font
-                m_staticHeader->add(new Label(item, ImColor(0x95, 0xB0, 0xD0), true, UISettings::smallFontSize()), offsets[col]);
+                // Teks Kolom/Title di bawah header: Menggunakan Small Font & Normal (PC Style)
+                m_staticHeader->add(new Label(item, ImColor(0x95, 0xB0, 0xD0), false, UISettings::smallFontSize()), offsets[col]);
             }
             col++;
         }

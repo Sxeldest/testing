@@ -69,7 +69,7 @@ void Dialog::performLayout()
 	if (!active) return;
 
 	/* 1. Deep Measure Phase */
-	float preferredWidth = 230.0f; // Standard PC Min width (m_iWidth default check)
+	float preferredWidth = 190.0f; // Minimal lebar konten (230 total - 40 side padding)
 	float preferredHeight = 0.0f;
 	DialogStyle style = m_content->activeStyle();
 
@@ -77,7 +77,11 @@ void Dialog::performLayout()
 		active->performLayout();
 		if (!active->children().empty()) {
 			Widget* panel = active->children()[0];
-			preferredWidth = ImMax(preferredWidth, panel->width());
+			// PC Min Width: 400 (Content: 360).
+			// Baik LIST maupun TABLIST menggunakan minimal yang sama agar konsisten
+			float minContentWidth = 360.0f;
+
+			preferredWidth = ImMax(minContentWidth, panel->width());
 			preferredHeight = panel->height();
 		}
 	} else if (style == DialogStyle::INPUT || style == DialogStyle::PASSWORD) {
@@ -113,7 +117,12 @@ void Dialog::performLayout()
 	}
 
 	float maxListHeight = 350.0f;
-	float listHeight = ImMin(preferredHeight, maxListHeight);
+	float minListHeight = 0.0f;
+	if (style == DialogStyle::LIST || style == DialogStyle::TABLIST || style == DialogStyle::TABLIST_HEADERS) {
+		minListHeight = 230.0f; // PC Default height 300 - 70 overhead
+	}
+
+	float listHeight = ImMin(ImMax(preferredHeight, minListHeight), maxListHeight);
 	float clientWidth = preferredWidth;
 
 	// PC Total Height Logic Refined:
@@ -132,12 +141,15 @@ void Dialog::performLayout()
 	// x positioning logic from PC:
 	// ListBox/TabList: SetLocation(10, 10) -> x = 10
 	float contentX = 10.0f;
-	float containerWidth = clientWidth + 20.0f;
+	// Tambahkan padding kanan ekstra (30px total di kanan) untuk area scrollbar PC
+	float containerWidth = clientWidth + 10.0f;
 
 	if (style == DialogStyle::INPUT || style == DialogStyle::PASSWORD) {
+		// Input/Password: Padding kiri 5px, lebar diatur agar padding kanan juga 5px
 		contentX = 5.0f;
 		containerWidth = clientWidth + 30.0f;
 	} else if (style == DialogStyle::MSGBOX) {
+		// MsgBox: Padding kiri 20px
 		contentX = 20.0f;
 		containerWidth = clientWidth;
 	}
@@ -176,7 +188,8 @@ void Dialog::touchEvent(const ImVec2& pos, TouchType type)
 }
 
 DialogTitle::DialogTitle() {
-	m_label = new Label("Title", ImColor(1.0f, 1.0f, 1.0f), false, UISettings::fontSize());
+	// PC Style: Bold, Size sedikit lebih besar dari chat (fontSize + 2)
+	m_label = new Label("Title", ImColor(1.0f, 1.0f, 1.0f), true, UISettings::fontSize() + 2.0f);
 	this->addChild(m_label);
 }
 void DialogTitle::setTitle(const std::string& caption) { m_label->setText(caption); }
@@ -223,5 +236,5 @@ void DialogButtonPanel::DialogButton2::touchPopEvent() {
 	if (pNetGame) pNetGame->SendDialogResponse(dialog->dialogID(), 0, dialog->content()->listItem(), dialog->content()->inputString().c_str());
 	dialog->hide();
 }
-DialogButtonPanel::DialogButton1::DialogButton1() : Button("", UISettings::fontSize()) {}
-DialogButtonPanel::DialogButton2::DialogButton2() : Button("", UISettings::fontSize()) {}
+DialogButtonPanel::DialogButton1::DialogButton1() : Button("", UISettings::fontSize() + 2.0f) {}
+DialogButtonPanel::DialogButton2::DialogButton2() : Button("", UISettings::fontSize() + 2.0f) {}
