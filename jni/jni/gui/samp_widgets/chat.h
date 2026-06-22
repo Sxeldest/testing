@@ -34,7 +34,7 @@ private:
 		void performLayout() override
 		{
 			m_text->performLayout();
-			m_text->setPosition(ImVec2(0.0f, (height() - m_text->height()) / 2));
+			m_text->setPosition(ImVec2(0.0f, 0.0f));
 		}
 
 	private:
@@ -55,10 +55,10 @@ private:
 		void performLayout() override
 		{
 			m_nick->performLayout();
-			m_nick->setPosition(ImVec2(0.0f, (height() - m_nick->height()) / 2));
+			m_nick->setPosition(ImVec2(0.0f, 0.0f));
 
 			m_text->performLayout();
-			m_text->setPosition(ImVec2(m_nick->position().x + m_nick->width(), (height() - m_text->height()) / 2));
+			m_text->setPosition(ImVec2(m_nick->position().x + m_nick->width(), 0.0f));
 		}
 
 	private:

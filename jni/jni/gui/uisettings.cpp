@@ -35,11 +35,10 @@ ImVec2 UISettings::m_splashScreenPBarPos = ImVec2(100.0f, 460.0f);
 ImVec2 UISettings::m_splashScreenPBarSize = ImVec2(440.0f, 10.0f);
 
 /* chat (PC standard) */
-int UISettings::m_chatDispMesssages = 10;
-int UISettings::m_chatMaxMessages = 20;
-ImVec2 UISettings::m_chatPos = ImVec2(20.0f, 20.0f);
-ImVec2 UISettings::m_chatPosNoRadar = ImVec2(20.0f, 20.0f);
-ImVec2 UISettings::m_chatSize = ImVec2(420.0f, 0.0f);
+int UISettings::m_chatDispMesssages = 30;
+int UISettings::m_chatMaxMessages = 10;
+ImVec2 UISettings::m_chatPos = ImVec2(45.0f, 10.0f);
+ImVec2 UISettings::m_chatSize = ImVec2(250.0f, 0.0f);
 ImVec2 UISettings::m_chatItemSize = ImVec2(420.0f, 15.0f);
 
 /* spawn */
@@ -47,7 +46,7 @@ ImVec2 UISettings::m_spawnPos = ImVec2(200.0f, 420.0f);
 ImVec2 UISettings::m_spawnSize = ImVec2(240.0f, 50.0f);
 
 /* nametag */
-ImVec2 UISettings::m_nametagBarSize = ImVec2(25.0f, 6.0f);
+ImVec2 UISettings::m_nametagBarSize = ImVec2(40.0f, 5.0f);
 
 /* dialog (EXACT PC VALUES FROM CDialog.cpp) */
 ImVec2 UISettings::m_dialogButtonSize = ImVec2(100.0f, 30.0f); // m_i20, m_i24
@@ -58,8 +57,8 @@ float UISettings::m_dialogListItemHeight = 18.0f;
 float UISettings::m_dialogInputHeight = 40.0f;
 
 /* buttonpanel */
-ImVec2 UISettings::m_buttonPanelPos = ImVec2(5.0f, 300.0f);
-ImVec2 UISettings::m_buttonPanelSize = ImVec2(700.0f, 80.0f);
+ImVec2 UISettings::m_buttonPanelPos = ImVec2(5.0f, 250.0f);
+ImVec2 UISettings::m_buttonPanelSize = ImVec2(800.0f, 60.0f);
 
 /* voice button */
 ImVec2 UISettings::m_buttonVoicePos = ImVec2(500.0f, 180.0f);
@@ -86,6 +85,9 @@ void UISettings::Initialize(const ImVec2& display_size)
 		m_fontSize = pSettings->Get().fFontSize;
 		m_outlineSize = (float)pSettings->Get().iFontOutline;
 		m_chatDispMesssages = pSettings->Get().iChatMaxMessages;
+		m_chatMaxMessages = pSettings->Get().iChatMaxMessages;
+		m_chatPos.x = pSettings->Get().fChatPosX;
+		m_chatPos.y = pSettings->Get().fChatPosY;
 	}
 
 	m_smallFontSize = m_fontSize - 2.0f;

@@ -28,7 +28,6 @@ public:
 
 	/* chat */
 	static ImVec2 chatPos() { return m_chatPos; }
-	static ImVec2 chatPosNoRadar() { return m_chatPosNoRadar; }
 	static ImVec2 chatSize() { return m_chatSize; }
 	static ImVec2 chatItemSize() { return m_chatItemSize; }
 	static int chatMaxMessages() { return m_chatMaxMessages; }
@@ -104,7 +103,6 @@ private:
 
 	/* chat */
 	static ImVec2 m_chatPos;
-	static ImVec2 m_chatPosNoRadar;
 	static ImVec2 m_chatSize;
 	static ImVec2 m_chatItemSize;
 	static int m_chatDispMesssages;

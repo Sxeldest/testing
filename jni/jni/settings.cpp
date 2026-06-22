@@ -44,20 +44,20 @@ CSettings::CSettings()
 	m_Settings.iFontOutline = reader.GetInteger("gui", "FontOutline", 2);
 
 	// chat
-	m_Settings.fChatPosX = reader.GetReal("gui", "ChatPosX", 170.0f);
-	m_Settings.fChatPosY = reader.GetReal("gui", "ChatPosY", 235.0f);
-	m_Settings.fChatSizeX = reader.GetReal("gui", "ChatSizeX", 1150.0f);
-	m_Settings.fChatSizeY = reader.GetReal("gui", "ChatSizeY", 220.0f);
-	m_Settings.iChatMaxMessages = reader.GetInteger("gui", "ChatMaxMessages", 6);
+	m_Settings.fChatPosX = reader.GetReal("gui", "ChatPosX", 45.0f);
+	m_Settings.fChatPosY = reader.GetReal("gui", "ChatPosY", 10.0f);
+	m_Settings.fChatSizeX = reader.GetReal("gui", "ChatSizeX", 350.0f);
+	m_Settings.fChatSizeY = reader.GetReal("gui", "ChatSizeY", 250.0f);
+	m_Settings.iChatMaxMessages = reader.GetInteger("gui", "ChatMaxMessages", 10);
 
 	// nametags
-	m_Settings.fHealthBarWidth = reader.GetReal("gui", "HealthBarWidth", 100.0f);
-	m_Settings.fHealthBarHeight = reader.GetReal("gui", "HealthBarHeight", 10.0f);
+	m_Settings.fHealthBarWidth = reader.GetReal("gui", "HealthBarWidth", 60.0f);
+	m_Settings.fHealthBarHeight = reader.GetReal("gui", "HealthBarHeight", 7.0f);
 
 	// system
 	m_Settings.iAndroidKeyboard = reader.GetBoolean("gui", "androidkeyboard", true);
 	m_Settings.iFPSCounter = reader.GetBoolean("gui", "fps", true);
-	m_Settings.iFPSCount = reader.GetInteger("gui", "FPSLimit", 120);
+	m_Settings.iFPSCount = reader.GetInteger("gui", "FPSLimit", 60);
 	m_Settings.bVoiceChatEnable = reader.GetBoolean("gui", "VoiceChatEnable", true);
 	m_Settings.iByteMod = reader.GetInteger("client", "mod", 10);
 

@@ -54,7 +54,10 @@ void Chat::addClientMessage(const std::string& message, const ImColor& color)
 
 void Chat::addMessage(const std::string& message, const ImColor& color)
 {
-	if (this->itemsCount() > UISettings::chatMaxMessages())
+	int maxMessages = pSettings ? pSettings->Get().iChatMaxMessages : 10;
+	if (maxMessages <= 0) maxMessages = 10;
+
+	if (this->itemsCount() >= maxMessages)
 	{
 		this->removeItem(0);
 	}
@@ -66,7 +69,10 @@ void Chat::addMessage(const std::string& message, const ImColor& color)
 
 void Chat::addPlayerMessage(const std::string& message, const std::string& nick, const ImColor& nick_color)
 {
-	if (this->itemsCount() > UISettings::chatMaxMessages())
+	int maxMessages = pSettings ? pSettings->Get().iChatMaxMessages : 10;
+	if (maxMessages <= 0) maxMessages = 10;
+
+	if (this->itemsCount() >= maxMessages)
 	{
 		this->removeItem(0);
 	}
@@ -78,6 +84,27 @@ void Chat::addPlayerMessage(const std::string& message, const std::string& nick,
 
 void Chat::draw(ImGuiRenderer* renderer)
 {
+	if (pSettings)
+	{
+		// 1. Anchor tetap di fChatPosY (Atas)
+		this->setPosition(ImVec2(pSettings->Get().fChatPosX, pSettings->Get().fChatPosY));
+
+		float fontSize = pSettings->Get().fFontSize;
+		int maxLines = pSettings->Get().iChatMaxMessages;
+		if (maxLines <= 0) maxLines = 10;
+
+		float sizeX = pSettings->Get().fChatSizeX;
+
+		// 2. Tinggi kotak murni dihitung dari MaxLines * FontSize
+		// Karena Anchor kita di Top (fChatPosY), maka jika MaxLines ditambah,
+		// kotak akan memanjang ke arah BAWAH.
+		float sizeY = fontSize * (float)maxLines;
+
+		if (sizeX > 1.0f && sizeY > 1.0f) {
+			this->setFixedSize(ImVec2(sizeX, sizeY));
+		}
+	}
+
 	ListBox::draw(renderer);
 }
 
