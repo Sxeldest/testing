@@ -41,6 +41,7 @@ std::vector<float> TabListWidget::assemble(const std::string& data, const std::v
 	std::string s_row;
 
 	float fSize = fontSize == 0.0f ? UISettings::fontSize() : fontSize;
+	m_itemSize.y = fSize + 4.0f; // Dinamis: Mengikuti ukuran font agar spacing pas
 
 	while (std::getline(ss_data, s_row, '\n'))
 	{

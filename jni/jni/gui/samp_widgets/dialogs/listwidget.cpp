@@ -26,6 +26,7 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 	std::string s_row;
 
 	float fSize = fontSize == 0.0f ? UISettings::fontSize() : fontSize;
+	m_itemSize.y = fSize + 4.0f; // Dinamis: Mengikuti ukuran font agar spacing pas
 
 	while (std::getline(ss_data, s_row, '\n'))
 	{
