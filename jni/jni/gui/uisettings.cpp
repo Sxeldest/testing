@@ -55,7 +55,7 @@ ImVec2 UISettings::m_dialogMinSize = ImVec2(230.0f, 150.0f);
 ImVec2 UISettings::m_dialogMaxSize = ImVec2(2000.0f, 2000.0f);
 float UISettings::m_dialogTitleHeight = 25.0f;
 float UISettings::m_dialogListItemHeight = 18.0f;
-float UISettings::m_dialogInputHeight = 38.0f;
+float UISettings::m_dialogInputHeight = 40.0f;
 
 /* buttonpanel */
 ImVec2 UISettings::m_buttonPanelPos = ImVec2(5.0f, 300.0f);

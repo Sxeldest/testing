@@ -88,7 +88,7 @@ void Dialog::performLayout()
 				Widget* label = msgbox->children()[0];
 				label->performLayout();
 				preferredWidth = ImMax(preferredWidth, label->width());
-				preferredHeight = label->height() + 38.0f + 20.0f;
+				preferredHeight = label->height() + 40.0f + 10.0f; // InputHeight(40) + Gap(10)
 			}
 		}
 	} else {
@@ -117,10 +117,10 @@ void Dialog::performLayout()
 	float clientWidth = preferredWidth;
 
 	// PC Total Height Logic Refined:
-	// Caption 25 + TopMargin 0 + MidGap 15 + ButtonArea 30 + BottomPadding 5 = 75px overhead
+	// Caption 25 + TopMargin 0 + MidGap 10 + ButtonArea 30 + BottomPadding 5 = 70px overhead
 	float clientHeight = listHeight + staticHeaderHeight + columnGap;
 	float dialogWidth = clientWidth + sidePadding;
-	float dialogHeight = clientHeight + 75.0f;
+	float dialogHeight = clientHeight + 70.0f;
 
 	this->setSize(ImVec2(dialogWidth, dialogHeight));
 

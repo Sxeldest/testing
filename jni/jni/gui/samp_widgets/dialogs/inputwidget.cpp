@@ -11,7 +11,7 @@ InputWidget::InputWidget()
 
 void InputWidget::performLayout()
 {
-	float editBoxHeight = 38.0f; // PC Standard
+	float editBoxHeight = 40.0f; // PC Standard + 2px height boost
 
 	// Measure the label inside the msgbox
 	if (m_msgbox->children().empty()) return;
