@@ -97,7 +97,7 @@ void ListWidget::ItemWidget::performLayout()
 
 void ListWidget::ItemWidget::draw(ImGuiRenderer* renderer)
 {
-	if (this->selected()) renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xF5, 0x91, 0x32), true);
+	if (this->selected()) renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xB9, 0x22, 0x28, 255), true);
 	ListBoxItem::draw(renderer);
 }
 

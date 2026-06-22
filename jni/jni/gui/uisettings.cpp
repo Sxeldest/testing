@@ -70,8 +70,8 @@ ImVec2 UISettings::m_scoreboardSize = ImVec2(640.0f, 480.0f); // Standard PC Def
 float UISettings::m_scoreboardHeaderHeight = 60.0f; // Standard PC Header
 
 /* ////////////////// colors ////////////////// */
-ImColor UISettings::m_buttonColor = ImColor(0.11f, 0.11f, 0.11f, 0.80f);
-ImColor UISettings::m_buttonFocusedColor = ImColor(0xFF, 0xCC, 0x01);
+ImColor UISettings::m_buttonColor = ImColor(5, 5, 5, 220); // Menyatu dengan background dialog
+ImColor UISettings::m_buttonFocusedColor = ImColor(0xB9, 0x22, 0x28, 255); // Merah PC saat ditekan
 ImColor UISettings::m_keyboardBackgroundColor = ImColor(0, 0, 0, 150);
 ImColor UISettings::m_dialogBackgroundColor = ImColor(5, 5, 5, 220);
 ImColor UISettings::m_dialogTitleBackgroundColor = ImColor(5, 5, 5, 220);

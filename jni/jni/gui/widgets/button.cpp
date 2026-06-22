@@ -31,10 +31,10 @@ void Button::draw(ImGuiRenderer* renderer)
 	renderer->drawRect(absolutePosition(), absolutePosition() + size(),
 		focused() ? m_colorFocused : m_color, true);
 
-	//Outline
+	//Outline - Set to dark color to blend in
 	renderer->drawRect(absolutePosition() + ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
 		(absolutePosition() + size()) - ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
-		ImColor(0.287f, 0.287f, 0.287f, 0.890f)/*ImColor(0xF5, 0x91, 0x32)*/, false, UISettings::outlineSize());
+		ImColor(0.15f, 0.15f, 0.15f, 0.9f), false, UISettings::outlineSize());
 
 	Widget::draw(renderer);
 }

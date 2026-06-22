@@ -117,7 +117,12 @@ void CDialog::performLayout()
 	/* 2. PC Dimension Values (1:1 CDialog.cpp) */
 	float fHeaderHeight = 20.0f;    // PC Caption height (approx size.cy + 4)
 	float fSidePadding = 40.0f;     // Default side padding (20px left + 20px right)
-	float fContentX = 20.0f;        // Always 20px from left for symmetry
+	float fContentX = 20.0f;        // Default for MSGBOX
+
+	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST || iStyle == DialogStyle::TABLIST_HEADERS) {
+		fSidePadding = 20.0f;       // 10px left + 10px right
+		fContentX = 10.0f;          // 10px from left
+	}
 
 	float fStaticHeaderHeight = 0.0f;
 	float fColumnGap = 0.0f;
