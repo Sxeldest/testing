@@ -144,8 +144,8 @@ void Dialog::performLayout()
 
 	m_content->setFixedSize(ImVec2(containerWidth, clientHeight));
 	m_content->performLayout();
-	// PC Precise: Caption(25) + TopMargin(0) = 25.0f (Strictly below header)
-	m_content->setPosition(ImVec2(contentX, 25.0f));
+	// PC Precise: Caption(25) - 2px Offset to eliminate label internal padding = 23.0f
+	m_content->setPosition(ImVec2(contentX, 23.0f));
 
 	m_buttonPanel->setFixedSize(ImVec2(dialogWidth, 30.0f));
 	m_buttonPanel->performLayout();

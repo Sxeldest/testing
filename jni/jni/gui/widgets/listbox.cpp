@@ -6,6 +6,7 @@ ListBox::ListBox()
 {
 	m_panel = new Panel();
 	this->addChild(m_panel);
+	m_clipping = true;
 }
 
 void ListBox::setItemSize(const ImVec2& size)
@@ -28,6 +29,12 @@ void ListBox::removeAllItems()
 	m_panel->removeAllItems();
 }
 
+void ListBox::setClipping(bool clipping)
+{
+	ScrollPanel::setClipping(clipping);
+	m_panel->setClipping(clipping);
+}
+
 /* ListBox::Panel */
 
 ListBox::Panel::Panel()
@@ -35,6 +42,7 @@ ListBox::Panel::Panel()
 	m_itemSize = ImVec2(0.0f, 0.0f);
 	m_activeItemIndex = -1;
 	m_itemsCount = 0;
+	m_clipping = true;
 }
 
 void ListBox::Panel::performLayout()
@@ -60,6 +68,12 @@ void ListBox::Panel::performLayout()
 
 void ListBox::Panel::draw(ImGuiRenderer* renderer)
 {
+	if (!m_clipping)
+	{
+		Widget::draw(renderer);
+		return;
+	}
+
 	float boxPosY1 = parent()->absolutePosition().y - m_itemSize.y;
 	float boxPosY2 = parent()->absolutePosition().y + parent()->height() - 0.1f;
 

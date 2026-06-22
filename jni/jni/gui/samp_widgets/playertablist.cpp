@@ -137,15 +137,15 @@ void PlayerTabList::performLayout()
 	m_lTotalPlayers->performLayout();
 	m_lTotalPlayers->setPosition(ImVec2(this->width() - m_lTotalPlayers->width() - 5.0f, 5.0f));
 
-	// PC Style: No padding between server name (y:5 + h:14 = 19) and columns
-	float headerY = 19.0f;
+	// PC Style: Tightening the gap by shifting up 2px (19.0f - 2.0f)
+	float headerY = 17.0f;
 	m_header->setFixedSize(ImVec2(this->width(), headerItemHeight));
 	m_header->performLayout();
 	m_header->setPosition(ImVec2(0.0f, headerY));
 
 	// Gap Kolom ke Player List = 15px (Consistent with Dialog Style 5)
-	// headerY(19) + headerHeight(25) + gap(15) = 59.0f
-	float listY = 59.0f;
+	// headerY(17) + headerHeight(25) + gap(15) = 57.0f
+	float listY = 57.0f;
 	m_tabList->setMinSize(ImVec2(this->width(), this->height() - listY));
 	m_tabList->setMaxSize(ImVec2(this->width(), this->height() - listY));
 	m_tabList->performLayout();

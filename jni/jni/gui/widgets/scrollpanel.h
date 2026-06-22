@@ -8,6 +8,7 @@ public:
 	void setScrollableX(bool scrollableX) { m_scrollableX = scrollableX; }
 	void setScrollableY(bool scrollableY) { m_scrollableY = scrollableY; }
 	void setScrollable(bool scrollable) { m_scrollableX = m_scrollableY = scrollable; }
+	void setClipping(bool clipping) { m_clipping = clipping; }
 	void setScrollX(float x);
 	void setScrollY(float y);
 
@@ -22,4 +23,5 @@ private:
 	ImVec2 m_scroll;
 	bool m_scrollableX;
 	bool m_scrollableY;
+	bool m_clipping;
 };

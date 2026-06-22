@@ -15,7 +15,7 @@ extern CJavaWrapper *pJavaWrapper;
 Chat::Chat()
 	: ListBox()
 {
-
+	this->setClipping(false);
 }
 
 void Chat::addChatMessage(const std::string& message, const std::string& nick, const ImColor& nick_color)

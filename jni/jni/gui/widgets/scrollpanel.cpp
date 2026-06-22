@@ -5,6 +5,7 @@ ScrollPanel::ScrollPanel()
 	m_scroll = ImVec2(0.0f, 0.0f);
 	m_scrollableX = true;
 	m_scrollableY = true;
+	m_clipping = true;
 }
 
 
@@ -53,9 +54,9 @@ void ScrollPanel::performLayout()
 
 void ScrollPanel::draw(ImGuiRenderer* renderer)
 {
-	renderer->pushClipRect(absolutePosition(), absolutePosition() + size(), true);
+	if (m_clipping) renderer->pushClipRect(absolutePosition(), absolutePosition() + size(), true);
 	Widget::draw(renderer);
-	renderer->popClipRect();
+	if (m_clipping) renderer->popClipRect();
 }
 
 void ScrollPanel::touchMoveEvent(const ImVec2& delta)

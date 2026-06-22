@@ -28,6 +28,8 @@ public:
 	void removeItem(int index);
 	void removeAllItems();
 
+	void setClipping(bool clipping);
+
 	int itemsCount() { return m_panel->itemsCount(); }
 	int activeItemIndex() const { return m_panel->activeItemIndex(); }
 
@@ -44,6 +46,8 @@ public:
 		void removeItem(int index);
 		void removeAllItems();
 
+		void setClipping(bool clipping) { m_clipping = clipping; }
+
 		int itemsCount() { return children().size(); }
 
 		int activeItemIndex() const { return m_activeItemIndex; }
@@ -56,9 +60,11 @@ public:
 		ImVec2 m_itemSize;
 		int m_activeItemIndex;
 		int m_itemsCount;
+		bool m_clipping;
 	};
 
 private:
 	bool m_headed;
 	Panel* m_panel;
+	bool m_clipping;
 };
