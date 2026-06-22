@@ -59,7 +59,7 @@ float UISettings::m_dialogInputHeight = 38.0f;
 
 /* buttonpanel */
 ImVec2 UISettings::m_buttonPanelPos = ImVec2(5.0f, 300.0f);
-ImVec2 UISettings::m_buttonPanelSize = ImVec2(3000.0f, 350.0f);
+ImVec2 UISettings::m_buttonPanelSize = ImVec2(300.0f, 350.0f);
 
 /* voice button */
 ImVec2 UISettings::m_buttonVoicePos = ImVec2(500.0f, 180.0f);
