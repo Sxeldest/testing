@@ -6,6 +6,7 @@ public:
 	TabListWidget();
 
 	virtual void performLayout() override;
+	virtual void draw(ImGuiRenderer* renderer) override;
 
 	std::vector<float> assemble(const std::string& data, const std::vector<float>& offsets = {}, bool skipFirstRow = false, float fontSize = 0.0f, bool outlined = false);
 
