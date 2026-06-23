@@ -66,7 +66,7 @@ void PlayerTabList::show()
 	this->performLayout();
 
 	pGame->EnableGameInput(false);
-	pUI->keyboard()->setVisible(false);
+	pUI->inputChat()->setVisible(false);
 
 	setVisible(true);
 }

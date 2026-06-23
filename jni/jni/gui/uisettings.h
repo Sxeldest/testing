@@ -15,10 +15,9 @@ public:
 	/* widgets */
 	static float padding() { return m_padding; }
 
-	/* keyboard */
-	static ImVec2 keyboardPos() { return m_keyboardPos; }
-	static ImVec2 keyboardSize() { return m_keyboardSize; }
-	static float keyboardRowHeight() { return m_keyboardRowHeight; }
+	/* input chat */
+	static ImVec2 inputChatPos() { return m_inputChatPos; }
+	static ImVec2 inputChatSize() { return m_inputChatSize; }
 
 	/* splashscreen */
 	static ImVec2 splashscreenLogoPos() { return m_splashscreenLogoPos; }
@@ -65,8 +64,8 @@ public:
 	static ImColor buttonColor() { return m_buttonColor; }
 	static ImColor buttonFocusedColor() { return m_buttonFocusedColor; }
 
-	/* keyboard */
-	static ImColor keyboardBackgroundColor() { return m_keyboardBackgroundColor; }
+	/* input chat */
+	static ImColor inputChatBackgroundColor() { return m_inputChatBackgroundColor; }
 
 	/* dialog */
 	static ImColor dialogBackgroundColor() { return m_dialogBackgroundColor; }
@@ -90,10 +89,9 @@ private:
 	/* Widgets */
 	static float m_padding;
 
-	/* keyboard */
-	static ImVec2 m_keyboardPos;
-	static ImVec2 m_keyboardSize;
-	static float m_keyboardRowHeight;
+	/* input chat */
+	static ImVec2 m_inputChatPos;
+	static ImVec2 m_inputChatSize;
 
 	/* splashscreen */
 	static ImVec2	m_splashscreenLogoPos;
@@ -141,8 +139,8 @@ private:
 	static ImColor m_buttonColor;
 	static ImColor m_buttonFocusedColor;
 
-	/* keyboard */
-	static ImColor m_keyboardBackgroundColor;
+	/* input chat */
+	static ImColor m_inputChatBackgroundColor;
 
 	/* dialog */
 	static ImColor m_dialogBackgroundColor;

@@ -39,7 +39,7 @@ public:
 	SplashScreen* splashscreen() const { return m_splashScreen; }
 	Chat* chat() const { return m_chat; }
 	Spawn* spawn() const { return m_spawn; }
-	Keyboard* keyboard() const { return m_keyboard; }
+	InputChat* inputChat() const { return m_inputChat; }
 	CDialog* dialog() const { return m_dialog; }
 	ButtonPanel* buttonpanel() const { return m_buttonPanel; }
 	PlayerTabList* playertablist() const { return m_playerTabList; }
@@ -85,7 +85,7 @@ protected:
 	void drawList() override;
 
 private:
-	Keyboard* m_keyboard;
+	InputChat* m_inputChat;
 	SplashScreen* m_splashScreen;
 	Chat* m_chat;
 	Spawn* m_spawn;

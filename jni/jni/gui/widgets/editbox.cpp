@@ -72,7 +72,7 @@ void EditBox::draw(ImGuiRenderer* renderer)
 
 void EditBox::touchPopEvent()
 {
-	pUI->keyboard()->show(this);
+	pUI->inputChat()->show(this);
 }
 
 void EditBox::keyboardEvent(const std::string& input)

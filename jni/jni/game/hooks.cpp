@@ -915,7 +915,7 @@ void AND_TouchEvent_hook(int type, int num, int posX, int posY)
 				break;
 		}
 
-		if (pUI->keyboard()->visible() || pUI->dialog()->visible()) {
+		if (pUI->inputChat()->visible() || pUI->dialog()->visible()) {
 			AND_TouchEvent(1, 0, 0, 0);
 			return;
 		}

@@ -83,11 +83,11 @@ bool UI::initialize()
 	m_dialog->setMinSize(UISettings::dialogMinSize());
 	m_dialog->setMaxSize(UISettings::dialogMaxSize());
 
-	m_keyboard = new Keyboard();
-	this->addChild(m_keyboard);
-	m_keyboard->setFixedSize(UISettings::keyboardSize());
-	m_keyboard->setPosition(UISettings::keyboardPos());
-	m_keyboard->setVisible(false);
+	m_inputChat = new InputChat();
+	this->addChild(m_inputChat);
+	m_inputChat->setFixedSize(UISettings::inputChatSize());
+	m_inputChat->setPosition(UISettings::inputChatPos());
+	m_inputChat->setVisible(false);
 
 	m_playerTabList = new PlayerTabList();
 	this->addChild(m_playerTabList);
@@ -160,10 +160,10 @@ void UI::touchEvent(const ImVec2& pos, TouchType type)
 		3 -    
 	*/
 
-	if (m_keyboard->visible())
+	if (m_inputChat->visible())
 	{
-		if (m_keyboard->contains(pos)) {
-			m_keyboard->touchEvent(pos, type);
+		if (m_inputChat->contains(pos)) {
+			m_inputChat->touchEvent(pos, type);
 			return;
 		}
 
@@ -174,7 +174,7 @@ void UI::touchEvent(const ImVec2& pos, TouchType type)
 
 		// Tapping anywhere else while keyboard is visible
 		if (type == TouchType::push) {
-			m_keyboard->hide(false); // Hide keyboard, keep chat active
+			m_inputChat->hide(false); // Hide keyboard, keep chat active
 			return; // Stop event propagation
 		}
 	}

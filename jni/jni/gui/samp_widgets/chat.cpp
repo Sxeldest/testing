@@ -145,7 +145,7 @@ void Chat::touchPopEvent()
 {
 	if (pUI->playertablist()->visible()) return;
 
-	pUI->keyboard()->show(this);
+	pUI->inputChat()->show(this);
 }
 
 void Chat::keyboardEvent(const std::string& input)

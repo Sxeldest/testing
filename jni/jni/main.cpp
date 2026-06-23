@@ -433,14 +433,14 @@ extern "C" {
 	{
 		if(pUI)
 		{
-			pUI->keyboard()->sendForGB(pEnv, thiz, str);
+			pUI->inputChat()->sendForGB(pEnv, thiz, str);
 		}
 	}
 
 	static void OnEventBackPressedBridge()
 	{
-		if (pUI && pUI->keyboard()->visible()) {
-			pUI->keyboard()->hide();
+		if (pUI && pUI->inputChat()->visible()) {
+			pUI->inputChat()->hide();
 			return;
 		}
 		if(pSettings && pJavaWrapper && pSettings->Get().iAndroidKeyboard) {
@@ -458,7 +458,7 @@ extern "C" {
 	}
 	JNIEXPORT void JNICALL Java_com_xyron_game_main_SAMP_onInputUpdate(JNIEnv *pEnv, jobject thiz, jbyteArray str)
 	{
-		if(pUI) pUI->keyboard()->updateForGB(pEnv, thiz, str);
+		if(pUI) pUI->inputChat()->updateForGB(pEnv, thiz, str);
 	}
 	JNIEXPORT void JNICALL Java_com_xyron_game_main_SAMP_onEventBackPressed(JNIEnv *pEnv, jobject thiz)
 	{

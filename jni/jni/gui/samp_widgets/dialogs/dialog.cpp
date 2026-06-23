@@ -36,7 +36,7 @@ void CDialog::Show(int16_t iID, DialogStyle iStyle, const std::string& szTitle, 
 {
 	if (iID >= 0)
 	{
-		if (pUI && pUI->keyboard()->visible()) pUI->keyboard()->hide();
+		if (pUI && pUI->inputChat()->visible()) pUI->inputChat()->hide();
 
 		m_iID = iID;
 

@@ -23,10 +23,9 @@ float UISettings::m_outlineSize = 1.0f;
 /* widgets */
 float UISettings::m_padding = 10.0f;
 
-/* keyboard */
-ImVec2 UISettings::m_keyboardPos = ImVec2(0.0f, 180.0f);
-ImVec2 UISettings::m_keyboardSize = ImVec2(640.0f, 300.0f);
-float UISettings::m_keyboardRowHeight = 52.0f;
+/* input chat */
+ImVec2 UISettings::m_inputChatPos = ImVec2(0.0f, 180.0f);
+ImVec2 UISettings::m_inputChatSize = ImVec2(640.0f, 300.0f);
 
 /* splashscreen */
 ImVec2 UISettings::m_splashscreenLogoPos = ImVec2(0.0f, 0.0f);
@@ -71,7 +70,7 @@ float UISettings::m_scoreboardHeaderHeight = 60.0f; // Standard PC Header
 /* ////////////////// colors ////////////////// */
 ImColor UISettings::m_buttonColor = ImColor(5, 5, 5, 220); // Menyatu dengan background dialog
 ImColor UISettings::m_buttonFocusedColor = ImColor(0xB9, 0x22, 0x28, 255); // Merah PC saat ditekan
-ImColor UISettings::m_keyboardBackgroundColor = ImColor(0, 0, 0, 150);
+ImColor UISettings::m_inputChatBackgroundColor = ImColor(0, 0, 0, 150);
 ImColor UISettings::m_dialogBackgroundColor = ImColor(5, 5, 5, 220);
 ImColor UISettings::m_dialogTitleBackgroundColor = ImColor(5, 5, 5, 220);
 ImColor UISettings::m_scoreboardBackgroundColor = ImColor(5, 5, 5, 220);
