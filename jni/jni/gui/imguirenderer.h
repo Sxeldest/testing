@@ -6,7 +6,7 @@
 #include <string>
 
 /*
-	Обертка над ImGui
+	пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ ImGui
 */
 
 class ImGuiRenderer
@@ -24,6 +24,7 @@ public:
 	void drawConvexPolyFilled(ImVec2* points, int num_points	, const ImColor& color);
 	void drawText(const ImVec2& pos, const ImColor& color, const std::string& text, bool outlined = false, float font_size = 0.0f);
 	void drawImage(const ImVec2& a, const ImVec2& b, ImTextureID texture);
+	void drawImageUV(const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, ImTextureID texture, const ImColor& color = ImColor(255, 255, 255));
 
 	void pushClipRect(const ImVec2& min, const ImVec2& max, bool intersect = false);
 	void popClipRect();

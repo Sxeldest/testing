@@ -185,7 +185,7 @@ ImVec2 ImGuiRenderer::calculateTextSize(const std::string& text, float font_size
 		{
 			if (text_cur != text_start)
 			{
-				// текст до колор-кода
+				// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅ
 				ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -198,13 +198,13 @@ ImVec2 ImGuiRenderer::calculateTextSize(const std::string& text, float font_size
 		{
 			if (text_cur != text_start)
 			{
-				// текст до \n
+				// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ \n
 				ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
 			}
 
-			// обновляем text_size
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ text_size
 			text_size.x = ImMax(text_size.x, cur_size.x);
 			cur_size.y += font_size;
 			cur_size.x = 0.0f;
@@ -215,7 +215,7 @@ ImVec2 ImGuiRenderer::calculateTextSize(const std::string& text, float font_size
 		{
 			if (text_cur != text_start)
 			{
-				// текст до \t
+				// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ \t
 				ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -230,7 +230,7 @@ ImVec2 ImGuiRenderer::calculateTextSize(const std::string& text, float font_size
 
 	if (text_cur != text_start)
 	{
-		// текст без форматирования
+		// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		ImVec2 sz = calculateTextSize(text_start, text_cur, font_size);
 		cur_size.x += sz.x;
 		if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -271,6 +271,11 @@ bool ImGuiRenderer::processInlineHexColor(const char* start, const char* end, Im
 void ImGuiRenderer::drawImage(const ImVec2& a, const ImVec2& b, ImTextureID texture)
 {
 	m_drawList->AddImage(texture, a, b);
+}
+
+void ImGuiRenderer::drawImageUV(const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, ImTextureID texture, const ImColor& color)
+{
+	m_drawList->AddImage(texture, a, b, uv_a, uv_b, color);
 }
 
 void ImGuiRenderer::pushClipRect(const ImVec2& min, const ImVec2& max, bool intersect)

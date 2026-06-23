@@ -5,6 +5,8 @@
 extern bool OpenButton;
 extern bool isOpen;
 
+RwTexture* Button::m_guiTexture = nullptr;
+
 Button::Button(const std::string& caption, float font_size)
 {
 	m_callback = nullptr;
@@ -14,6 +16,9 @@ Button::Button(const std::string& caption, float font_size)
 
 	m_color = UISettings::buttonColor();
 	m_colorFocused = UISettings::buttonFocusedColor();
+
+	if (!m_guiTexture)
+		m_guiTexture = (RwTexture*)LoadTextureFromDB("samp", "sampgui");
 }
 
 void Button::performLayout()
@@ -21,20 +26,39 @@ void Button::performLayout()
 	float padding = UISettings::padding();
 
 	m_label->performLayout();
-	this->setSize(m_label->size() + ImVec2(padding * 2, padding / 2 * 2));
+
+	// Gunakan tinggi minimal 30.0f sesuai standar PC agar tidak gepeng
+	float btnHeight = ImMax(30.0f, m_label->size().y + (padding / 2 * 2));
+	this->setSize(ImVec2(m_label->size().x + padding * 2, btnHeight));
 
 	m_label->setPosition((size() - m_label->size()) / 2);
 }
 
 void Button::draw(ImGuiRenderer* renderer)
 {
-	renderer->drawRect(absolutePosition(), absolutePosition() + size(),
-		focused() ? m_colorFocused : m_color, true);
+	if (m_guiTexture)
+	{
+		float tw = (float)m_guiTexture->raster->width;
+		float th = (float)m_guiTexture->raster->height;
 
-	//Outline - Set to dark color to blend in
-	renderer->drawRect(absolutePosition() + ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
-		(absolutePosition() + size()) - ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
-		ImColor(0.15f, 0.15f, 0.15f, 0.9f), false, UISettings::outlineSize());
+		// Menggunakan warna full (Alpha 255) agar line terlihat jelas dan tebal
+		ImColor currentTint = focused() ? m_colorFocused : ImColor(255, 255, 255, 255);
+		m_label->setColor(focused() ? m_colorFocused : ImColor(255, 255, 255, 255));
+
+		ImVec2 p = absolutePosition();
+		p.x = floorf(p.x); p.y = floorf(p.y);
+		ImVec2 s = size();
+
+		// Menggunakan metode simple stretch (Gaya PC) agar line stabil
+		// Texture (0, 0, 136, 54) ditarik mengikuti size widget
+		renderer->drawImageUV(p, p + s, ImVec2(0.0f/tw, 0.5f/th), ImVec2(136.0f/tw, 54.5f/th), (ImTextureID)m_guiTexture->raster, currentTint);
+
+		if (focused())
+		{
+			// Layer fill transparan gelap saat ditekan
+			renderer->drawImageUV(p, p + s, ImVec2(136.0f/tw, 0.5f/th), ImVec2(272.0f/tw, 54.5f/th), (ImTextureID)m_guiTexture->raster, ImColor(0, 0, 0, 60));
+		}
+	}
 
 	Widget::draw(renderer);
 }
@@ -55,6 +79,9 @@ CButton::CButton(const std::string& caption, float font_size)
 
 	m_color = UISettings::buttonColor();
 	m_colorFocused = UISettings::buttonFocusedColor();
+
+	if (!Button::m_guiTexture)
+		Button::m_guiTexture = (RwTexture*)LoadTextureFromDB("samp", "sampgui");
 }
 
 void CButton::performLayout()
@@ -62,7 +89,8 @@ void CButton::performLayout()
 	float padding = UISettings::padding();
 
 	m_label->performLayout();
-	this->setSize(m_label->size() + ImVec2(padding * 2, padding / 2 * 2));
+	float btnHeight = ImMax(30.0f, m_label->size().y + (padding / 2 * 2));
+	this->setSize(ImVec2(m_label->size().x + padding * 2, btnHeight));
 
 	m_label->setPosition((size() - m_label->size()) / 2);
 }
@@ -71,13 +99,25 @@ void CButton::draw(ImGuiRenderer* renderer)
 {
 	if (OpenButton == false) return;
 
-	renderer->drawRect(absolutePosition(), absolutePosition() + size(),
-		focused() ? m_colorFocused : m_color, true);
+	if (Button::m_guiTexture)
+	{
+		float tw = (float)Button::m_guiTexture->raster->width;
+		float th = (float)Button::m_guiTexture->raster->height;
 
-	
-	renderer->drawRect(absolutePosition() + ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
-		(absolutePosition() + size()) - ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
-		ImColor(0xFF, 0xCC, 0x01)/*ImColor(0, 0, 0, 200)*/, false, UISettings::outlineSize());
+		ImColor currentTint = focused() ? m_colorFocused : ImColor(255, 255, 255, 255);
+		m_label->setColor(focused() ? m_colorFocused : ImColor(255, 255, 255, 255));
+
+		ImVec2 p = absolutePosition();
+		p.x = floorf(p.x); p.y = floorf(p.y);
+		ImVec2 s = size();
+
+		renderer->drawImageUV(p, p + s, ImVec2(0.0f/tw, 0.0f/th), ImVec2(136.0f/tw, 54.0f/th), (ImTextureID)Button::m_guiTexture->raster, currentTint);
+
+		if (focused())
+		{
+			renderer->drawImageUV(p, p + s, ImVec2(136.0f/tw, 0.0f/th), ImVec2(272.0f/tw, 54.0f/th), (ImTextureID)Button::m_guiTexture->raster, ImColor(0, 0, 0, 60));
+		}
+	}
 
 	Widget::draw(renderer);
 }
@@ -98,6 +138,9 @@ OButton::OButton(const std::string& caption, float font_size)
 
 	m_color = UISettings::buttonColor();
 	m_colorFocused = UISettings::buttonFocusedColor();
+
+	if (!Button::m_guiTexture)
+		Button::m_guiTexture = (RwTexture*)LoadTextureFromDB("samp", "sampgui");
 }
 
 void OButton::performLayout()
@@ -105,11 +148,10 @@ void OButton::performLayout()
 	float padding = UISettings::padding();
 
 	m_label->performLayout();
-	this->setSize(m_label->size() + ImVec2(padding * 2, padding / 2 * 2));
+	float btnHeight = ImMax(30.0f, m_label->size().y + (padding / 2 * 2));
+	this->setSize(ImVec2(m_label->size().x + padding * 2, btnHeight));
 
 	m_label->setPosition((size() - m_label->size()) / 2);
-	//m_label->setPosition((m_label->size()) / 2);
-
 }
 
 void OButton::draw(ImGuiRenderer* renderer)
@@ -121,13 +163,25 @@ void OButton::draw(ImGuiRenderer* renderer)
 		return;
 	}
 
-	renderer->drawRect(absolutePosition(), absolutePosition() + size(),
-		focused() ? m_colorFocused : m_color, true);
+	if (Button::m_guiTexture)
+	{
+		float tw = (float)Button::m_guiTexture->raster->width;
+		float th = (float)Button::m_guiTexture->raster->height;
 
+		ImColor currentTint = focused() ? m_colorFocused : ImColor(255, 255, 255, 255);
+		m_label->setColor(focused() ? m_colorFocused : ImColor(255, 255, 255, 255));
 
-	renderer->drawRect(absolutePosition() + ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
-		(absolutePosition() + size()) - ImVec2(UISettings::outlineSize(), UISettings::outlineSize()),
-		ImColor(0xFF, 0xCC, 0x01)/*ImColor(0, 0, 0, 200)*/, false, UISettings::outlineSize());
+		ImVec2 p = absolutePosition();
+		p.x = floorf(p.x); p.y = floorf(p.y);
+		ImVec2 s = size();
+
+		renderer->drawImageUV(p, p + s, ImVec2(0.0f/tw, 0.0f/th), ImVec2(136.0f/tw, 54.0f/th), (ImTextureID)Button::m_guiTexture->raster, currentTint);
+
+		if (focused())
+		{
+			renderer->drawImageUV(p, p + s, ImVec2(136.0f/tw, 0.0f/th), ImVec2(272.0f/tw, 54.0f/th), (ImTextureID)Button::m_guiTexture->raster, ImColor(0, 0, 0, 60));
+		}
+	}
 
 	Widget::draw(renderer);
 

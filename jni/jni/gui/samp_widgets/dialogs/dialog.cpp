@@ -100,7 +100,7 @@ void CDialog::performLayout()
 				Widget* pLabel = pMsgBox->children()[0];
 				pLabel->performLayout();
 				cx = ImMax(cx, pLabel->width());
-				cy = pLabel->height() + 40.0f + 10.0f; // InputHeight(40) + Gap(10)
+				cy = pLabel->height() + UISettings::dialogInputHeight() + 10.0f; // Gap(10)
 			}
 		}
 	}
@@ -141,10 +141,10 @@ void CDialog::performLayout()
 	float fClientWidth = cx;
 
 	// PC Total Height Logic:
-	// Caption 20 + TopMargin 0 + MidGap 10 + ButtonArea 30 + BottomPadding 5 + GapToButtons 20 = 85px overhead
+	// Caption 20 + TopMargin 0 + MidGap 10 + ButtonArea 30 + BottomPadding 5 + GapToButtons 5 = 70px overhead
 	float fClientHeight = fListHeight + fStaticHeaderHeight + fColumnGap;
 	m_fWidth = fClientWidth + fSidePadding;
-	m_fHeight = fClientHeight + 85.0f;
+	m_fHeight = fClientHeight + 70.0f;
 
 	this->setSize(ImVec2(m_fWidth, m_fHeight));
 
