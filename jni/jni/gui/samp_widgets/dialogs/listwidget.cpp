@@ -5,10 +5,15 @@
 
 /* ListWidget */
 
+RwTexture* ListWidget::m_guiTexture = nullptr;
+
 ListWidget::ListWidget()
 	: ListBox()
 {
 	m_itemSize = { 0.0f, UISettings::dialogListItemHeight() };
+
+	if (!m_guiTexture)
+		m_guiTexture = (RwTexture*)LoadTextureFromDB("samp", "sampgui");
 }
 
 void ListWidget::performLayout()
@@ -16,6 +21,28 @@ void ListWidget::performLayout()
 	m_itemSize.x = ImMax(m_itemSize.x, this->minSize().x);
 	this->setItemSize(m_itemSize);
 	ListBox::performLayout();
+}
+
+void ListWidget::draw(ImGuiRenderer* renderer)
+{
+	if (m_guiTexture)
+	{
+		float tw = (float)m_guiTexture->raster->width;
+		float th = (float)m_guiTexture->raster->height;
+
+		ImVec2 p = absolutePosition();
+		ImVec2 s = size();
+
+		// CDXUTListBox - Main (13, 124, 241, 265)
+		// We use 9-slice or simple stretch depending on how it looks
+		// PC uses simple stretch for the background usually
+		renderer->drawImageUV(p, p + s,
+			ImVec2(13.0f / tw, 124.0f / th),
+			ImVec2(241.0f / tw, 265.0f / th),
+			(ImTextureID)m_guiTexture->raster, ImColor(255, 255, 255, 200));
+	}
+
+	ListBox::draw(renderer);
 }
 
 void ListWidget::assemble(const std::string& data, float fontSize, bool outlined)
@@ -98,7 +125,24 @@ void ListWidget::ItemWidget::performLayout()
 
 void ListWidget::ItemWidget::draw(ImGuiRenderer* renderer)
 {
-	if (this->selected()) renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xB9, 0x22, 0x28, 255), true);
+	if (this->selected())
+	{
+		if (ListWidget::m_guiTexture)
+		{
+			float tw = (float)ListWidget::m_guiTexture->raster->width;
+			float th = (float)ListWidget::m_guiTexture->raster->height;
+
+			// CDXUTListBox - Selection (17, 269, 241, 287)
+			renderer->drawImageUV(absolutePosition(), absolutePosition() + size(),
+				ImVec2(17.0f / tw, 269.0f / th),
+				ImVec2(241.0f / tw, 287.0f / th),
+				(ImTextureID)ListWidget::m_guiTexture->raster, ImColor(255, 255, 255, 255));
+		}
+		else
+		{
+			renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xB9, 0x22, 0x28, 255), true);
+		}
+	}
 	ListBoxItem::draw(renderer);
 }
 

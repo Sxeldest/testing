@@ -9,6 +9,10 @@ public:
 
 	void assemble(const std::string& data, float fontSize = 0.0f, bool outlined = false);
 
+	virtual void draw(ImGuiRenderer* renderer) override;
+
+	static RwTexture* m_guiTexture;
+
 private:
 	class ItemWidget : public ListBoxItem
 	{
