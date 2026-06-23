@@ -87,8 +87,8 @@ void CDialog::performLayout()
 			Widget* pPanel = pActive->children()[0];
 			float fMinContentWidth = 360.0f;
 
-			// Add 20px extra to content width to create internal right padding (PC Style)
-			cx = ImMax(fMinContentWidth, pPanel->width() + 20.0f);
+			// Add extra 16px for the scrollbar (PC Style)
+			cx = ImMax(fMinContentWidth, pPanel->width() + 16.0f);
 			cy = pPanel->height();
 		}
 	}
@@ -127,14 +127,14 @@ void CDialog::performLayout()
 	float fStaticHeaderHeight = 0.0f;
 	float fColumnGap = 0.0f;
 	if (iStyle == DialogStyle::TABLIST_HEADERS) {
-		fStaticHeaderHeight = UISettings::dialogListItemHeight(); // 18.0f
-		fColumnGap = 15.0f; // Reduced from 15.0f to tighten the gap
+		fStaticHeaderHeight = UISettings::dialogListItemHeight();
+		fColumnGap = 15.0f;
 	}
 
 	float fMaxListHeight = 380.0f;
 	float fMinListHeight = 0.0f;
 	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST || iStyle == DialogStyle::TABLIST_HEADERS) {
-		fMinListHeight = 230.0f; // PC Default height 300 - 70 overhead
+		fMinListHeight = 230.0f;
 	}
 
 	float fListHeight = ImMin(ImMax(cy, fMinListHeight), fMaxListHeight);
@@ -144,7 +144,16 @@ void CDialog::performLayout()
 	// Caption 20 + MidGap 10 + List + Button 30 = approx 60 overhead
 	float fClientHeight = fListHeight + fStaticHeaderHeight + fColumnGap;
 	m_fWidth = fClientWidth + fSidePadding;
-	m_fHeight = fClientHeight + 70.0f; // Tightened from 70.0f
+
+	// Adjust height overhead per style to keep list-to-button padding consistent
+	float fHeightOverhead = 70.0f; // Default for MSGBOX and INPUT (5px gap)
+	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST) {
+		fHeightOverhead = 75.0f;   // 10px gap for lists
+	} else if (iStyle == DialogStyle::TABLIST_HEADERS) {
+		fHeightOverhead = 65.0f;   // Offset for the lack of header gap (fContentY=20) to keep 10px gap
+	}
+
+	m_fHeight = fClientHeight + fHeightOverhead;
 
 	this->setSize(ImVec2(m_fWidth, m_fHeight));
 

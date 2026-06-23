@@ -73,7 +73,13 @@ public:
 	// Elements (Left, Top, Right, Bottom)
 	static ImVec4 rectButtonNormal;
 	static ImVec4 rectListBoxMain;
+	static ImVec4 rectListBoxSelection;
 	static ImVec4 rectEditBox;
+
+	static ImVec4 rectScrollTrack;
+	static ImVec4 rectScrollUpArrow;
+	static ImVec4 rectScrollDownArrow;
+	static ImVec4 rectScrollThumb;
 
 protected:
 	void drawList() override;

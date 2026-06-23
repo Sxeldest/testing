@@ -137,17 +137,16 @@ void PlayerTabList::performLayout()
 	m_lTotalPlayers->performLayout();
 	m_lTotalPlayers->setPosition(ImVec2(this->width() - m_lTotalPlayers->width() - 5.0f, 5.0f));
 
-	// PC Style: Tightening the gap by shifting up 2px (19.0f - 2.0f)
+	// PC Style: Tightening the gap
 	float headerY = 17.0f;
 	m_header->setFixedSize(ImVec2(this->width(), headerItemHeight));
 	m_header->performLayout();
 	m_header->setPosition(ImVec2(0.0f, headerY));
 
-	// Gap Kolom ke Player List = 15px (Consistent with Dialog Style 5)
-	// headerY(17) + headerHeight(25) + gap(15) = 57.0f
+	// Fix: Use setFixedSize so the ListBox has actual height to draw items
 	float listY = 57.0f;
-	m_tabList->setMinSize(ImVec2(this->width(), this->height() - listY));
-	m_tabList->setMaxSize(ImVec2(this->width(), this->height() - listY));
+	float listH = this->height() - listY - 10.0f;
+	m_tabList->setFixedSize(ImVec2(this->width(), listH));
 	m_tabList->performLayout();
 	m_tabList->setPosition(ImVec2(0.0f, listY));
 
@@ -156,11 +155,17 @@ void PlayerTabList::performLayout()
 
 void PlayerTabList::draw(ImGuiRenderer* renderer)
 {
-	renderer->pushClipRect(absolutePosition(), absolutePosition() + size(), true);
-	// PC Color: D3DCOLOR_ARGB(150,10,10,10) -> Alpha 0.58
+	// 1. Draw solid dark background for the whole Scoreboard (PC Style)
 	renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(10, 10, 10, 150), true);
+
+	// 2. Header (id, name, score, ping) background
+	if (m_header) {
+		ImVec2 hp = m_header->absolutePosition();
+		ImVec2 hs = m_header->size();
+		renderer->drawRect(hp, hp + hs, ImColor(15, 15, 15, 220), true);
+	}
+
 	Widget::draw(renderer);
-	renderer->popClipRect();
 }
 
 void PlayerTabList::activateEvent(bool active)

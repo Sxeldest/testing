@@ -13,8 +13,10 @@ public:
 	void addClientMessage(const std::string& message, const ImColor& color);
 
 	virtual void draw(ImGuiRenderer* renderer) override;
+	virtual void performLayout() override;
 
 	virtual void activateEvent(bool active) override;
+	virtual void touchEvent(const ImVec2& pos, TouchType type) override;
 	virtual void touchPopEvent() override;
 	virtual void keyboardEvent(const std::string& input) override;
 

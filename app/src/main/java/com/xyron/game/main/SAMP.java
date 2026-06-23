@@ -110,6 +110,14 @@ public class SAMP extends com.xyron.game.main.GTASA implements CustomKeyboard.In
     }
     public native void onInputEnd(byte[] str);
 
+    @Override
+    public void OnInputUpdate(String str) {
+        byte[] b_upd;
+        try { b_upd = str.getBytes("windows-1251"); } catch (Exception e) { b_upd = str.getBytes(); }
+        onInputUpdate(b_upd);
+    }
+    public native void onInputUpdate(byte[] str);
+
     public void showKeyboard() { runOnUiThread(() -> mKeyboard.ShowInputLayout()); }
     public void hideKeyboard() { runOnUiThread(() -> mKeyboard.HideInputLayout()); }
 

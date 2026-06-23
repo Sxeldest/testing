@@ -452,6 +452,10 @@ extern "C" {
 	{
 		OnInputEndBridge(pEnv, thiz, str);
 	}
+	JNIEXPORT void JNICALL Java_com_xyron_game_main_SAMP_onInputUpdate(JNIEnv *pEnv, jobject thiz, jbyteArray str)
+	{
+		if(pUI) pUI->keyboard()->updateForGB(pEnv, thiz, str);
+	}
 	JNIEXPORT void JNICALL Java_com_xyron_game_main_SAMP_onEventBackPressed(JNIEnv *pEnv, jobject thiz)
 	{
 		OnEventBackPressedBridge();

@@ -16,6 +16,8 @@ Chat::Chat()
 	: ListBox()
 {
 	this->setClipping(false);
+	this->setScrollableX(false);
+	this->setScrollableY(true);
 }
 
 void Chat::addChatMessage(const std::string& message, const std::string& nick, const ImColor& nick_color)
@@ -84,9 +86,13 @@ void Chat::addPlayerMessage(const std::string& message, const std::string& nick,
 
 void Chat::draw(ImGuiRenderer* renderer)
 {
+	ListBox::draw(renderer);
+}
+
+void Chat::performLayout()
+{
 	if (pSettings)
 	{
-		// 1. Anchor tetap di fChatPosY (Atas)
 		this->setPosition(ImVec2(pSettings->Get().fChatPosX, pSettings->Get().fChatPosY));
 
 		float fontSize = pSettings->Get().fFontSize;
@@ -94,30 +100,39 @@ void Chat::draw(ImGuiRenderer* renderer)
 		if (maxLines <= 0) maxLines = 10;
 
 		float sizeX = pSettings->Get().fChatSizeX;
-
-		// 2. Tinggi kotak murni dihitung dari MaxLines * FontSize
-		// Karena Anchor kita di Top (fChatPosY), maka jika MaxLines ditambah,
-		// kotak akan memanjang ke arah BAWAH.
 		float sizeY = fontSize * (float)maxLines;
 
 		if (sizeX > 1.0f && sizeY > 1.0f) {
 			this->setFixedSize(ImVec2(sizeX, sizeY));
 		}
 	}
-
-	ListBox::draw(renderer);
+	ListBox::performLayout();
 }
 
 void Chat::activateEvent(bool active)
 {
-	if (active)
+	// Chat is always scrollable Y, never X
+	this->setScrollableX(false);
+	this->setScrollableY(true);
+
+	if (!active)
 	{
-		this->setScrollable(true);
+		// Reset side position just in case
+		if (children().size() > 0) {
+			Widget* child = children()[0];
+			child->setPosition(ImVec2(0.0f, child->position().y));
+		}
 	}
-	else
-	{
-		this->setScrollable(false);
+}
+
+void Chat::touchEvent(const ImVec2& pos, TouchType type)
+{
+	// Force chat to be focused for scrolling if touched
+	if (type == TouchType::push && contains(pos)) {
+		this->setScrollableY(true);
+		this->setScrollableX(false);
 	}
+	ListBox::touchEvent(pos, type);
 }
 
 void Chat::touchPopEvent()

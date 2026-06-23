@@ -6,6 +6,7 @@ ScrollPanel::ScrollPanel()
 	m_scrollableX = true;
 	m_scrollableY = true;
 	m_clipping = true;
+	m_showScrollBar = false;
 }
 
 
@@ -15,12 +16,8 @@ void ScrollPanel::setScrollX(float x)
 	Widget* child = children()[0];
 
 	m_scroll.x = x;
-	ImVec2 deltaPos = ImVec2(
-		-m_scroll.x * (child->width() - width()),
-		-m_scroll.y * (child->height() - height())
-	);
-
-	child->setPosition(deltaPos);
+	float posX = -m_scroll.x * (child->width() - width());
+	child->setPosition(ImVec2(posX, child->position().y));
 }
 
 void ScrollPanel::setScrollY(float y)
@@ -29,12 +26,8 @@ void ScrollPanel::setScrollY(float y)
 	Widget* child = children()[0];
 
 	m_scroll.y = y;
-	ImVec2 deltaPos = ImVec2(
-		-m_scroll.x * (child->width() - width()),
-		-m_scroll.y * (child->height() - height())
-	);
-
-	child->setPosition(deltaPos);
+	float posY = -m_scroll.y * (child->height() - height());
+	child->setPosition(ImVec2(child->position().x, posY));
 }
 
 void ScrollPanel::performLayout()
@@ -44,12 +37,17 @@ void ScrollPanel::performLayout()
 
 	Widget* child = children()[0];
 
-	// Layout child but DO NOT change our own size to match child.
-	// Our size is the "window" set by the parent (Dialog).
 	child->performLayout();
 
-	// Ensure child is at least as wide as the view window
-	if(child->width() < width()) child->setWidth(width());
+	float viewWidth = width();
+	if (m_showScrollBar)
+	{
+		// SAMP PC: Scrollbar (16px) + Padding (12px) gap from list items
+		viewWidth -= 27.5f;
+	}
+
+	// Force child to be at least the view width to prevent horizontal "jumping"
+	if (child->width() < viewWidth) child->setWidth(viewWidth);
 }
 
 void ScrollPanel::draw(ImGuiRenderer* renderer)
@@ -57,6 +55,66 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 	if (m_clipping) renderer->pushClipRect(absolutePosition(), absolutePosition() + size(), true);
 	Widget::draw(renderer);
 	if (m_clipping) renderer->popClipRect();
+
+	if (children().empty()) return;
+	Widget* child = children()[0];
+
+	// SAMP PC: Scrollbar (Only for Dialog Lists/Tablists)
+	if (m_showScrollBar && m_scrollableY && UI::m_pSampGuiTexture)
+	{
+		float tw = (float)UI::m_pSampGuiTexture->raster->width;
+		float th = (float)UI::m_pSampGuiTexture->raster->height;
+
+		float sbWidth = 16.0f;
+
+		// SAMP PC: Scrollbar matches the background height (6px offset top/bottom)
+		// Shifted further 1px left (4px offset from edge)
+		ImVec2 sbPos = absolutePosition() + ImVec2(width() + 4.0f - sbWidth, -6.0f);
+		ImVec2 sbSize = ImVec2(sbWidth, height() + 12.0f);
+
+		// 1. Draw Track (Always displayed in Dialog Lists)
+		ImVec4 rectTrack = UI::rectScrollTrack;
+		renderer->drawImageUV(sbPos, sbPos + sbSize,
+			ImVec2(rectTrack.x / tw, rectTrack.y / th),
+			ImVec2(rectTrack.z / tw, rectTrack.w / th),
+			(ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 255));
+
+		// 2. Draw Arrows (Always displayed in Dialog Lists)
+		float arrowHeight = 16.0f;
+		ImVec4 rectUp = UI::rectScrollUpArrow;
+		renderer->drawImageUV(sbPos, sbPos + ImVec2(sbWidth, arrowHeight),
+			ImVec2(rectUp.x / tw, rectUp.y / th),
+			ImVec2(rectUp.z / tw, rectUp.w / th),
+			(ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 255));
+
+		ImVec4 rectDown = UI::rectScrollDownArrow;
+		renderer->drawImageUV(sbPos + ImVec2(0.0f, sbSize.y - arrowHeight), sbPos + sbSize,
+			ImVec2(rectDown.x / tw, rectDown.y / th),
+			ImVec2(rectDown.z / tw, rectDown.w / th),
+			(ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 255));
+
+		// 3. Draw Thumb (Only if content is actually scrollable)
+		if (child->height() > height())
+		{
+			float totalHeight = child->height();
+			float windowHeight = height();
+			float trackHeight = sbSize.y - (arrowHeight * 2.0f);
+
+			float thumbHeight = ImMax(20.0f, (windowHeight / totalHeight) * trackHeight);
+
+			float scrollableHeight = totalHeight - windowHeight;
+			float scrollRatio = -child->position().y / scrollableHeight;
+			scrollRatio = ImSaturate(scrollRatio);
+
+			float thumbY = arrowHeight + (scrollRatio * (trackHeight - thumbHeight));
+
+			ImVec4 rectThumb = UI::rectScrollThumb;
+			renderer->drawImageUV(sbPos + ImVec2(0.0f, thumbY), sbPos + ImVec2(sbWidth, thumbY + thumbHeight),
+				ImVec2(rectThumb.x / tw, rectThumb.y / th),
+				ImVec2(rectThumb.z / tw, rectThumb.w / th),
+				(ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(0xB9, 0x22, 0x28, 255));
+		}
+	}
 }
 
 void ScrollPanel::touchMoveEvent(const ImVec2& delta)

@@ -3,6 +3,7 @@ package com.xyron.game.main.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class CustomKeyboard {
 
     public interface InputListener {
         void OnInputEnd(String str);
+        void OnInputUpdate(String str);
     }
 
     private LinearLayout mInputLayout = null;
@@ -97,6 +99,21 @@ public class CustomKeyboard {
 
         mButtonSend.setOnClickListener(view -> submitInput());
 
+        mInputEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (mIsShowing) {
+                    ((InputListener) mContext).OnInputUpdate(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         mInputEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -135,7 +152,12 @@ public class CustomKeyboard {
         }
 
         applyBottomOffset(mLastKeyboardHeight);
+        
+        // PC Style: Hide the Android input bar so typing goes "directly" to SAMP UI
         mInputLayout.setVisibility(View.VISIBLE);
+        mInputLayout.setAlpha(0.0f); 
+        mInputLayout.setBackground(null);
+        mInputLayout.getLayoutParams().height = 1;
 
         mInputEt.postDelayed(() -> {
             mInputEt.requestFocus();

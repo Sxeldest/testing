@@ -11,6 +11,7 @@ public:
 	void setClipping(bool clipping) { m_clipping = clipping; }
 	void setScrollX(float x);
 	void setScrollY(float y);
+	void setShowScrollBar(bool show) { m_showScrollBar = show; }
 
 	virtual void performLayout() override;
 
@@ -24,4 +25,5 @@ private:
 	bool m_scrollableX;
 	bool m_scrollableY;
 	bool m_clipping;
+	bool m_showScrollBar;
 };

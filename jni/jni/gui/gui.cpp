@@ -23,7 +23,13 @@ RwTexture* UI::m_pSampGuiTexture = nullptr;
 // Initialize PC Style coordinates (Pixels from sampgui.png)
 ImVec4 UI::rectButtonNormal = ImVec4(0.0f, 0.5f, 136.0f, 54.5f);
 ImVec4 UI::rectListBoxMain  = ImVec4(13.0f, 124.0f, 241.0f, 265.0f);
+ImVec4 UI::rectListBoxSelection = ImVec4(17.0f, 269.0f, 241.0f, 287.0f);
 ImVec4 UI::rectEditBox     = ImVec4(8.0f, 82.0f, 246.0f, 121.0f);
+
+ImVec4 UI::rectScrollTrack     = ImVec4(243.0f, 144.0f, 265.0f, 155.0f);
+ImVec4 UI::rectScrollUpArrow   = ImVec4(243.0f, 124.0f, 265.0f, 144.0f);
+ImVec4 UI::rectScrollDownArrow = ImVec4(243.0f, 155.0f, 265.0f, 176.0f);
+ImVec4 UI::rectScrollThumb     = ImVec4(266.0f, 123.0f, 286.0f, 167.0f);
 
 UI::UI(const ImVec2& display_size, const std::string& font_path)
 	: Widget(), ImGuiWrapper(display_size, font_path)

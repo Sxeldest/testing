@@ -10,12 +10,13 @@ TabListWidget::TabListWidget()
 	: ListBox()
 {
 	m_itemSize = { 0.0f, UISettings::dialogListItemHeight() };
+	this->setShowScrollBar(true);
 }
 
 void TabListWidget::performLayout()
 {
-	// SAMP PC: Menambahkan padding internal agar selection tidak menempel ke border texture
-	m_itemSize.x = ImMax(m_itemSize.x, this->minSize().x - 12.0f);
+	// SAMP PC: Adjust item width to account for the 28px scrollbar + padding area
+	m_itemSize.x = ImMax(m_itemSize.x, this->width() - 28.0f);
 	this->setItemSize(m_itemSize);
 	ListBox::performLayout();
 }
