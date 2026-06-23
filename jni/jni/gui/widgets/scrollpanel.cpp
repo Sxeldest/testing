@@ -43,7 +43,7 @@ void ScrollPanel::performLayout()
 	if (m_showScrollBar)
 	{
 		// SAMP PC: Scrollbar (16px) + Padding (12px) gap from list items
-		viewWidth -= 28.0f;
+		viewWidth -= 28.5f;
 	}
 
 	// Force child to be at least the view width to prevent horizontal "jumping"
@@ -57,8 +57,7 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 	if (m_clipping) {
 		if (isChat) {
 			// Vertical clipping only for Chat, no horizontal clipping
-			// Add 5px padding to bottom to prevent outline cutting
-			renderer->pushClipRect(ImVec2(0.0f, absolutePosition().y), ImVec2(ImGui::GetIO().DisplaySize.x, absolutePosition().y + height() + 5.0f), true);
+			renderer->pushClipRect(ImVec2(0.0f, absolutePosition().y), ImVec2(ImGui::GetIO().DisplaySize.x, absolutePosition().y + height()), true);
 		} else {
 			renderer->pushClipRect(absolutePosition(), absolutePosition() + size(), true);
 		}
@@ -174,7 +173,7 @@ void ScrollPanel::touchMoveEvent(const ImVec2& delta)
 
 	bool isChat = (dynamic_cast<Chat*>(this) != nullptr);
 	if (isChat) {
-		float step = UISettings::fontSize();
+		float step = UISettings::chatItemSize().y;
 		if (step > 0.1f) {
 			deltaPos.y = roundf(deltaPos.y / step) * step;
 		}

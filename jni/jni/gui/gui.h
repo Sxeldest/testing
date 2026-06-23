@@ -17,7 +17,7 @@
 #include "widgets/listbox.h"
 #include "widgets/editbox.h"
 
-#include "samp_widgets/keyboard.h"
+#include "samp_widgets/inputchat.h"
 #include "samp_widgets/splashscreen.h"
 #include "samp_widgets/chat.h"
 #include "samp_widgets/spawn.h"

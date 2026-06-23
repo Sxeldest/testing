@@ -90,7 +90,7 @@ void UISettings::Initialize(const ImVec2& display_size)
 	}
 
 	m_smallFontSize = m_fontSize - 2.0f;
-	m_chatItemSize.y = m_fontSize;
+	m_chatItemSize.y = m_fontSize + 1.0f;
 	m_chatSize.y = m_chatItemSize.y * (float)m_chatDispMesssages;
 
 	if (display_size.x > 800.0f) {

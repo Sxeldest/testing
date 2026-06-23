@@ -1,0 +1,12 @@
+build/*
+cmake/*
+gcc/*
+msvc/*
+*/android/*/obj
+*/android/*/libs
+*/android/*/assets
+*/android/*/bin
+*/android/*/gen
+*.PIXExp
+me-*
+lib/nv/bin

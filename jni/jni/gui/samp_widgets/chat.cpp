@@ -98,12 +98,14 @@ void Chat::performLayout()
 		if (maxLines <= 0) maxLines = 10;
 
 		float sizeX = pSettings->Get().fChatSizeX;
-		float sizeY = fontSize * (float)maxLines;
+
+		float itemHeight = UISettings::chatItemSize().y;
+		float sizeY = itemHeight * (float)maxLines;
 
 		if (sizeX > 1.0f && sizeY > 1.0f) {
-			// Tambahkan 10px ekstra pada tinggi kotak agar baris terakhir & outline tidak terpotong
-			this->setFixedSize(ImVec2(sizeX, sizeY + 10.0f));
-			this->setItemSize(ImVec2(sizeX, fontSize)); // Kembali rapat sesuai ukuran font
+			// Set tinggi kotak pas sesuai kelipatan baris agar tidak ada baris setengah
+			this->setFixedSize(ImVec2(sizeX, sizeY));
+			this->setItemSize(ImVec2(sizeX, itemHeight));
 		}
 	}
 	ListBox::performLayout();
