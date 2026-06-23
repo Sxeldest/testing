@@ -19,6 +19,25 @@ void TabListWidget::performLayout()
 	ListBox::performLayout();
 }
 
+void TabListWidget::draw(ImGuiRenderer* renderer)
+{
+	if (Button::m_guiTexture)
+	{
+		float tw = (float)Button::m_guiTexture->raster->width;
+		float th = (float)Button::m_guiTexture->raster->height;
+
+		ImVec2 p = absolutePosition();
+		ImVec2 s = size();
+
+		// CDXUTListBox - Main (13, 124, 241, 265)
+		renderer->drawImageUV(p, p + s,
+			ImVec2(13.0f / tw, 124.0f / th),
+			ImVec2(241.0f / tw, 265.0f / th),
+			(ImTextureID)Button::m_guiTexture->raster, ImColor(255, 255, 255, 200));
+	}
+	ListBox::draw(renderer);
+}
+
 std::string TabListWidget::getFirstRow(const std::string& data)
 {
 	size_t pos = data.find('\n');
@@ -144,16 +163,16 @@ void TabListWidget::ItemWidget::draw(ImGuiRenderer* renderer)
 {
 	if (this->selected())
 	{
-		if (ListWidget::m_guiTexture)
+		if (Button::m_guiTexture)
 		{
-			float tw = (float)ListWidget::m_guiTexture->raster->width;
-			float th = (float)ListWidget::m_guiTexture->raster->height;
+			float tw = (float)Button::m_guiTexture->raster->width;
+			float th = (float)Button::m_guiTexture->raster->height;
 
 			// CDXUTListBox - Selection (17, 269, 241, 287)
 			renderer->drawImageUV(absolutePosition(), absolutePosition() + size(),
 				ImVec2(17.0f / tw, 269.0f / th),
 				ImVec2(241.0f / tw, 287.0f / th),
-				(ImTextureID)ListWidget::m_guiTexture->raster, ImColor(255, 255, 255, 255));
+				(ImTextureID)Button::m_guiTexture->raster, ImColor(255, 255, 255, 255));
 		}
 		else
 		{

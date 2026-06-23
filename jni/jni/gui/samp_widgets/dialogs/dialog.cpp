@@ -209,7 +209,21 @@ void CDialogTitle::performLayout()
 
 void CDialogTitle::draw(ImGuiRenderer* renderer)
 {
-	renderer->drawRect(absolutePosition(), absolutePosition() + size(), UISettings::dialogTitleBackgroundColor(), true);
+	if (Button::m_guiTexture)
+	{
+		float tw = (float)Button::m_guiTexture->raster->width;
+		float th = (float)Button::m_guiTexture->raster->height;
+
+		// PC Style: Title bar uses Selection texture (17, 269 ke 241, 287)
+		renderer->drawImageUV(absolutePosition(), absolutePosition() + size(),
+			ImVec2(17.0f / tw, 269.0f / th),
+			ImVec2(241.0f / tw, 287.0f / th),
+			(ImTextureID)Button::m_guiTexture->raster, ImColor(255, 255, 255, 255));
+	}
+	else
+	{
+		renderer->drawRect(absolutePosition(), absolutePosition() + size(), UISettings::dialogTitleBackgroundColor(), true);
+	}
 	Widget::draw(renderer);
 }
 
