@@ -16,7 +16,7 @@ void CDialogContent::performLayout()
         m_pStaticHeader->setFixedSize(ImVec2(this->width(), UISettings::dialogListItemHeight()));
         m_pStaticHeader->performLayout();
         m_pStaticHeader->setPosition(ImVec2(0.0f, 0.0f));
-        fHeaderOffset = m_pStaticHeader->height() + 15.0f; // Gap between header and list (Identical to columnGap)
+        fHeaderOffset = m_pStaticHeader->height() + 15.0f; // Reduced from 15.0f to tighten gap
     }
 
     m_pActiveWidget->setFixedSize(ImVec2(this->width(), this->height() - fHeaderOffset));

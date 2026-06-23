@@ -18,6 +18,13 @@ extern CNetGame* pNetGame;
 extern CPlayerTags* pPlayerTags;
 extern UI* pUI;
 
+RwTexture* UI::m_pSampGuiTexture = nullptr;
+
+// Initialize PC Style coordinates (Pixels from sampgui.png)
+ImVec4 UI::rectButtonNormal = ImVec4(0.0f, 0.5f, 136.0f, 54.5f);
+ImVec4 UI::rectListBoxMain  = ImVec4(13.0f, 124.0f, 241.0f, 265.0f);
+ImVec4 UI::rectEditBox     = ImVec4(8.0f, 82.0f, 246.0f, 121.0f);
+
 UI::UI(const ImVec2& display_size, const std::string& font_path)
 	: Widget(), ImGuiWrapper(display_size, font_path)
 {
@@ -28,6 +35,10 @@ UI::UI(const ImVec2& display_size, const std::string& font_path)
 bool UI::initialize()
 {
 	if (!ImGuiWrapper::initialize()) return false;
+
+	// Load shared textures
+	if (!m_pSampGuiTexture)
+		m_pSampGuiTexture = (RwTexture*)LoadTextureFromDB("samp", "sampgui");
 
 	/*m_splashScreen = new SplashScreen();
 	this->addChild(m_splashScreen);

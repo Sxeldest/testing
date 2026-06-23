@@ -128,7 +128,7 @@ void CDialog::performLayout()
 	float fColumnGap = 0.0f;
 	if (iStyle == DialogStyle::TABLIST_HEADERS) {
 		fStaticHeaderHeight = UISettings::dialogListItemHeight(); // 18.0f
-		fColumnGap = 15.0f;
+		fColumnGap = 15.0f; // Reduced from 15.0f to tighten the gap
 	}
 
 	float fMaxListHeight = 380.0f;
@@ -141,10 +141,10 @@ void CDialog::performLayout()
 	float fClientWidth = cx;
 
 	// PC Total Height Logic:
-	// Caption 20 + TopMargin 0 + MidGap 10 + ButtonArea 30 + BottomPadding 5 + GapToButtons 5 = 70px overhead
+	// Caption 20 + MidGap 10 + List + Button 30 = approx 60 overhead
 	float fClientHeight = fListHeight + fStaticHeaderHeight + fColumnGap;
 	m_fWidth = fClientWidth + fSidePadding;
-	m_fHeight = fClientHeight + 70.0f;
+	m_fHeight = fClientHeight + 70.0f; // Tightened from 70.0f
 
 	this->setSize(ImVec2(m_fWidth, m_fHeight));
 
@@ -163,7 +163,7 @@ void CDialog::performLayout()
 	m_pContent->setFixedSize(ImVec2(fContainerWidth, fClientHeight));
 	m_pContent->performLayout();
 
-	float fContentY = fHeaderHeight + 10.0f;
+	float fContentY = fHeaderHeight + 10.0f; // Reduced from 10.0f
 	if (iStyle == DialogStyle::TABLIST_HEADERS) {
 		fContentY = fHeaderHeight; // Gap 0 from header to static title
 	}
@@ -171,7 +171,7 @@ void CDialog::performLayout()
 
 	m_pButton->setFixedSize(ImVec2(m_fWidth, 30.0f));
 	m_pButton->performLayout();
-	m_pButton->setPosition(ImVec2(0.0f, m_fHeight - 35.0f));
+	m_pButton->setPosition(ImVec2(0.0f, m_fHeight - 35.0f)); // 3px bottom padding
 
 	this->setPosition(ImVec2((parent()->width() - width()) / 2, (parent()->height() - height()) / 2));
 }
@@ -195,7 +195,7 @@ void CDialog::touchEvent(const ImVec2& pos, TouchType type)
 
 CDialogTitle::CDialogTitle()
 {
-	m_pLabel = new Label("Title", ImColor(1.0f, 1.0f, 1.0f), false, UISettings::fontSize());
+	m_pLabel = new Label("Title", ImColor(1.0f, 1.0f, 1.0f), false, UISettings::fontSize() + 4.0f);
 	this->addChild(m_pLabel);
 }
 
@@ -209,21 +209,9 @@ void CDialogTitle::performLayout()
 
 void CDialogTitle::draw(ImGuiRenderer* renderer)
 {
-	if (Button::m_guiTexture)
-	{
-		float tw = (float)Button::m_guiTexture->raster->width;
-		float th = (float)Button::m_guiTexture->raster->height;
-
-		// PC Style: Title bar uses Selection texture (17, 269 ke 241, 287)
-		renderer->drawImageUV(absolutePosition(), absolutePosition() + size(),
-			ImVec2(17.0f / tw, 269.0f / th),
-			ImVec2(241.0f / tw, 287.0f / th),
-			(ImTextureID)Button::m_guiTexture->raster, ImColor(255, 255, 255, 255));
-	}
-	else
-	{
-		renderer->drawRect(absolutePosition(), absolutePosition() + size(), UISettings::dialogTitleBackgroundColor(), true);
-	}
+	// SAMP PC: Title bar background can be a texture or solid color.
+	// User requested to remove texture and make it black.
+	renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0, 0, 0, 255), true);
 	Widget::draw(renderer);
 }
 
@@ -280,5 +268,5 @@ void CDialogButton::CDialogButton2::touchPopEvent()
 	pDialog->Hide();
 }
 
-CDialogButton::CDialogButton1::CDialogButton1() : Button("", UISettings::fontSize() + 2.0f) {}
-CDialogButton::CDialogButton2::CDialogButton2() : Button("", UISettings::fontSize() + 2.0f) {}
+CDialogButton::CDialogButton1::CDialogButton1() : Button("", UISettings::fontSize() + 4.0f) {}
+CDialogButton::CDialogButton2::CDialogButton2() : Button("", UISettings::fontSize() + 4.0f) {}

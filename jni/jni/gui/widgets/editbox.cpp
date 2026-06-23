@@ -2,16 +2,11 @@
 
 extern UI* pUI;
 
-RwTexture* EditBox::m_guiTexture = nullptr;
-
 EditBox::EditBox()
 {
 	m_label = new Label(" ", ImColor(1.0f, 1.0f, 1.0f), true, UISettings::fontSize()); // PC Style: Outlined/Bold + Large
 	this->addChild(m_label);
 	m_passwordMode = false;
-
-	if (!m_guiTexture)
-		m_guiTexture = (RwTexture*)LoadTextureFromDB("samp", "sampgui");
 }
 
 void EditBox::performLayout()
@@ -27,10 +22,10 @@ void EditBox::performLayout()
 
 void EditBox::draw(ImGuiRenderer* renderer)
 {
-	if (m_guiTexture)
+	if (UI::m_pSampGuiTexture)
 	{
-		float tw = (float)m_guiTexture->raster->width;
-		float th = (float)m_guiTexture->raster->height;
+		float tw = (float)UI::m_pSampGuiTexture->raster->width;
+		float th = (float)UI::m_pSampGuiTexture->raster->height;
 		ImVec2 p = absolutePosition();
 		p.x = floorf(p.x); p.y = floorf(p.y);
 		ImVec2 s = size();
@@ -40,8 +35,9 @@ void EditBox::draw(ImGuiRenderer* renderer)
 		float v_th = 5.5; float v_bh = 5.5f;
 
 		// KOORDINAT MENTAH DI TEXTURE (PC DXUT)
-		float mtx = 8.0f; float mty = 82.0f;
-		float mtw = 238.0f; float mth = 39.0f;
+		ImVec4 rect = UI::rectEditBox;
+		float mtx = rect.x; float mty = rect.y;
+		float mtw = rect.z - rect.x; float mth = rect.w - rect.y;
 
 		// Slice asli texture
 		float t_lw = 6.0f; float t_rw = 5.0f;
@@ -51,7 +47,7 @@ void EditBox::draw(ImGuiRenderer* renderer)
 
 		auto drawPart = [&](float stx, float sty, float stw, float sth, float dx, float dy, float dw, float dh) {
 			renderer->drawImageUV(p + ImVec2(dx, dy), p + ImVec2(dx + dw, dy + dh),
-				ImVec2(stx/tw, sty/th), ImVec2((stx+stw)/tw, (sty+sth)/th), (ImTextureID)m_guiTexture->raster, ImColor(255, 255, 255, 240));
+				ImVec2(stx/tw, sty/th), ImVec2((stx+stw)/tw, (sty+sth)/th), (ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 200));
 		};
 
 		// 9-Slice Rendering dengan Border Tipis (2.5px)

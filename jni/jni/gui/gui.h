@@ -68,6 +68,13 @@ public:
 
 	bool OnTouchEvent(int type, bool multi, int x, int y);
 
+	static RwTexture* m_pSampGuiTexture;
+
+	// Elements (Left, Top, Right, Bottom)
+	static ImVec4 rectButtonNormal;
+	static ImVec4 rectListBoxMain;
+	static ImVec4 rectEditBox;
+
 protected:
 	void drawList() override;
 

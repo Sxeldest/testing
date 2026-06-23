@@ -5,41 +5,38 @@
 
 /* ListWidget */
 
-RwTexture* ListWidget::m_guiTexture = nullptr;
-
 ListWidget::ListWidget()
 	: ListBox()
 {
 	m_itemSize = { 0.0f, UISettings::dialogListItemHeight() };
-
-	if (!m_guiTexture)
-		m_guiTexture = (RwTexture*)LoadTextureFromDB("samp", "sampgui");
 }
 
 void ListWidget::performLayout()
 {
-	m_itemSize.x = ImMax(m_itemSize.x, this->minSize().x);
+	// SAMP PC: Menambahkan padding internal agar selection tidak menempel ke border texture
+	m_itemSize.x = ImMax(m_itemSize.x, this->minSize().x - 12.0f); // 6px left + 6px right inset
 	this->setItemSize(m_itemSize);
 	ListBox::performLayout();
 }
 
 void ListWidget::draw(ImGuiRenderer* renderer)
 {
-	if (m_guiTexture)
+	if (UI::m_pSampGuiTexture)
 	{
-		float tw = (float)m_guiTexture->raster->width;
-		float th = (float)m_guiTexture->raster->height;
+		float tw = (float)UI::m_pSampGuiTexture->raster->width;
+		float th = (float)UI::m_pSampGuiTexture->raster->height;
 
-		ImVec2 p = absolutePosition();
-		ImVec2 s = size();
+		// SAMP PC: Background texture digambar sedikit lebih besar (Bounding Box)
+		// Area item (ListBox) akan berada di dalamnya dengan inset border
+		ImVec2 p = absolutePosition() - ImVec2(6.0f, 6.0f);
+		ImVec2 s = size() + ImVec2(12.0f, 12.0f);
 
-		// CDXUTListBox - Main (13, 124, 241, 265)
-		// We use 9-slice or simple stretch depending on how it looks
-		// PC uses simple stretch for the background usually
+		// CDXUTListBox - Main
+		ImVec4 rect = UI::rectListBoxMain;
 		renderer->drawImageUV(p, p + s,
-			ImVec2(13.0f / tw, 124.0f / th),
-			ImVec2(241.0f / tw, 265.0f / th),
-			(ImTextureID)m_guiTexture->raster, ImColor(255, 255, 255, 200));
+			ImVec2(rect.x / tw, rect.y / th),
+			ImVec2(rect.z / tw, rect.w / th),
+			(ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 200));
 	}
 
 	ListBox::draw(renderer);
@@ -53,7 +50,7 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 	std::string s_row;
 
 	float fSize = fontSize == 0.0f ? UISettings::fontSize() : fontSize;
-	m_itemSize.y = fSize + 4.0f; // Dinamis: Mengikuti ukuran font agar spacing pas
+	m_itemSize.y = fSize + 2.0f; // Line spacing dirapatkan (PC Style)
 
 	while (std::getline(ss_data, s_row, '\n'))
 	{
@@ -74,9 +71,9 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 	}
 
 	std::vector<float> vColumnsWidth;
-	for (int r_idx = 0; r_idx < vRows.size(); r_idx++)
+	for (int r_idx = 0; r_idx < (int)vRows.size(); r_idx++)
 	{
-		for (int c_idx = 0; c_idx < vRows[r_idx].size(); c_idx++)
+		for (int c_idx = 0; c_idx < (int)vRows[r_idx].size(); c_idx++)
 		{
 			if (vColumnsWidth.size() < (c_idx + 1)) {
 				vColumnsWidth.push_back(0.0f);
@@ -87,19 +84,19 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 	}
 
 	float max_width = 0.0f;
-	for (int r_idx = 0; r_idx < vRows.size(); r_idx++)
+	for (int r_idx = 0; r_idx < (int)vRows.size(); r_idx++)
 	{
 		ItemWidget* item = new ItemWidget();
 		this->addItem(item);
 
-		float pos_x = UISettings::padding();
-		for (int c_idx = 0; c_idx < vRows[r_idx].size(); c_idx++)
+		float pos_x = 5.0f; // Margin internal kiri (m_nMargin PC)
+		for (int c_idx = 0; c_idx < (int)vRows[r_idx].size(); c_idx++)
 		{
 			Label* l = vRows[r_idx][c_idx];
 			item->add(l, pos_x);
 			pos_x += vColumnsWidth[c_idx] + 30.0f; // PC Style Column Gap
 		}
-		max_width = std::max(max_width, pos_x + 20.0f); // Extra right-side margin
+		max_width = std::max(max_width, pos_x + 10.0f);
 	}
 
 	m_itemSize.x = max_width;
@@ -113,7 +110,7 @@ ListWidget::ItemWidget::ItemWidget()
 
 void ListWidget::ItemWidget::performLayout()
 {
-	for (auto item : m_itemsData)
+	for (auto& item : m_itemsData)
 	{
 		Label* l = item.label;
 		l->setPosition(ImVec2(
@@ -127,21 +124,8 @@ void ListWidget::ItemWidget::draw(ImGuiRenderer* renderer)
 {
 	if (this->selected())
 	{
-		if (ListWidget::m_guiTexture)
-		{
-			float tw = (float)ListWidget::m_guiTexture->raster->width;
-			float th = (float)ListWidget::m_guiTexture->raster->height;
-
-			// CDXUTListBox - Selection (17, 269, 241, 287)
-			renderer->drawImageUV(absolutePosition(), absolutePosition() + size(),
-				ImVec2(17.0f / tw, 269.0f / th),
-				ImVec2(241.0f / tw, 287.0f / th),
-				(ImTextureID)ListWidget::m_guiTexture->raster, ImColor(255, 255, 255, 255));
-		}
-		else
-		{
-			renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xB9, 0x22, 0x28, 255), true);
-		}
+		// SAMP PC: Selection is Red (B92228), and no texture
+		renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xB9, 0x22, 0x28, 255), true);
 	}
 	ListBoxItem::draw(renderer);
 }

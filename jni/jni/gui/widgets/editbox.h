@@ -17,6 +17,4 @@ private:
 	Label* m_label;
 	std::string m_input;
 	bool m_passwordMode;
-
-	static RwTexture* m_guiTexture;
 };

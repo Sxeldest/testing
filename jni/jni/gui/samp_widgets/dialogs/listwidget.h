@@ -11,8 +11,6 @@ public:
 
 	virtual void draw(ImGuiRenderer* renderer) override;
 
-	static RwTexture* m_guiTexture;
-
 private:
 	class ItemWidget : public ListBoxItem
 	{

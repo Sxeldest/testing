@@ -29,9 +29,6 @@ private:
 
 	ImColor m_color;
 	ImColor m_colorFocused;
-
-public:
-	static RwTexture* m_guiTexture;
 };
 
 class CButton : public Widget
@@ -60,9 +57,6 @@ private:
 
 	ImColor m_color;
 	ImColor m_colorFocused;
-
-public:
-	static RwTexture* m_guiTexture;
 };
 
 //>> Button
