@@ -106,14 +106,14 @@ void Keyboard::performLayout()
 
 	// PC Style: Custom fixed pixel dimensions (700x100)
 	float inputW = 800.0f;
-	float inputH = 50.0f;
+	float inputH = 45.0f;
 
 	float fontSize = pSettings->Get().fFontSize;
 	int maxLines = pSettings->Get().iChatMaxMessages;
 	if (maxLines <= 0) maxLines = 10;
 	float chatH = fontSize * (float)maxLines;
 
-	this->setPosition(ImVec2(chatX, chatY + chatH + 5.0f));
+	this->setPosition(ImVec2(chatX - 5.0f, chatY + chatH + 20.0f));
 	this->setFixedSize(ImVec2(inputW, inputH));
 
 	m_chatInput->setFixedSize(ImVec2(inputW, inputH));
@@ -128,7 +128,7 @@ void Keyboard::draw(ImGuiRenderer* renderer)
 
 	if (ImGui::IsKeyPressed(ImGui::GetIO().KeyMap[ImGuiKey_Escape]))
 	{
-		this->hide();
+		this->hide(true);
 		return;
 	}
 
@@ -148,7 +148,7 @@ void Keyboard::draw(ImGuiRenderer* renderer)
 
 void Keyboard::show(Widget* caller)
 {
-	m_chatInput->clear();
+	if (m_caller != caller) m_chatInput->clear();
 	this->setVisible(true);
 	m_caller = caller;
 
@@ -157,12 +157,16 @@ void Keyboard::show(Widget* caller)
 	pGame->EnableGameInput(false);
 }
 
-void Keyboard::hide()
+void Keyboard::hide(bool deactivate)
 {
-	this->setVisible(false);
 	pJavaWrapper->HideKeyboard();
-	pGame->EnableGameInput(true);
-	m_caller = nullptr;
+	if (deactivate)
+	{
+		this->setVisible(false);
+		pGame->EnableGameInput(true);
+		if (m_caller) m_caller->setActive(false);
+		m_caller = nullptr;
+	}
 }
 
 void Keyboard::send()

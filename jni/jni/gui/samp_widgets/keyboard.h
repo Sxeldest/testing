@@ -29,7 +29,7 @@ public:
 	Keyboard();
 
 	void show(Widget* caller);
-	void hide();
+	void hide(bool deactivate = true);
 	void send();
 	void sendForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str);
 	void updateForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str);

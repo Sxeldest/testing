@@ -74,8 +74,8 @@ void ListBox::Panel::draw(ImGuiRenderer* renderer)
 		return;
 	}
 
-	float boxPosY1 = parent()->absolutePosition().y - m_itemSize.y;
-	float boxPosY2 = parent()->absolutePosition().y + parent()->height() - 0.1f;
+	float boxPosY1 = parent()->absolutePosition().y - (m_itemSize.y * 2.0f);
+	float boxPosY2 = parent()->absolutePosition().y + parent()->height() + m_itemSize.y;
 
 	for (auto item : children())
 	{

@@ -15,7 +15,7 @@ extern CJavaWrapper *pJavaWrapper;
 Chat::Chat()
 	: ListBox()
 {
-	this->setClipping(false);
+	this->setClipping(true);
 	this->setScrollableX(false);
 	this->setScrollableY(true);
 }
@@ -101,7 +101,9 @@ void Chat::performLayout()
 		float sizeY = fontSize * (float)maxLines;
 
 		if (sizeX > 1.0f && sizeY > 1.0f) {
-			this->setFixedSize(ImVec2(sizeX, sizeY));
+			// Tambahkan 10px ekstra pada tinggi kotak agar baris terakhir & outline tidak terpotong
+			this->setFixedSize(ImVec2(sizeX, sizeY + 10.0f));
+			this->setItemSize(ImVec2(sizeX, fontSize)); // Kembali rapat sesuai ukuran font
 		}
 	}
 	ListBox::performLayout();

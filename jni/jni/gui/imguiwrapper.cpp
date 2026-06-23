@@ -44,7 +44,7 @@ bool ImGuiWrapper::initialize()
 
 	Log::addParameter("Loading font: %s", m_fontPath.c_str());
 	ImFontConfig fontCfg;
-	fontCfg.GlyphExtraSpacing.x = 0.0f;
+	fontCfg.GlyphExtraSpacing.x = -0.9f;
 	fontCfg.PixelSnapH = true;
 
 	static const ImWchar ranges[] =

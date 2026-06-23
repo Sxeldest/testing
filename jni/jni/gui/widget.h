@@ -58,6 +58,9 @@ public:
 	bool focused() { return m_focused; }
 	bool active() { return m_active; }
 
+	void setActive(bool active);
+	void setFocus(bool focus);
+
 	/* touch */
 	bool contains(const ImVec2& pos) const;
 	virtual void touchEvent(const ImVec2& pos, TouchType type);
@@ -85,9 +88,6 @@ protected:
 
 private:
 	void updateAbsolutePosition();
-
-	void setActive(bool active);
-	void setFocus(bool focus);
 
 private:
 	Widget* m_parent;

@@ -63,7 +63,7 @@ bool UI::initialize()
 	this->addChild(m_buttonPanel);
 	m_buttonPanel->setFixedSize(UISettings::buttonPanelSize());
 	m_buttonPanel->setPosition(UISettings::buttonPanelPos());
-	m_buttonPanel->setVisible(true);
+	m_buttonPanel->setVisible(false);
 
 	m_voiceButton = new VoiceButton();
 	this->addChild(m_voiceButton);
@@ -170,6 +170,12 @@ void UI::touchEvent(const ImVec2& pos, TouchType type)
 		if (m_chat->contains(pos)) {
 			m_chat->touchEvent(pos, type);
 			return;
+		}
+
+		// Tapping anywhere else while keyboard is visible
+		if (type == TouchType::push) {
+			m_keyboard->hide(false); // Hide keyboard, keep chat active
+			return; // Stop event propagation
 		}
 	}
 

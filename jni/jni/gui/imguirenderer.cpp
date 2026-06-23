@@ -16,12 +16,12 @@ void ImGuiRenderer::drawLine(const ImVec2& a, const ImVec2& b, const ImColor& co
 void ImGuiRenderer::drawRect(const ImVec2& a, const ImVec2& b, const ImColor& color, bool fill, float thickness)
 {
 	fill ? m_drawList->AddRectFilled(a, b, color) :
-		m_drawList->AddRect(a, b, color, 0.0f, 15, thickness);
+	m_drawList->AddRect(a, b, color, 0.0f, 15, thickness);
 }
 
 void ImGuiRenderer::drawRectFilledMulticolor(const ImVec2& a, const ImVec2& b,
-	const ImColor& col_upr_left, const ImColor& col_upr_right,
-	const ImColor& col_bot_right, const ImColor& col_bot_left)
+											 const ImColor& col_upr_left, const ImColor& col_upr_right,
+											 const ImColor& col_bot_right, const ImColor& col_bot_left)
 {
 	m_drawList->AddRectFilledMultiColor(a, b, col_upr_left, col_upr_right, col_bot_right, col_bot_left);
 }
@@ -29,7 +29,7 @@ void ImGuiRenderer::drawRectFilledMulticolor(const ImVec2& a, const ImVec2& b,
 void ImGuiRenderer::drawTriangle(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImColor& color, bool fill, float thickness)
 {
 	fill ? m_drawList->AddTriangleFilled(a, b, c, color) :
-		m_drawList->AddTriangle(a, b, c, color, thickness);
+	m_drawList->AddTriangle(a, b, c, color, thickness);
 }
 
 void ImGuiRenderer::drawConvexPolyFilled(ImVec2* points, int num_points, const ImColor& color)
@@ -38,7 +38,7 @@ void ImGuiRenderer::drawConvexPolyFilled(ImVec2* points, int num_points, const I
 }
 
 void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color,
-	const char* begin, const char* end, bool outline, float font_size)
+							 const char* begin, const char* end, bool outline, float font_size)
 {
 	float sz_font = font_size == 0.0f ? m_font->FontSize : font_size;
 
@@ -174,7 +174,7 @@ ImVec2 ImGuiRenderer::calculateTextSize(const std::string& text, float font_size
 
 	ImVec2 cur_size = { 0.0f, 0.0f };
 	if (font_size == 0.0f) font_size = m_font->FontSize;
-	
+
 	const char* text_start = text.c_str();
 	const char* text_cur = text.c_str();
 	const char* text_end = text.c_str() + text.length();
