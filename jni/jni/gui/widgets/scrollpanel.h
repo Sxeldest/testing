@@ -12,6 +12,7 @@ public:
 	void setScrollX(float x);
 	void setScrollY(float y);
 	void setShowScrollBar(bool show) { m_showScrollBar = show; }
+	bool showScrollBar() const { return m_showScrollBar; }
 
 	virtual void performLayout() override;
 

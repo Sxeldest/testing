@@ -33,8 +33,7 @@ void ChatInput::popCharFromInput()
 
 void ChatInput::performLayout()
 {
-	// Fixed height for PC chat input
-	this->setHeight(30.0f);
+	// Height is managed by parent (Keyboard)
 }
 
 void ChatInput::draw(ImGuiRenderer* renderer)
@@ -80,7 +79,7 @@ void ChatInput::draw(ImGuiRenderer* renderer)
 		drawPart(mtx + t_lw + t_mw, mty + t_th + t_mh, t_rw, t_bh, s.x - v_w, s.y - v_w, v_w, v_w);
 	}
 
-	float font_sz = UISettings::fontSize();
+	float font_sz = UISettings::fontSize() + 2.0f;
 	std::string display_text = m_caption + "|"; // Removed "> " prefix
 	renderer->drawText(absolutePosition() + ImVec2(8.0f, (height() - font_sz) / 2),
 					   ImColor(1.0f, 1.0f, 1.0f), display_text, true, font_sz);
@@ -105,9 +104,9 @@ void Keyboard::performLayout()
 	float chatX = pSettings->Get().fChatPosX;
 	float chatY = pSettings->Get().fChatPosY;
 
-	// PC Style: Long input bar (80% of screen width)
-	float screenW = parent() ? parent()->width() : 1920.0f;
-	float inputW = screenW * 0.8f;
+	// PC Style: Custom fixed pixel dimensions (700x100)
+	float inputW = 800.0f;
+	float inputH = 50.0f;
 
 	float fontSize = pSettings->Get().fFontSize;
 	int maxLines = pSettings->Get().iChatMaxMessages;
@@ -115,9 +114,9 @@ void Keyboard::performLayout()
 	float chatH = fontSize * (float)maxLines;
 
 	this->setPosition(ImVec2(chatX, chatY + chatH + 5.0f));
-	this->setFixedSize(ImVec2(inputW, 35.0f));
+	this->setFixedSize(ImVec2(inputW, inputH));
 
-	m_chatInput->setFixedSize(ImVec2(inputW, 30.0f));
+	m_chatInput->setFixedSize(ImVec2(inputW, inputH));
 	m_chatInput->setPosition(ImVec2(0.0f, 0.0f));
 
 	Widget::performLayout();
@@ -126,6 +125,12 @@ void Keyboard::performLayout()
 void Keyboard::draw(ImGuiRenderer* renderer)
 {
 	if (!m_caller) return;
+
+	if (ImGui::IsKeyPressed(ImGui::GetIO().KeyMap[ImGuiKey_Escape]))
+	{
+		this->hide();
+		return;
+	}
 
 	// PC Style Input Bar only visible when typing for Chat
 	// If caller is NOT a dialog EditBox, we assume it's Chat
@@ -206,5 +211,5 @@ void Keyboard::updateForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str)
 
 void Keyboard::activateEvent(bool active)
 {
-	if (!active) this->hide();
+	// Keyboard should only be closed via ESC/ENTER or Back button
 }

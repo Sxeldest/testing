@@ -56,8 +56,7 @@ void Chat::addClientMessage(const std::string& message, const ImColor& color)
 
 void Chat::addMessage(const std::string& message, const ImColor& color)
 {
-	int maxMessages = pSettings ? pSettings->Get().iChatMaxMessages : 10;
-	if (maxMessages <= 0) maxMessages = 10;
+	int maxMessages = 100; // Increase buffer for scrolling
 
 	if (this->itemsCount() >= maxMessages)
 	{
@@ -66,13 +65,12 @@ void Chat::addMessage(const std::string& message, const ImColor& color)
 
 	MessageItem* item = new MessageItem(message, color);
 	this->addItem(item);
-	/*if(!active())*/ this->setScrollY(1.0f);
+	if(!visible() || !this->showScrollBar()) this->setScrollY(1.0f);
 }
 
 void Chat::addPlayerMessage(const std::string& message, const std::string& nick, const ImColor& nick_color)
 {
-	int maxMessages = pSettings ? pSettings->Get().iChatMaxMessages : 10;
-	if (maxMessages <= 0) maxMessages = 10;
+	int maxMessages = 100; // Increase buffer for scrolling
 
 	if (this->itemsCount() >= maxMessages)
 	{
@@ -81,7 +79,7 @@ void Chat::addPlayerMessage(const std::string& message, const std::string& nick,
 
 	PlayerMessageItem* item = new PlayerMessageItem(message, nick, nick_color);
 	this->addItem(item);
-	/*if(!active())*/ this->setScrollY(1.0f);
+	if(!visible() || !this->showScrollBar()) this->setScrollY(1.0f);
 }
 
 void Chat::draw(ImGuiRenderer* renderer)
@@ -117,11 +115,17 @@ void Chat::activateEvent(bool active)
 
 	if (!active)
 	{
+		this->setScrollY(1.0f);
+		this->setShowScrollBar(false);
 		// Reset side position just in case
 		if (children().size() > 0) {
 			Widget* child = children()[0];
 			child->setPosition(ImVec2(0.0f, child->position().y));
 		}
+	}
+	else
+	{
+		this->setShowScrollBar(true);
 	}
 }
 

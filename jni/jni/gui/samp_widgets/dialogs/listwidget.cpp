@@ -50,7 +50,7 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 	std::stringstream ss_data(data);
 	std::string s_row;
 
-	float fSize = fontSize == 0.0f ? UISettings::fontSize() : fontSize;
+	float fSize = (fontSize == 0.0f ? UISettings::fontSize() : fontSize);
 	m_itemSize.y = fSize + 2.0f; // Line spacing dirapatkan (PC Style)
 
 	while (std::getline(ss_data, s_row, '\n'))

@@ -160,10 +160,17 @@ void UI::touchEvent(const ImVec2& pos, TouchType type)
 		3 -    
 	*/
 
-	if (m_keyboard->visible() && m_keyboard->contains(pos))
+	if (m_keyboard->visible())
 	{
-		m_keyboard->touchEvent(pos, type);
-		return;
+		if (m_keyboard->contains(pos)) {
+			m_keyboard->touchEvent(pos, type);
+			return;
+		}
+
+		if (m_chat->contains(pos)) {
+			m_chat->touchEvent(pos, type);
+			return;
+		}
 	}
 
 	if (m_dialog->visible() && m_dialog->contains(pos))

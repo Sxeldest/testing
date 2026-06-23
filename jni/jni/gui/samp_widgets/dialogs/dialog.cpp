@@ -5,6 +5,7 @@
 
 extern CGame* pGame;
 extern CNetGame* pNetGame;
+extern UI* pUI;
 
 /* CDialog Class Implementation */
 
@@ -35,6 +36,8 @@ void CDialog::Show(int16_t iID, DialogStyle iStyle, const std::string& szTitle, 
 {
 	if (iID >= 0)
 	{
+		if (pUI && pUI->keyboard()->visible()) pUI->keyboard()->hide();
+
 		m_iID = iID;
 
 		this->SetTitleCaption(szTitle);

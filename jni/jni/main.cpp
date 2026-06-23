@@ -439,6 +439,10 @@ extern "C" {
 
 	static void OnEventBackPressedBridge()
 	{
+		if (pUI && pUI->keyboard()->visible()) {
+			pUI->keyboard()->hide();
+			return;
+		}
 		if(pSettings && pJavaWrapper && pSettings->Get().iAndroidKeyboard) {
 			pJavaWrapper->HideKeyboard();
 		}

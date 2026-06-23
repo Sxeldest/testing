@@ -67,10 +67,19 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 
 		float sbWidth = 16.0f;
 
-		// SAMP PC: Scrollbar matches the background height (6px offset top/bottom)
-		// Shifted further 1px left (4px offset from edge)
-		ImVec2 sbPos = absolutePosition() + ImVec2(width() + 4.0f - sbWidth, -6.0f);
-		ImVec2 sbSize = ImVec2(sbWidth, height() + 12.0f);
+		// PC Style: Positioned on the LEFT if it's the Chat widget
+		bool isChat = (parent() && dynamic_cast<Chat*>(parent()));
+
+		ImVec2 sbPos;
+		if (isChat) {
+			// Left side for Chat (aligned with text start)
+			sbPos = absolutePosition() + ImVec2(-25.0f, 0.0f);
+		} else {
+			// Right side for Dialogs
+			sbPos = absolutePosition() + ImVec2(width() + 4.0f - sbWidth, -6.0f);
+		}
+
+		ImVec2 sbSize = ImVec2(sbWidth, height() + (isChat ? 0.0f : 12.0f));
 
 		// 1. Draw Track (Always displayed in Dialog Lists)
 		ImVec4 rectTrack = UI::rectScrollTrack;
@@ -103,6 +112,7 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 			float thumbHeight = ImMax(20.0f, (windowHeight / totalHeight) * trackHeight);
 
 			float scrollableHeight = totalHeight - windowHeight;
+			// Child position is negative as it moves up
 			float scrollRatio = -child->position().y / scrollableHeight;
 			scrollRatio = ImSaturate(scrollRatio);
 
