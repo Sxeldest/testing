@@ -15,7 +15,6 @@ TabListWidget::TabListWidget()
 
 void TabListWidget::performLayout()
 {
-	// SAMP PC: Adjust item width to account for the 28px scrollbar + padding area
 	m_itemSize.x = ImMax(m_itemSize.x, this->width() - 28.0f);
 	this->setItemSize(m_itemSize);
 	ListBox::performLayout();

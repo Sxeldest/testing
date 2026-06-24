@@ -17,6 +17,8 @@ PAD_KEYS RemotePlayerKeys[PLAYER_PED_SLOTS];
 uint16_t(*CPad__GetPedWalkLeftRight)(uintptr_t thiz);
 uint16_t CPad__GetPedWalkLeftRight_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		// Remote player
@@ -39,6 +41,8 @@ uint16_t CPad__GetPedWalkLeftRight_hook(uintptr_t thiz)
 uint16_t(*CPad__GetPedWalkUpDown)(uintptr_t thiz);
 uint16_t CPad__GetPedWalkUpDown_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		// Remote player
@@ -61,6 +65,8 @@ uint16_t CPad__GetPedWalkUpDown_hook(uintptr_t thiz)
 uint32_t(*CPad__GetSprint)(uintptr_t thiz, uint32_t unk);
 uint32_t CPad__GetSprint_hook(uintptr_t thiz, uint32_t unk)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		return RemotePlayerKeys[byteCurPlayer].bKeys[ePadKeys::KEY_SPRINT];
@@ -75,6 +81,8 @@ uint32_t CPad__GetSprint_hook(uintptr_t thiz, uint32_t unk)
 uint32_t(*CPad__JumpJustDown)(uintptr_t thiz);
 uint32_t CPad__JumpJustDown_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		if (!RemotePlayerKeys[byteCurPlayer].bIgnoreJump &&
@@ -97,6 +105,8 @@ uint32_t CPad__JumpJustDown_hook(uintptr_t thiz)
 uint32_t(*CPad__GetJump)(uintptr_t thiz);
 uint32_t CPad__GetJump_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		if (RemotePlayerKeys[byteCurPlayer].bIgnoreJump) return 0;
@@ -169,6 +179,8 @@ uint32_t CPad__SwimJumpJustDown_hook(uintptr_t thiz)
 uint32_t(*CPad__DuckJustDown)(uintptr_t thiz, int unk);
 uint32_t CPad__DuckJustDown_hook(uintptr_t thiz, int unk)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		return 0;
@@ -235,6 +247,8 @@ uint32_t CPad__GetBlock_hook(uintptr_t thiz)
 int16_t(*CPad__GetSteeringLeftRight)(uintptr_t thiz);
 int16_t CPad__GetSteeringLeftRight_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		// remote player
@@ -251,6 +265,8 @@ int16_t CPad__GetSteeringLeftRight_hook(uintptr_t thiz)
 uint16_t(*CPad__GetSteeringUpDown)(uintptr_t thiz);
 uint16_t CPad__GetSteeringUpDown_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		// remote player
@@ -267,6 +283,8 @@ uint16_t CPad__GetSteeringUpDown_hook(uintptr_t thiz)
 uint16_t(*CPad__GetAccelerate)(uintptr_t thiz);
 uint16_t CPad__GetAccelerate_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		// remote player
@@ -307,6 +325,8 @@ uint16_t CPad__GetAccelerate_hook(uintptr_t thiz)
 uint16_t(*CPad__GetBrake)(uintptr_t thiz);
 uint16_t CPad__GetBrake_hook(uintptr_t thiz)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return 0;
+
 	if (*pbyteCurrentPlayer)
 	{
 		// remote player
@@ -513,6 +533,8 @@ uint32_t CPad__CycleWeaponLeftJustDown_hook(uintptr_t thiz)
 bool (*CPad__GetWeapon)(uintptr_t thiz, PED_TYPE* pPed);
 bool CPad__GetWeapon_hook(uintptr_t thiz, PED_TYPE* pPed)
 {
+	if (pUI && (pUI->inputChat()->visible() || pUI->dialog()->visible())) return false;
+
 	if (*pbyteCurrentPlayer)
 	{
 		return RemotePlayerKeys[byteCurPlayer].bKeys[ePadKeys::KEY_FIRE];

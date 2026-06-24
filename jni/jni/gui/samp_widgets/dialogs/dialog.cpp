@@ -7,7 +7,7 @@ extern CGame* pGame;
 extern CNetGame* pNetGame;
 extern UI* pUI;
 
-/* CDialog Class Implementation */
+/* CDialog Class */
 
 CDialog::CDialog()
 {
@@ -79,8 +79,7 @@ void CDialog::performLayout()
 
 	DialogStyle iStyle = m_pContent->GetActiveStyle();
 
-	/* 1. Deep Measure Phase (cx, cy) */
-	float cx = 190.0f; // Minimal content width (230 total - 40 side padding)
+	float cx = 190.0f;
 	float cy = 0.0f;
 
 	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST || iStyle == DialogStyle::TABLIST_HEADERS)
@@ -90,7 +89,6 @@ void CDialog::performLayout()
 			Widget* pPanel = pActive->children()[0];
 			float fMinContentWidth = 360.0f;
 
-			// Add extra 16px for the scrollbar (PC Style)
 			cx = ImMax(fMinContentWidth, pPanel->width() + 16.0f);
 			cy = pPanel->height();
 		}
@@ -103,7 +101,7 @@ void CDialog::performLayout()
 				Widget* pLabel = pMsgBox->children()[0];
 				pLabel->performLayout();
 				cx = ImMax(cx, pLabel->width());
-				cy = pLabel->height() + UISettings::dialogInputHeight() + 10.0f; // Gap(10)
+				cy = pLabel->height() + UISettings::dialogInputHeight() + 10.0f;
 			}
 		}
 	}
@@ -117,14 +115,13 @@ void CDialog::performLayout()
 		}
 	}
 
-	/* 2. PC Dimension Values (1:1 CDialog.cpp) */
-	float fHeaderHeight = 20.0f;    // PC Caption height (approx size.cy + 4)
-	float fSidePadding = 40.0f;     // Default side padding (20px left + 20px right)
-	float fContentX = 20.0f;        // Default for MSGBOX
+	float fHeaderHeight = 20.0f;
+	float fSidePadding = 40.0f;
+	float fContentX = 20.0f;
 
 	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST || iStyle == DialogStyle::TABLIST_HEADERS) {
-		fSidePadding = 20.0f;       // 10px left + 10px right
-		fContentX = 10.0f;          // 10px from left
+		fSidePadding = 20.0f;
+		fContentX = 10.0f;
 	}
 
 	float fStaticHeaderHeight = 0.0f;
@@ -142,25 +139,20 @@ void CDialog::performLayout()
 
 	float fListHeight = ImMin(ImMax(cy, fMinListHeight), fMaxListHeight);
 	float fClientWidth = cx;
-
-	// PC Total Height Logic:
-	// Caption 20 + MidGap 10 + List + Button 30 = approx 60 overhead
 	float fClientHeight = fListHeight + fStaticHeaderHeight + fColumnGap;
 	m_fWidth = fClientWidth + fSidePadding;
 
-	// Adjust height overhead per style to keep list-to-button padding consistent
-	float fHeightOverhead = 70.0f; // Default for MSGBOX and INPUT (5px gap)
+	float fHeightOverhead = 70.0f;
 	if (iStyle == DialogStyle::LIST || iStyle == DialogStyle::TABLIST) {
-		fHeightOverhead = 75.0f;   // 10px gap for lists
+		fHeightOverhead = 75.0f;
 	} else if (iStyle == DialogStyle::TABLIST_HEADERS) {
-		fHeightOverhead = 65.0f;   // Offset for the lack of header gap (fContentY=20) to keep 10px gap
+		fHeightOverhead = 65.0f;
 	}
 
 	m_fHeight = fClientHeight + fHeightOverhead;
 
 	this->setSize(ImVec2(m_fWidth, m_fHeight));
 
-	/* 3. Positioning Components */
 	m_pTitle->setFixedSize(ImVec2(m_fWidth, fHeaderHeight));
 	m_pTitle->performLayout();
 	m_pTitle->setPosition(ImVec2(0.0f, 0.0f));
@@ -175,15 +167,15 @@ void CDialog::performLayout()
 	m_pContent->setFixedSize(ImVec2(fContainerWidth, fClientHeight));
 	m_pContent->performLayout();
 
-	float fContentY = fHeaderHeight + 10.0f; // Reduced from 10.0f
+	float fContentY = fHeaderHeight + 10.0f;
 	if (iStyle == DialogStyle::TABLIST_HEADERS) {
-		fContentY = fHeaderHeight; // Gap 0 from header to static title
+		fContentY = fHeaderHeight;
 	}
 	m_pContent->setPosition(ImVec2(fContentX, fContentY));
 
 	m_pButton->setFixedSize(ImVec2(m_fWidth, 30.0f));
 	m_pButton->performLayout();
-	m_pButton->setPosition(ImVec2(0.0f, m_fHeight - 35.0f)); // 3px bottom padding
+	m_pButton->setPosition(ImVec2(0.0f, m_fHeight - 35.0f));
 
 	this->setPosition(ImVec2((parent()->width() - width()) / 2, (parent()->height() - height()) / 2));
 }
@@ -203,11 +195,9 @@ void CDialog::touchEvent(const ImVec2& pos, TouchType type)
 	Widget::touchEvent(pos, type);
 }
 
-/* CDialogTitle Class Implementation */
-
 CDialogTitle::CDialogTitle()
 {
-	m_pLabel = new Label("Title", ImColor(1.0f, 1.0f, 1.0f), false, UISettings::fontSize() + 4.0f);
+	m_pLabel = new Label("Title", ImColor(1.0f, 1.0f, 1.0f), false, UISettings::fontSize() + 2.0f);
 	this->addChild(m_pLabel);
 }
 
@@ -221,13 +211,9 @@ void CDialogTitle::performLayout()
 
 void CDialogTitle::draw(ImGuiRenderer* renderer)
 {
-	// SAMP PC: Title bar background can be a texture or solid color.
-	// User requested to remove texture and make it black.
 	renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0, 0, 0, 255), true);
 	Widget::draw(renderer);
 }
-
-/* CDialogButton Class Implementation */
 
 CDialogButton::CDialogButton() : Layout(Orientation::HORIZONTAL)
 {
@@ -253,15 +239,11 @@ void CDialogButton::performLayout()
 
 	if (m_pButton2->visible())
 	{
-		// EXACT SAMP PC POSITIONING (from CDialog.cpp UpdateLayout)
-		// Button 1: (Width / 2) - (ButtonWidth - 10)
-		// Button 2: (Width / 2) + 10
 		m_pButton1->setPosition(ImVec2(fCenterX - 110.0f, fButtonY));
 		m_pButton2->setPosition(ImVec2(fCenterX + 10.0f, fButtonY));
 	}
 	else
 	{
-		// Single button perfectly centered
 		m_pButton1->setPosition(ImVec2(fCenterX - 50.0f, fButtonY));
 	}
 }

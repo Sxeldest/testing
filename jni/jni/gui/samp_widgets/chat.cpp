@@ -113,9 +113,9 @@ void Chat::performLayout()
 
 void Chat::activateEvent(bool active)
 {
-	// Chat is always scrollable Y, never X
+	// Chat is always scrollable Y when active, never X
 	this->setScrollableX(false);
-	this->setScrollableY(true);
+	this->setScrollableY(active);
 
 	if (!active)
 	{
@@ -137,8 +137,12 @@ void Chat::touchEvent(const ImVec2& pos, TouchType type)
 {
 	// Force chat to be focused for scrolling if touched
 	if (type == TouchType::push && contains(pos)) {
-		this->setScrollableY(true);
-		this->setScrollableX(false);
+		if (pUI->inputChat()->getCaller() == this) {
+			this->setScrollableY(true);
+			this->setScrollableX(false);
+		} else {
+			this->setScrollableY(false);
+		}
 	}
 	ListBox::touchEvent(pos, type);
 }
@@ -152,6 +156,12 @@ void Chat::touchPopEvent()
 
 void Chat::keyboardEvent(const std::string& input)
 {
+	// Do nothing, history updates shouldn't send messages
+}
+
+void Chat::onSubmit()
+{
+	std::string input = pUI->inputChat()->inputString();
 	if (input.length() > 0 && pNetGame)
 	{
 		if (input[0] == '/') pNetGame->SendChatCommand(input.c_str());

@@ -13,10 +13,12 @@
 
 #include "../gui/samp_widgets/voicebutton.h"
 #include "../gui/samp_widgets/buttonpanel.h"
+#include "../java/jniutil.h"
 
 extern CNetGame* pNetGame;
 extern CPlayerTags* pPlayerTags;
 extern UI* pUI;
+extern CJavaWrapper* pJavaWrapper;
 
 RwTexture* UI::m_pSampGuiTexture = nullptr;
 
@@ -163,20 +165,34 @@ void UI::touchEvent(const ImVec2& pos, TouchType type)
 	if (m_inputChat->visible())
 	{
 		if (m_inputChat->contains(pos)) {
+			if (type == TouchType::push && pJavaWrapper && !pJavaWrapper->IsKeyboardShowing()) {
+				pJavaWrapper->ShowKeyboard();
+				pJavaWrapper->SetKeyboardText(m_inputChat->inputString().c_str());
+			}
 			m_inputChat->touchEvent(pos, type);
 			return;
 		}
 
-		if (m_chat->contains(pos)) {
-			m_chat->touchEvent(pos, type);
+		// Jika menekan area caller (misal Chat area) saat input aktif
+		if (m_inputChat->getCaller() && m_inputChat->getCaller()->contains(pos)) {
+			if (type == TouchType::push && pJavaWrapper && !pJavaWrapper->IsKeyboardShowing()) {
+				pJavaWrapper->ShowKeyboard();
+				pJavaWrapper->SetKeyboardText(m_inputChat->inputString().c_str());
+			}
+			m_inputChat->getCaller()->touchEvent(pos, type);
 			return;
 		}
 
-		// Tapping anywhere else while keyboard is visible
+		// Jika menekan di luar area InputChat (area kosong)
 		if (type == TouchType::push) {
-			m_inputChat->hide(false); // Hide keyboard, keep chat active
-			return; // Stop event propagation
+			if (pJavaWrapper && pJavaWrapper->IsKeyboardShowing()) {
+				pJavaWrapper->HideKeyboard(); // Hanya sembunyikan keyboard
+			} else {
+				m_inputChat->hide(true); // Sembunyikan input chat dan scrollbar (deactivate)
+			}
+			return; // Consume event agar tidak langsung re-open keyboard
 		}
+		return;
 	}
 
 	if (m_dialog->visible() && m_dialog->contains(pos))

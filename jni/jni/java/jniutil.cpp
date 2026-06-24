@@ -90,6 +90,8 @@ CJavaWrapper::CJavaWrapper(JNIEnv *env, jobject activity)
 
     s_showInputLayout = env->GetMethodID(clas, "showKeyboard", "()V");
     s_hideInputLayout = env->GetMethodID(clas, "hideKeyboard", "()V");
+    s_setKeyboardText = env->GetMethodID(clas, "setKeyboardText", "(Ljava/lang/String;)V");
+    s_isKeyboardShowing = env->GetMethodID(clas, "isKeyboardShowing", "()Z");
 
     s_ShowLogo = env->GetMethodID(clas, "ShowLogo", "(Z)V");
     s_ShowHud = env->GetMethodID(clas, "showhud", "()V");
@@ -126,6 +128,31 @@ void CJavaWrapper::HideKeyboard()
     }
     p->CallVoidMethod(activity, s_hideInputLayout);
     ClearJavaException(p, "hideKeyboard");
+}
+
+void CJavaWrapper::SetKeyboardText(const char* text)
+{
+    ScopedJniEnv scopedEnv;
+    JNIEnv* p = scopedEnv.get();
+    if (!ValidateJavaCall(p, activity, s_setKeyboardText, "setKeyboardText")) {
+        return;
+    }
+    jstring jstr = p->NewStringUTF(text);
+    p->CallVoidMethod(activity, s_setKeyboardText, jstr);
+    p->DeleteLocalRef(jstr);
+    ClearJavaException(p, "setKeyboardText");
+}
+
+bool CJavaWrapper::IsKeyboardShowing()
+{
+    ScopedJniEnv scopedEnv;
+    JNIEnv* p = scopedEnv.get();
+    if (!ValidateJavaCall(p, activity, s_isKeyboardShowing, "isKeyboardShowing")) {
+        return false;
+    }
+    jboolean result = p->CallBooleanMethod(activity, s_isKeyboardShowing);
+    ClearJavaException(p, "isKeyboardShowing");
+    return (bool)result;
 }
 
 void CJavaWrapper::ShowLoadingScreen()

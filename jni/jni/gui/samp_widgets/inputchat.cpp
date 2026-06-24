@@ -14,24 +14,44 @@ InputChat::InputChat()
 {
 	m_input = "";
 	m_caption = "";
+	m_cursorPos = 0;
+	m_selectionStart = -1;
+	m_historyIdx = 0;
 	m_caller = nullptr;
 }
 
 void InputChat::addCharToInput(char value)
 {
-	m_input += value;
+	m_input.insert(m_cursorPos, 1, value);
+	m_cursorPos++;
 	m_caption = Encoding::cp2utf(m_input);
+	if (m_caller) {
+		m_caller->keyboardEvent(m_input);
+		m_caller->cursorEvent(m_cursorPos);
+	}
 }
 
 void InputChat::popCharFromInput()
 {
-	if (m_input.empty()) return;
-	m_input.pop_back();
+	if (m_input.empty() || m_cursorPos <= 0) return;
+	m_input.erase(m_cursorPos - 1, 1);
+	m_cursorPos--;
 	m_caption = Encoding::cp2utf(m_input);
+	if (m_caller) {
+		m_caller->keyboardEvent(m_input);
+		m_caller->cursorEvent(m_cursorPos);
+	}
 }
 
 void InputChat::performLayout()
 {
+	if (m_caller && m_caller != pUI->chat())
+	{
+		this->setPosition(m_caller->absolutePosition());
+		this->setFixedSize(m_caller->size());
+		return;
+	}
+
 	if (!pSettings) return;
 
 	float chatX = pSettings->Get().fChatPosX;
@@ -53,18 +73,157 @@ void InputChat::draw(ImGuiRenderer* renderer)
 {
 	if (!m_caller) return;
 
-	if (ImGui::IsKeyPressed(ImGui::GetIO().KeyMap[ImGuiKey_Escape]))
+	this->performLayout();
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_Escape]))
 	{
 		this->hide(true);
 		return;
 	}
 
-	if (!(m_caller->childCount() == 0 || m_caller->childAt(0)->childCount() > 0))
+	bool ctrl = io.KeyCtrl;
+
+	// History Navigation
+	if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_UpArrow]))
 	{
-		return;
+		if (m_historyIdx == m_history.size()) m_currentDraft = m_input;
+		if (m_historyIdx > 0)
+		{
+			m_historyIdx--;
+			setInputString(m_history[m_historyIdx]);
+			m_cursorPos = (int)m_input.length();
+			m_selectionStart = -1;
+			if (pJavaWrapper) pJavaWrapper->SetKeyboardText(m_input.c_str());
+			if (m_caller) {
+				m_caller->keyboardEvent(m_input);
+				m_caller->cursorEvent(m_cursorPos);
+			}
+		}
 	}
 
-	this->performLayout();
+	if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_DownArrow]))
+	{
+		if (m_historyIdx < m_history.size())
+		{
+			m_historyIdx++;
+			if (m_historyIdx == m_history.size()) setInputString(m_currentDraft);
+			else setInputString(m_history[m_historyIdx]);
+			m_cursorPos = (int)m_input.length();
+			m_selectionStart = -1;
+			if (pJavaWrapper) pJavaWrapper->SetKeyboardText(m_input.c_str());
+			if (m_caller) {
+				m_caller->keyboardEvent(m_input);
+				m_caller->cursorEvent(m_cursorPos);
+			}
+		}
+	}
+
+	// Shortcuts
+	if (ctrl)
+	{
+		if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_A]))
+		{
+			m_selectionStart = 0;
+			m_cursorPos = (int)m_input.length();
+			if (m_caller) m_caller->cursorEvent(m_cursorPos);
+		}
+		else if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_C]))
+		{
+			if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
+			{
+				int start = std::min(m_selectionStart, m_cursorPos);
+				int len = std::abs(m_selectionStart - m_cursorPos);
+				std::string selected = m_input.substr(start, len);
+				ImGui::SetClipboardText(selected.c_str());
+			}
+		}
+		else if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_V]))
+		{
+			const char* clipboard = ImGui::GetClipboardText();
+			if (clipboard)
+			{
+				// Delete selection first
+				if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
+				{
+					int start = std::min(m_selectionStart, m_cursorPos);
+					int len = std::abs(m_selectionStart - m_cursorPos);
+					m_input.erase(start, len);
+					m_cursorPos = start;
+					m_selectionStart = -1;
+				}
+				m_input.insert(m_cursorPos, clipboard);
+				m_cursorPos += strlen(clipboard);
+				m_caption = Encoding::cp2utf(m_input);
+				if (m_caller) {
+					m_caller->keyboardEvent(m_input);
+					m_caller->cursorEvent(m_cursorPos);
+				}
+			}
+		}
+		else if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_X]))
+		{
+			if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
+			{
+				int start = std::min(m_selectionStart, m_cursorPos);
+				int len = std::abs(m_selectionStart - m_cursorPos);
+				std::string selected = m_input.substr(start, len);
+				ImGui::SetClipboardText(selected.c_str());
+				m_input.erase(start, len);
+				m_cursorPos = start;
+				m_selectionStart = -1;
+				m_caption = Encoding::cp2utf(m_input);
+				if (m_caller) {
+					m_caller->keyboardEvent(m_input);
+					m_caller->cursorEvent(m_cursorPos);
+				}
+			}
+		}
+	}
+
+	if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_LeftArrow]))
+	{
+		if (m_cursorPos > 0) m_cursorPos--;
+		m_selectionStart = -1;
+		if (m_caller) m_caller->cursorEvent(m_cursorPos);
+	}
+
+	if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_RightArrow]))
+	{
+		if (m_cursorPos < m_input.length()) m_cursorPos++;
+		m_selectionStart = -1;
+		if (m_caller) m_caller->cursorEvent(m_cursorPos);
+	}
+
+	if (ImGui::IsMouseClicked(0) && contains(io.MousePos))
+	{
+		float font_sz = UISettings::fontSize() + 2.0f;
+		ImVec2 textPos = absolutePosition() + ImVec2(8.0f, (height() - font_sz) / 2);
+		float relX = io.MousePos.x - textPos.x;
+
+		float bestDist = 10000.0f;
+		int bestIdx = 0;
+
+		for (int i = 0; i <= m_input.length(); i++)
+		{
+			std::string sub = m_input.substr(0, i);
+			std::string cap = Encoding::cp2utf(sub);
+			float width = renderer->calculateTextSize(cap, font_sz).x;
+			float dist = fabsf(relX - width);
+			if (dist < bestDist)
+			{
+				bestDist = dist;
+				bestIdx = i;
+			}
+			else if (width > relX + 20.0f) break; // Optimization
+		}
+		m_cursorPos = bestIdx;
+		m_selectionStart = -1;
+		if (m_caller) m_caller->cursorEvent(m_cursorPos);
+	}
+
+	if (m_caller != pUI->chat()) return;
 
 	if (UI::m_pSampGuiTexture)
 	{
@@ -102,37 +261,104 @@ void InputChat::draw(ImGuiRenderer* renderer)
 		drawPart(mtx + t_lw + t_mw, mty + t_th + t_mh, t_rw, t_bh, s.x - v_w, s.y - v_w, v_w, v_w);
 	}
 
-	float font_sz = UISettings::fontSize() + 2.0f;
-	std::string display_text = m_caption + "|";
-	renderer->drawText(absolutePosition() + ImVec2(8.0f, (height() - font_sz) / 2),
-					   ImColor(1.0f, 1.0f, 1.0f), display_text, true, font_sz);
+	float font_sz = UISettings::fontSize() + 4.0f;
+	ImVec2 textPos = absolutePosition() + ImVec2(8.0f, (height() - font_sz) / 2);
+
+	// Draw selection
+	if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
+	{
+		int start = std::min(m_selectionStart, m_cursorPos);
+		int end = std::max(m_selectionStart, m_cursorPos);
+
+		std::string textBeforeStart = m_input.substr(0, start);
+		std::string textSelection = m_input.substr(start, end - start);
+
+		float startOffset = renderer->calculateTextSize(Encoding::cp2utf(textBeforeStart), font_sz).x;
+		float selWidth = renderer->calculateTextSize(Encoding::cp2utf(textSelection), font_sz).x;
+
+		renderer->drawRect(ImVec2(textPos.x + startOffset, textPos.y),
+			ImVec2(textPos.x + startOffset + selWidth, textPos.y + font_sz),
+			ImColor(255, 50, 50, 150), true);
+	}
+
+	renderer->drawText(textPos, ImColor(1.0f, 1.0f, 1.0f), m_caption, true, font_sz);
+
+	// Draw cursor
+	if (pJavaWrapper && pJavaWrapper->IsKeyboardShowing())
+	{
+		std::string textBeforeCursor = m_input.substr(0, m_cursorPos);
+		std::string captionBeforeCursor = Encoding::cp2utf(textBeforeCursor);
+		float cursorOffset = renderer->calculateTextSize(captionBeforeCursor, font_sz).x;
+
+		static float cursorAnim = 0.0f;
+		cursorAnim += ImGui::GetIO().DeltaTime;
+		if (fmodf(cursorAnim, 1.0f) < 0.5f)
+		{
+			renderer->drawRect(ImVec2(textPos.x + cursorOffset, textPos.y - 2.0f),
+				ImVec2(textPos.x + cursorOffset + 1.0f, textPos.y + font_sz + 2.0f),
+				ImColor(255, 255, 255, 255), true);
+		}
+	}
 }
 
 void InputChat::show(Widget* caller)
 {
-	if (m_caller != caller) clear();
-	this->setVisible(true);
+	// Save current text as chat draft if the previous caller was chat
+	if (m_caller == pUI->chat()) {
+		m_chatDraft = m_input;
+	}
+
+	if (m_caller != caller) {
+		m_input.clear();
+		m_caption.clear();
+		m_cursorPos = 0;
+	}
+
 	m_caller = caller;
 
+	// Restore chat draft if the new caller is chat
+	if (m_caller == pUI->chat()) {
+		m_input = m_chatDraft;
+		m_caption = Encoding::cp2utf(m_input);
+		m_cursorPos = (int)m_input.length();
+	}
+
+	this->setVisible(true);
+
+	pJavaWrapper->SetKeyboardText(m_input.c_str());
 	pJavaWrapper->ShowKeyboard();
 	pGame->EnableGameInput(false);
 }
 
 void InputChat::hide(bool deactivate)
 {
-	pJavaWrapper->HideKeyboard();
 	if (deactivate)
 	{
+		pJavaWrapper->SetKeyboardText(""); // Clear Java side on hide
+		pJavaWrapper->HideKeyboard();
 		this->setVisible(false);
-		pGame->EnableGameInput(true);
 		if (m_caller) m_caller->setActive(false);
 		m_caller = nullptr;
+		pGame->EnableGameInput(true);
+	}
+	else
+	{
+		pJavaWrapper->HideKeyboard();
 	}
 }
 
 void InputChat::send()
 {
-	if (m_caller) m_caller->keyboardEvent(m_input);
+	if (m_caller) {
+		m_caller->keyboardEvent(m_input);
+		m_caller->onSubmit();
+	}
+
+	if (m_caller == pUI->chat()) {
+		m_chatDraft.clear();
+	}
+
+	pushHistory(m_input);
 	this->hide();
 }
 
@@ -145,7 +371,20 @@ void InputChat::sendForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str)
 	buffer[v8] = 0;
 	std::string input = std::string(buffer);
 
-	if (m_caller) m_caller->keyboardEvent(input);
+	// Logika ENTER dari Gboard/Hacker's Keyboard
+	// Sinkronkan internal state sebelum submit agar tidak kosong
+	setInputString(input);
+
+	if (m_caller) {
+		m_caller->keyboardEvent(input); // Pastikan widget pemanggil (dialog) mendapat teks terbaru
+		m_caller->onSubmit();
+	}
+
+	if (m_caller == pUI->chat()) {
+		m_chatDraft.clear();
+	}
+
+	pushHistory(input);
 	hide();
 
 	free(buffer);
@@ -162,13 +401,152 @@ void InputChat::updateForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str)
 	std::string input = std::string(buffer);
 
 	setInputString(input);
+	m_selectionStart = -1;
 
-	if (m_caller && m_caller != pUI->chat()) {
-		m_caller->keyboardEvent(input);
+	if (m_caller) {
+		m_caller->keyboardEvent(input); // Restore real-time update for dialogs
+		m_caller->cursorEvent(m_cursorPos);
 	}
 
 	free(buffer);
 	pEnv->ReleaseByteArrayElements(str, elements, JNI_ABORT);
+}
+
+void InputChat::updateCursorForGB(int pos)
+{
+	if (pos >= 0 && pos <= m_input.length()) {
+		m_cursorPos = pos;
+		if (m_caller) m_caller->cursorEvent(m_cursorPos);
+	}
+}
+
+void InputChat::handleKeyStrokeForGB(int keyCode, int metaState)
+{
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (m_caller) m_caller->keyStrokeEvent(keyCode, metaState);
+
+	// Map Android KeyCodes to ImGui Keys for InputChat navigation
+	if (keyCode == 19) // KEYCODE_DPAD_UP
+	{
+		if (m_historyIdx == m_history.size()) m_currentDraft = m_input;
+		if (m_historyIdx > 0)
+		{
+			m_historyIdx--;
+			setInputString(m_history[m_historyIdx]);
+			m_cursorPos = (int)m_input.length();
+			m_selectionStart = -1;
+			if (pJavaWrapper) pJavaWrapper->SetKeyboardText(m_input.c_str());
+			if (m_caller) {
+				m_caller->keyboardEvent(m_input);
+				m_caller->cursorEvent(m_cursorPos);
+			}
+		}
+	}
+	else if (keyCode == 20) // KEYCODE_DPAD_DOWN
+	{
+		if (m_historyIdx < m_history.size())
+		{
+			m_historyIdx++;
+			if (m_historyIdx == m_history.size()) setInputString(m_currentDraft);
+			else setInputString(m_history[m_historyIdx]);
+			m_cursorPos = (int)m_input.length();
+			m_selectionStart = -1;
+			if (pJavaWrapper) pJavaWrapper->SetKeyboardText(m_input.c_str());
+			if (m_caller) {
+				m_caller->keyboardEvent(m_input);
+				m_caller->cursorEvent(m_cursorPos);
+			}
+		}
+	}
+	else if (keyCode == 21) // KEYCODE_DPAD_LEFT
+	{
+		if (m_cursorPos > 0) m_cursorPos--;
+		m_selectionStart = -1;
+		if (m_caller) m_caller->cursorEvent(m_cursorPos);
+	}
+	else if (keyCode == 22) // KEYCODE_DPAD_RIGHT
+	{
+		if (m_cursorPos < m_input.length()) m_cursorPos++;
+		m_selectionStart = -1;
+		if (m_caller) m_caller->cursorEvent(m_cursorPos);
+	}
+
+	// Handle Ctrl shortcuts from Hacker's Keyboard
+	bool ctrl = (metaState & 0x1000) != 0 || (metaState & 0x2000) != 0; // META_CTRL_ON
+	if (ctrl)
+	{
+		if (keyCode == 29) // KEYCODE_A
+		{
+			m_selectionStart = 0;
+			m_cursorPos = (int)m_input.length();
+			if (m_caller) m_caller->cursorEvent(m_cursorPos);
+		}
+		else if (keyCode == 31) // KEYCODE_C
+		{
+			if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
+			{
+				int start = std::min(m_selectionStart, m_cursorPos);
+				int len = std::abs(m_selectionStart - m_cursorPos);
+				std::string selected = m_input.substr(start, len);
+				ImGui::SetClipboardText(selected.c_str());
+			}
+		}
+		else if (keyCode == 50) // KEYCODE_V
+		{
+			const char* clipboard = ImGui::GetClipboardText();
+			if (clipboard)
+			{
+				if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
+				{
+					int start = std::min(m_selectionStart, m_cursorPos);
+					int len = std::abs(m_selectionStart - m_cursorPos);
+					m_input.erase(start, len);
+					m_cursorPos = start;
+					m_selectionStart = -1;
+				}
+				m_input.insert(m_cursorPos, clipboard);
+				m_cursorPos += strlen(clipboard);
+				m_caption = Encoding::cp2utf(m_input);
+				if (m_caller) {
+					m_caller->keyboardEvent(m_input);
+					m_caller->cursorEvent(m_cursorPos);
+				}
+			}
+		}
+		else if (keyCode == 52) // KEYCODE_X
+		{
+			if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
+			{
+				int start = std::min(m_selectionStart, m_cursorPos);
+				int len = std::abs(m_selectionStart - m_cursorPos);
+				std::string selected = m_input.substr(start, len);
+				ImGui::SetClipboardText(selected.c_str());
+				m_input.erase(start, len);
+				m_cursorPos = start;
+				m_selectionStart = -1;
+				m_caption = Encoding::cp2utf(m_input);
+				if (m_caller) {
+					m_caller->keyboardEvent(m_input);
+					m_caller->cursorEvent(m_cursorPos);
+				}
+			}
+		}
+	}
+}
+
+void InputChat::pushHistory(const std::string& str)
+{
+	if (str.empty()) return;
+	if (!m_history.empty() && m_history.back() == str)
+	{
+		m_historyIdx = (int)m_history.size();
+		return;
+	}
+
+	m_history.push_back(str);
+	if (m_history.size() > 50) m_history.erase(m_history.begin());
+	m_historyIdx = (int)m_history.size();
 }
 
 void InputChat::activateEvent(bool active)

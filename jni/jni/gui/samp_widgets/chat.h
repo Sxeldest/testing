@@ -19,6 +19,7 @@ public:
 	virtual void touchEvent(const ImVec2& pos, TouchType type) override;
 	virtual void touchPopEvent() override;
 	virtual void keyboardEvent(const std::string& input) override;
+	virtual void onSubmit() override;
 
 private:
 	void addMessage(const std::string& messsage, const ImColor& color = ImColor(1.0f, 1.0f, 1.0f));

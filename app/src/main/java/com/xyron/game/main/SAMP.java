@@ -118,8 +118,29 @@ public class SAMP extends com.xyron.game.main.GTASA implements CustomKeyboard.In
     }
     public native void onInputUpdate(byte[] str);
 
+    @Override
+    public void onCursorChanged(int pos) {
+        onCursorChangedNative(pos);
+    }
+    public native void onCursorChangedNative(int pos);
+
+    @Override
+    public void onKeyStroke(int keyCode, int metaState) {
+        onKeyStrokeNative(keyCode, metaState);
+    }
+    public native void onKeyStrokeNative(int keyCode, int metaState);
+
     public void showKeyboard() { runOnUiThread(() -> mKeyboard.ShowInputLayout()); }
     public void hideKeyboard() { runOnUiThread(() -> mKeyboard.HideInputLayout()); }
+
+    public void setKeyboardText(String text) {
+        if (mKeyboard != null) mKeyboard.setText(text);
+    }
+
+    public boolean isKeyboardShowing() {
+        if (mKeyboard != null) return mKeyboard.IsShowing();
+        return false;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

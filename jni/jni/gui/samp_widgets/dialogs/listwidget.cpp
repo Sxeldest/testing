@@ -14,7 +14,6 @@ ListWidget::ListWidget()
 
 void ListWidget::performLayout()
 {
-	// SAMP PC: Adjust item width to account for the 28px scrollbar + padding area
 	m_itemSize.x = ImMax(m_itemSize.x, this->width() - 28.0f);
 	this->setItemSize(m_itemSize);
 	ListBox::performLayout();
@@ -27,12 +26,9 @@ void ListWidget::draw(ImGuiRenderer* renderer)
 		float tw = (float)UI::m_pSampGuiTexture->raster->width;
 		float th = (float)UI::m_pSampGuiTexture->raster->height;
 
-		// SAMP PC: Background texture digambar sedikit lebih besar (Bounding Box)
-		// Area item (ListBox) akan berada di dalamnya dengan inset border
 		ImVec2 p = absolutePosition() - ImVec2(6.0f, 6.0f);
 		ImVec2 s = size() + ImVec2(12.0f, 12.0f);
 
-		// CDXUTListBox - Main
 		ImVec4 rect = UI::rectListBoxMain;
 		renderer->drawImageUV(p, p + s,
 			ImVec2(rect.x / tw, rect.y / th),
@@ -51,7 +47,7 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 	std::string s_row;
 
 	float fSize = (fontSize == 0.0f ? UISettings::fontSize() : fontSize);
-	m_itemSize.y = fSize + 2.0f; // Line spacing dirapatkan (PC Style)
+	m_itemSize.y = fSize + 2.0f;
 
 	while (std::getline(ss_data, s_row, '\n'))
 	{
@@ -90,12 +86,12 @@ void ListWidget::assemble(const std::string& data, float fontSize, bool outlined
 		ItemWidget* item = new ItemWidget();
 		this->addItem(item);
 
-		float pos_x = 5.0f; // Margin internal kiri (m_nMargin PC)
+		float pos_x = 5.0f;
 		for (int c_idx = 0; c_idx < (int)vRows[r_idx].size(); c_idx++)
 		{
 			Label* l = vRows[r_idx][c_idx];
 			item->add(l, pos_x);
-			pos_x += vColumnsWidth[c_idx] + 30.0f; // PC Style Column Gap
+			pos_x += vColumnsWidth[c_idx] + 30.0f;
 		}
 		max_width = std::max(max_width, pos_x + 10.0f);
 	}
@@ -125,7 +121,6 @@ void ListWidget::ItemWidget::draw(ImGuiRenderer* renderer)
 {
 	if (this->selected())
 	{
-		// SAMP PC: Selection is Red (B92228), and no texture
 		renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xB9, 0x22, 0x28, 255), true);
 	}
 	ListBoxItem::draw(renderer);

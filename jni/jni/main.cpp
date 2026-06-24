@@ -460,6 +460,14 @@ extern "C" {
 	{
 		if(pUI) pUI->inputChat()->updateForGB(pEnv, thiz, str);
 	}
+	JNIEXPORT void JNICALL Java_com_xyron_game_main_SAMP_onCursorChangedNative(JNIEnv *pEnv, jobject thiz, jint pos)
+	{
+		if(pUI) pUI->inputChat()->updateCursorForGB(pos);
+	}
+	JNIEXPORT void JNICALL Java_com_xyron_game_main_SAMP_onKeyStrokeNative(JNIEnv *pEnv, jobject thiz, jint keyCode, jint metaState)
+	{
+		if(pUI) pUI->inputChat()->handleKeyStrokeForGB(keyCode, metaState);
+	}
 	JNIEXPORT void JNICALL Java_com_xyron_game_main_SAMP_onEventBackPressed(JNIEnv *pEnv, jobject thiz)
 	{
 		OnEventBackPressedBridge();

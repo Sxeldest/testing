@@ -82,6 +82,9 @@ public:
 	virtual void focuseEvent(bool event) {}
 	/* ������ ����� */
 	virtual void keyboardEvent(const std::string& input) {}
+	virtual void cursorEvent(int pos) {}
+	virtual void keyStrokeEvent(int keyCode, int metaState) {}
+	virtual void onSubmit() {}
 
 protected:
 	virtual ~Widget();

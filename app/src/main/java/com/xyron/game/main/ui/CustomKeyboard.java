@@ -26,6 +26,8 @@ public class CustomKeyboard {
     public interface InputListener {
         void OnInputEnd(String str);
         void OnInputUpdate(String str);
+        void onCursorChanged(int pos);
+        void onKeyStroke(int keyCode, int metaState);
     }
 
     private LinearLayout mInputLayout = null;
@@ -114,6 +116,25 @@ public class CustomKeyboard {
             public void afterTextChanged(Editable s) {}
         });
 
+        mInputEt.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override
+            public void sendAccessibilityEvent(View host, int eventType) {
+                super.sendAccessibilityEvent(host, eventType);
+                if (eventType == android.view.accessibility.AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED) {
+                    if (mIsShowing) {
+                        ((InputListener) mContext).onCursorChanged(mInputEt.getSelectionStart());
+                    }
+                }
+            }
+        });
+
+        mInputEt.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                ((InputListener) mContext).onKeyStroke(keyCode, event.getMetaState());
+            }
+            return false;
+        });
+
         mInputEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -146,11 +167,6 @@ public class CustomKeyboard {
         mIsShowing = true;
         mCurrentHistoryMessage = 0;
 
-        if (mSavedInput != null) {
-            mInputEt.setText(mSavedInput);
-            mInputEt.setSelection(mInputEt.getText().length());
-        }
-
         applyBottomOffset(mLastKeyboardHeight);
         
         // PC Style: Hide the Android input bar so typing goes "directly" to SAMP UI
@@ -161,7 +177,9 @@ public class CustomKeyboard {
 
         mInputEt.postDelayed(() -> {
             mInputEt.requestFocus();
-            mInputEt.setSelection(mInputEt.getText() != null ? mInputEt.getText().length() : 0);
+            if (mInputEt.getText() != null) {
+                mInputEt.setSelection(mInputEt.getText().length());
+            }
             InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
                 imm.showSoftInput(mInputEt, InputMethodManager.SHOW_IMPLICIT);
@@ -171,10 +189,6 @@ public class CustomKeyboard {
 
     public void HideInputLayout() {
         mCurrentHistoryMessage = 0;
-
-        if (mInputEt != null && mInputEt.getEditableText() != null) {
-            mSavedInput = mInputEt.getEditableText().toString();
-        }
 
         View currentFocus = mContext.getCurrentFocus();
         if (currentFocus != null) {
@@ -189,6 +203,15 @@ public class CustomKeyboard {
             mInputLayout.setVisibility(View.GONE);
         }
         mIsShowing = false;
+    }
+
+    public void setText(String text) {
+        mContext.runOnUiThread(() -> {
+            if (mInputEt != null) {
+                mInputEt.setText(text);
+                mInputEt.setSelection(mInputEt.getText().length());
+            }
+        });
     }
 
     private void applyBottomOffset(int keyboardHeight) {
