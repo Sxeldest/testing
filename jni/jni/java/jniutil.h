@@ -28,6 +28,7 @@ public:
     void ShowKeyboard();
     void HideKeyboard();
     void SetKeyboardText(const char* text);
+    void SetKeyboardSelection(int start, int end);
     bool IsKeyboardShowing();
 
 	void exitGame();
@@ -62,6 +63,7 @@ public:
     jmethodID s_showInputLayout;
     jmethodID s_hideInputLayout;
     jmethodID s_setKeyboardText;
+    jmethodID s_setKeyboardSelection;
     jmethodID s_isKeyboardShowing;
 	jmethodID s_exitGame;
 	jmethodID s_showEditObject;

@@ -22,6 +22,14 @@ public class CustomEditText extends EditText {
     }
 
     @Override
+    protected void onSelectionChanged(int selStart, int selEnd) {
+        super.onSelectionChanged(selStart, selEnd);
+        if (mContext instanceof SAMP) {
+            ((SAMP) mContext).onCursorChanged(selStart, selEnd);
+        }
+    }
+
+    @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             ((SAMP)mContext).onEventBackPressed();

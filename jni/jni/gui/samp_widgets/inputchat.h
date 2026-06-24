@@ -23,7 +23,7 @@ public:
 
 	void sendForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str);
 	void updateForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str);
-	void updateCursorForGB(int pos);
+	void updateCursorForGB(int start, int end);
 	void handleKeyStrokeForGB(int keyCode, int metaState);
 
 	virtual void performLayout() override;

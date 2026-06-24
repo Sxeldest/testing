@@ -26,7 +26,7 @@ public class CustomKeyboard {
     public interface InputListener {
         void OnInputEnd(String str);
         void OnInputUpdate(String str);
-        void onCursorChanged(int pos);
+        void onCursorChanged(int start, int end);
         void onKeyStroke(int keyCode, int metaState);
     }
 
@@ -46,9 +46,14 @@ public class CustomKeyboard {
     private int mCurrentHistoryMessage = 0;
     private int mLastKeyboardHeight = 0;
     private final int mBaseBottomMarginPx;
+    private boolean mIsUpdatingProgrammatically = false;
 
     public boolean IsShowing() {
         return mIsShowing;
+    }
+
+    public boolean isUpdatingProgrammatically() {
+        return mIsUpdatingProgrammatically;
     }
 
     public CustomKeyboard(Activity act) {
@@ -78,12 +83,11 @@ public class CustomKeyboard {
                 mCurrentHistoryMessage = 0;
             }
             if (mCurrentHistoryMessage <= 0) {
-                mInputEt.setText("");
+                setText("");
                 return;
             }
 
-            mInputEt.setText(mInputHistory.get(mCurrentHistoryMessage - 1));
-            mInputEt.setSelection(mInputEt.getText().length());
+            setText(mInputHistory.get(mCurrentHistoryMessage - 1));
         });
 
         mButtonHistoryNext.setOnClickListener(view -> {
@@ -95,8 +99,7 @@ public class CustomKeyboard {
                 return;
             }
 
-            mInputEt.setText(mInputHistory.get(mCurrentHistoryMessage - 1));
-            mInputEt.setSelection(mInputEt.getText().length());
+            setText(mInputHistory.get(mCurrentHistoryMessage - 1));
         });
 
         mButtonSend.setOnClickListener(view -> submitInput());
@@ -107,7 +110,7 @@ public class CustomKeyboard {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mIsShowing) {
+                if (mIsShowing && !mIsUpdatingProgrammatically) {
                     ((InputListener) mContext).OnInputUpdate(s.toString());
                 }
             }
@@ -116,21 +119,13 @@ public class CustomKeyboard {
             public void afterTextChanged(Editable s) {}
         });
 
-        mInputEt.setAccessibilityDelegate(new View.AccessibilityDelegate() {
-            @Override
-            public void sendAccessibilityEvent(View host, int eventType) {
-                super.sendAccessibilityEvent(host, eventType);
-                if (eventType == android.view.accessibility.AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED) {
-                    if (mIsShowing) {
-                        ((InputListener) mContext).onCursorChanged(mInputEt.getSelectionStart());
-                    }
-                }
-            }
-        });
-
         mInputEt.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 ((InputListener) mContext).onKeyStroke(keyCode, event.getMetaState());
+                // Consume Up/Down keys to prevent EditText from moving cursor to pos 0
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    return true;
+                }
             }
             return false;
         });
@@ -208,8 +203,23 @@ public class CustomKeyboard {
     public void setText(String text) {
         mContext.runOnUiThread(() -> {
             if (mInputEt != null) {
+                mIsUpdatingProgrammatically = true;
                 mInputEt.setText(text);
                 mInputEt.setSelection(mInputEt.getText().length());
+                mIsUpdatingProgrammatically = false;
+            }
+        });
+    }
+
+    public void setSelection(int start, int end) {
+        mContext.runOnUiThread(() -> {
+            if (mInputEt != null) {
+                mIsUpdatingProgrammatically = true;
+                int len = mInputEt.getText().length();
+                int s = Math.max(0, Math.min(start, len));
+                int e = Math.max(0, Math.min(end, len));
+                mInputEt.setSelection(s, e);
+                mIsUpdatingProgrammatically = false;
             }
         });
     }

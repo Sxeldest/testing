@@ -119,10 +119,10 @@ public class SAMP extends com.xyron.game.main.GTASA implements CustomKeyboard.In
     public native void onInputUpdate(byte[] str);
 
     @Override
-    public void onCursorChanged(int pos) {
-        onCursorChangedNative(pos);
+    public void onCursorChanged(int start, int end) {
+        onCursorChangedNative(start, end);
     }
-    public native void onCursorChangedNative(int pos);
+    public native void onCursorChangedNative(int start, int end);
 
     @Override
     public void onKeyStroke(int keyCode, int metaState) {
@@ -135,6 +135,10 @@ public class SAMP extends com.xyron.game.main.GTASA implements CustomKeyboard.In
 
     public void setKeyboardText(String text) {
         if (mKeyboard != null) mKeyboard.setText(text);
+    }
+
+    public void setKeyboardSelection(int start, int end) {
+        if (mKeyboard != null) mKeyboard.setSelection(start, end);
     }
 
     public boolean isKeyboardShowing() {
