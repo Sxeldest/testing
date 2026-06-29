@@ -46,6 +46,7 @@ public class SAMP extends com.xyron.game.main.GTASA implements CustomKeyboard.In
                             .build()
             );
             System.loadLibrary("SAMP");
+            System.loadLibrary("AML");
         } catch (Throwable e) {
             Log.e(TAG, "Library load failed", e);
         }
