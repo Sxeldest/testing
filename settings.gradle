@@ -7,3 +7,4 @@ pluginManagement {
 }
 rootProject.name = "Nero SA-MP"
 include ':app'
+include ':prdownloader'
