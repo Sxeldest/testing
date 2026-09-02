@@ -1,8 +1,11 @@
 #pragma once
 
-#include "../gui/gui.h"
+#include "../game/common.h"
+#include <string>
 
-#pragma pack(push, 1)
+typedef unsigned short PLAYERID;
+class ImGuiRenderer;
+
 struct PlayerBubbleStruct
 {
     char szText[256];
@@ -11,23 +14,19 @@ struct PlayerBubbleStruct
     uint32_t dwLineCount;
     uint32_t uiColor;
 };
-#pragma pack(pop)
 
-class CPlayerBubblePool
+class ChatBubble
 {
 public:
-    CPlayerBubblePool();
-    ~CPlayerBubblePool();
+    ChatBubble();
+    ~ChatBubble();
 
-    PlayerBubbleStruct *New(PLAYERID playerId, const char *text, uint32_t color, float distance, uint32_t time);
+    void New(PLAYERID playerId, const char *text, uint32_t color, float distance, uint32_t time);
     void Delete(PLAYERID playerId);
 
     void Render(ImGuiRenderer* renderer);
-    
 
 private:
-    void Draw(ImGuiRenderer* renderer);
     PlayerBubbleStruct *m_pPlayerBubble[MAX_PLAYERS];
     bool m_bSlotState[MAX_PLAYERS];
-
 };

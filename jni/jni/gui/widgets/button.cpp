@@ -19,14 +19,10 @@ Button::Button(const std::string& caption, float font_size)
 void Button::performLayout()
 {
 	float padding = UISettings::padding();
-
 	m_label->performLayout();
-
-	// SAMP PC: Standard button height is 30px
 	float btnHeight = 30.0f;
 	this->setSize(ImVec2(m_label->size().x + padding * 2, btnHeight));
 
-	// Centering with a slightly larger offset to fix "too low" appearance
 	ImVec2 labelPos = (size() - m_label->size()) / 2;
 	labelPos.y -= 1.5f;
 	m_label->setPosition(labelPos);
@@ -39,7 +35,6 @@ void Button::draw(ImGuiRenderer* renderer)
 		float tw = (float)UI::m_pSampGuiTexture->raster->width;
 		float th = (float)UI::m_pSampGuiTexture->raster->height;
 
-		// Opacity tetap di 200 sesuai permintaan
 		ImColor currentTint = focused() ? m_colorFocused : ImColor(255, 255, 255, 200);
 
 		m_label->setColor(ImColor(255, 255, 255, 255));
@@ -60,8 +55,6 @@ void Button::touchPopEvent()
 	if (m_callback) m_callback();
 }
 
-
-//============== Custom Button=========================//
 CButton::CButton(const std::string& caption, float font_size)
 {
 	m_callback = nullptr;
@@ -113,9 +106,7 @@ void CButton::touchPopEvent()
 {
 	if (m_callback) m_callback();
 }
-//=======================================//
 
-//======== >> Button ====================//
 OButton::OButton(const std::string& caption, float font_size)
 {
 	m_callback = nullptr;
@@ -144,7 +135,6 @@ void OButton::draw(ImGuiRenderer* renderer)
 {
 	if (OpenButton == true)
 	{
-		//Set >> to hide position
 		this->setPosition(ImVec2(-150.0f, -150.0f));
 		return;
 	}
@@ -166,13 +156,9 @@ void OButton::draw(ImGuiRenderer* renderer)
 	}
 
 	Widget::draw(renderer);
-
-	//Set >> to position
 	this->setPosition(ImVec2(15.0f, 15.0f));
 }
 
-void OButton::touchPopEvent()
-{
+void OButton::touchPopEvent() {
 	if (m_callback) m_callback();
 }
-//======================================//

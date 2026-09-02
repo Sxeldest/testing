@@ -27,11 +27,8 @@ void TabListWidget::draw(ImGuiRenderer* renderer)
 		float tw = (float)UI::m_pSampGuiTexture->raster->width;
 		float th = (float)UI::m_pSampGuiTexture->raster->height;
 
-		// SAMP PC: Background texture digambar sedikit lebih besar (Bounding Box terluar)
 		ImVec2 p = absolutePosition() - ImVec2(6.0f, 6.0f);
 		ImVec2 s = size() + ImVec2(12.0f, 12.0f);
-
-		// CDXUTListBox - Main
 		ImVec4 rect = UI::rectListBoxMain;
 		renderer->drawImageUV(p, p + s,
 			ImVec2(rect.x / tw, rect.y / th),
@@ -63,7 +60,7 @@ std::vector<float> TabListWidget::assemble(const std::string& data, const std::v
 	std::string s_row;
 
 	float fSize = fontSize == 0.0f ? UISettings::fontSize() : fontSize;
-	m_itemSize.y = fSize + 2.0f; // Line spacing dirapatkan (PC Style)
+	m_itemSize.y = fSize + 2.0f;
 
 	while (std::getline(ss_data, s_row, '\n'))
 	{
@@ -118,10 +115,10 @@ std::vector<float> TabListWidget::assemble(const std::string& data, const std::v
 			}
 		}
 
-		float current_x = 5.0f; // PC Margin (5px)
+		float current_x = 5.0f;
 		for(float w : vColumnsWidth) {
 			columnOffsets.push_back(current_x);
-			current_x += w + 30.0f; // PC Style Column Gap (Increased)
+			current_x += w + 30.0f;
 		}
 
 		for (int r_idx = (skipFirstRow ? 1 : 0); r_idx < (int)vRows.size(); r_idx++)
@@ -166,7 +163,6 @@ void TabListWidget::ItemWidget::draw(ImGuiRenderer* renderer)
 {
 	if (this->selected())
 	{
-		// SAMP PC: Selection is Red (B92228), and no texture
 		renderer->drawRect(absolutePosition(), absolutePosition() + size(), ImColor(0xB9, 0x22, 0x28, 255), true);
 	}
 	ListBoxItem::draw(renderer);

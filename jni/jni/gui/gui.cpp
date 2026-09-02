@@ -3,7 +3,7 @@
 #include "../net/netgame.h"
 #include "gui.h"
 #include "../playertags.h"
-#include "../net/playerbubblepool.h"
+#include "../net/chatbubble.h"
 
 // voice
 #include "../voice_new/Plugin.h"
@@ -22,7 +22,6 @@ extern CJavaWrapper* pJavaWrapper;
 
 RwTexture* UI::m_pSampGuiTexture = nullptr;
 
-// Initialize PC Style coordinates (Pixels from sampgui.png)
 ImVec4 UI::rectButtonNormal = ImVec4(0.0f, 0.5f, 136.0f, 54.5f);
 ImVec4 UI::rectListBoxMain  = ImVec4(13.0f, 124.0f, 241.0f, 265.0f);
 ImVec4 UI::rectListBoxSelection = ImVec4(17.0f, 269.0f, 241.0f, 287.0f);
@@ -58,7 +57,6 @@ bool UI::initialize()
 	this->addChild(m_chat);
 	m_chat->setFixedSize(UISettings::chatSize());
 	m_chat->setPosition(UISettings::chatPos());
-	m_chat->setItemSize(UISettings::chatItemSize());
 	m_chat->setVisible(true);
 
 	m_buttonPanel = new ButtonPanel();
@@ -173,7 +171,6 @@ void UI::touchEvent(const ImVec2& pos, TouchType type)
 			return;
 		}
 
-		// Jika menekan area caller (misal Chat area) saat input aktif
 		if (m_inputChat->getCaller() && m_inputChat->getCaller()->contains(pos)) {
 			if (type == TouchType::push && pJavaWrapper && !pJavaWrapper->IsKeyboardShowing()) {
 				pJavaWrapper->ShowKeyboard();
@@ -183,14 +180,13 @@ void UI::touchEvent(const ImVec2& pos, TouchType type)
 			return;
 		}
 
-		// Jika menekan di luar area InputChat (area kosong)
 		if (type == TouchType::push) {
 			if (pJavaWrapper && pJavaWrapper->IsKeyboardShowing()) {
-				pJavaWrapper->HideKeyboard(); // Hanya sembunyikan keyboard
+				pJavaWrapper->HideKeyboard();
 			} else {
-				m_inputChat->hide(true); // Sembunyikan input chat dan scrollbar (deactivate)
+				m_inputChat->hide(true);
 			}
-			return; // Consume event agar tidak langsung re-open keyboard
+			return;
 		}
 		return;
 	}

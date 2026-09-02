@@ -13,12 +13,10 @@ extern CSettings* pSettings;
 ImVec2 UISettings::m_baseSize = ImVec2(640.0f, 480.0f);
 ImVec2 UISettings::m_scaleFactor = ImVec2(1.0f, 1.0f);
 
-/* font (PC standard) */
+/* font */
 float UISettings::m_fontSize = 16.0f;
 float UISettings::m_smallFontSize = 14.0f;
 float UISettings::m_outlineSize = 1.0f;
-
-/* ////////////////// sizes ////////////////// */
 
 /* widgets */
 float UISettings::m_padding = 10.0f;
@@ -33,7 +31,7 @@ ImVec2 UISettings::m_splashscreenLogoSize = ImVec2(640.0f, 480.0f);
 ImVec2 UISettings::m_splashScreenPBarPos = ImVec2(100.0f, 460.0f);
 ImVec2 UISettings::m_splashScreenPBarSize = ImVec2(440.0f, 10.0f);
 
-/* chat (PC standard) */
+/* chat */
 int UISettings::m_chatDispMesssages = 30;
 int UISettings::m_chatMaxMessages = 10;
 ImVec2 UISettings::m_chatPos = ImVec2(45.0f, 10.0f);
@@ -47,8 +45,8 @@ ImVec2 UISettings::m_spawnSize = ImVec2(240.0f, 50.0f);
 /* nametag */
 ImVec2 UISettings::m_nametagBarSize = ImVec2(40.0f, 5.0f);
 
-/* dialog (EXACT PC VALUES FROM CDialog.cpp) */
-ImVec2 UISettings::m_dialogButtonSize = ImVec2(100.0f, 30.0f); // m_i20, m_i24
+/* dialog */
+ImVec2 UISettings::m_dialogButtonSize = ImVec2(100.0f, 30.0f);
 ImVec2 UISettings::m_dialogMinSize = ImVec2(230.0f, 150.0f);
 ImVec2 UISettings::m_dialogMaxSize = ImVec2(2000.0f, 2000.0f);
 float UISettings::m_dialogTitleHeight = 20.0f;
@@ -64,12 +62,12 @@ ImVec2 UISettings::m_buttonVoicePos = ImVec2(500.0f, 180.0f);
 ImVec2 UISettings::m_buttonVoiceSize = ImVec2(55.0f, 80.0f);
 
 /* scoreboard */
-ImVec2 UISettings::m_scoreboardSize = ImVec2(640.0f, 480.0f); // Standard PC Default
-float UISettings::m_scoreboardHeaderHeight = 60.0f; // Standard PC Header
+ImVec2 UISettings::m_scoreboardSize = ImVec2(640.0f, 480.0f);
+float UISettings::m_scoreboardHeaderHeight = 60.0f;
 
-/* ////////////////// colors ////////////////// */
-ImColor UISettings::m_buttonColor = ImColor(5, 5, 5, 220); // Menyatu dengan background dialog
-ImColor UISettings::m_buttonFocusedColor = ImColor(0xB9, 0x22, 0x28, 255); // Merah PC saat ditekan
+/* colors */
+ImColor UISettings::m_buttonColor = ImColor(5, 5, 5, 220);
+ImColor UISettings::m_buttonFocusedColor = ImColor(0xB9, 0x22, 0x28, 255);
 ImColor UISettings::m_inputChatBackgroundColor = ImColor(0, 0, 0, 150);
 ImColor UISettings::m_dialogBackgroundColor = ImColor(5, 5, 5, 220);
 ImColor UISettings::m_dialogTitleBackgroundColor = ImColor(5, 5, 5, 220);
@@ -77,7 +75,7 @@ ImColor UISettings::m_scoreboardBackgroundColor = ImColor(5, 5, 5, 220);
 
 void UISettings::Initialize(const ImVec2& display_size)
 {
-	m_scaleFactor = ImVec2(1.0f, 1.0f); // Disable scaling for PC-like absolute sizes
+	m_scaleFactor = ImVec2(1.0f, 1.0f);
 
 	if (pSettings)
 	{

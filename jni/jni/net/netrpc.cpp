@@ -1017,14 +1017,14 @@ void HideActor(RPCParameters* rpcParams)
 	pActorPool->Delete(ActorID);
 }
 
-void ChatBubble(RPCParameters* rpcParams)
+void ScrChatBubble(RPCParameters* rpcParams)
 {
 	Log::traceLastFunc("RPC: ChatBubble");
 
 	unsigned char* Data = reinterpret_cast<unsigned char*>(rpcParams->input);
 	int iBitLength = rpcParams->numberOfBitsOfData;
 
-	CPlayerBubblePool* pPlayerBubblePool = pNetGame->GetPlayerBubblePool();
+	ChatBubble* pPlayerBubblePool = pNetGame->GetPlayerBubblePool();
 	if (pPlayerBubblePool == nullptr) return;
 
 	RakNet::BitStream bsData(Data, (iBitLength / 8) + 1, false);
@@ -1093,7 +1093,7 @@ void RegisterRPCs(RakClientInterface *pRakClient)
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_RequestSpawn, RequestSpawn);
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ShowActor, ShowActor);
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_HideActor, HideActor);
-	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ChatBubble, ChatBubble);
+	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ChatBubble, ScrChatBubble);
 }
 
 void UnregisterRPCs(RakClientInterface *pRakClient)

@@ -291,9 +291,6 @@ void ApplyGlobalPatches()
 	ARMHook::writeMemory(g_libGTASA + 0x5EABE8 + 53, (uintptr_t)"      ", 6);
 	ARMHook::writeMemory(g_libGTASA + 0x5EABE8 + 99, (uintptr_t)"      ", 6);*/
 
-	// gamepad fix?
-	ARMHook::makeRET(g_libGTASA + 0x28CC04);
-
 	// lower threads sleeping timers p.s. killman
 	//ARMHook::writeMemory(g_libGTASA + 0x1D248E, (uintptr_t)"\x08", 1);
 	//ARMHook::writeMemory(g_libGTASA + 0x266D3A, (uintptr_t)"\x08", 1);

@@ -47,14 +47,12 @@ ListBox::Panel::Panel()
 
 void ListBox::Panel::performLayout()
 {
-	/* ��������� ��� �������� */
 	for (auto c : children())
 	{
 		c->setFixedSize(m_itemSize);
 		c->performLayout();
 	}
 
-	/* ��������� �������� */
 	ImVec2 item_pos = ImVec2(0.0f, 0.0f);
 
 	for (auto c : children())

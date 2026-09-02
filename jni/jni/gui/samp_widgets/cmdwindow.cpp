@@ -85,7 +85,6 @@ void InputChat::draw(ImGuiRenderer* renderer)
 
     bool ctrl = io.KeyCtrl;
 
-    // History Navigation
     if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_UpArrow]))
     {
         if (m_historyIdx == m_history.size()) m_currentDraft = m_input;
@@ -120,7 +119,6 @@ void InputChat::draw(ImGuiRenderer* renderer)
         }
     }
 
-    // Shortcuts
     if (ctrl)
     {
         if (ImGui::IsKeyPressed(io.KeyMap[ImGuiKey_A]))
@@ -145,7 +143,6 @@ void InputChat::draw(ImGuiRenderer* renderer)
             const char* clipboard = ImGui::GetClipboardText();
             if (clipboard)
             {
-                // Delete selection first
                 if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
                 {
                     int start = std::min(m_selectionStart, m_cursorPos);
@@ -227,7 +224,7 @@ void InputChat::draw(ImGuiRenderer* renderer)
                 bestDist = dist;
                 bestIdx = i;
             }
-            else if (width > relX + 20.0f) break; // Optimization
+            else if (width > relX + 20.0f) break;
         }
         m_cursorPos = bestIdx;
         m_selectionStart = -1;
@@ -276,7 +273,6 @@ void InputChat::draw(ImGuiRenderer* renderer)
     float font_sz = UISettings::fontSize() + 4.0f;
     ImVec2 textPos = absolutePosition() + ImVec2(8.0f, (height() - font_sz) / 2);
 
-    // Draw selection
     if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
     {
         int start = std::min(m_selectionStart, m_cursorPos);
@@ -295,7 +291,6 @@ void InputChat::draw(ImGuiRenderer* renderer)
 
     renderer->drawText(textPos, ImColor(1.0f, 1.0f, 1.0f), m_caption, true, font_sz);
 
-    // Draw cursor
     if (pJavaWrapper && pJavaWrapper->IsKeyboardShowing())
     {
         std::string textBeforeCursor = m_input.substr(0, m_cursorPos);
@@ -315,7 +310,6 @@ void InputChat::draw(ImGuiRenderer* renderer)
 
 void InputChat::show(Widget* caller)
 {
-    // Save current text as chat draft if the previous caller was chat
     if (m_caller == pUI->chat()) {
         m_chatDraft = m_input;
     }
@@ -328,7 +322,6 @@ void InputChat::show(Widget* caller)
 
     m_caller = caller;
 
-    // Restore chat draft if the new caller is chat
     if (m_caller == pUI->chat()) {
         m_input = m_chatDraft;
         m_caption = Encoding::cp2utf(m_input);
@@ -346,7 +339,7 @@ void InputChat::hide(bool deactivate)
 {
     if (deactivate)
     {
-        pJavaWrapper->SetKeyboardText(""); // Clear Java side on hide
+        pJavaWrapper->SetKeyboardText("");
         pJavaWrapper->HideKeyboard();
         this->setVisible(false);
         if (m_caller) m_caller->setActive(false);
@@ -383,12 +376,10 @@ void InputChat::sendForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str)
     buffer[v8] = 0;
     std::string input = std::string(buffer);
 
-    // Logika ENTER dari Gboard/Hacker's Keyboard
-    // Sinkronkan internal state sebelum submit agar tidak kosong
     setInputString(input);
 
     if (m_caller) {
-        m_caller->keyboardEvent(input); // Pastikan widget pemanggil (dialog) mendapat teks terbaru
+        m_caller->keyboardEvent(input);
         m_caller->onSubmit();
     }
 
@@ -418,7 +409,7 @@ void InputChat::updateForGB(JNIEnv *pEnv, jobject thiz, jbyteArray str)
     m_selectionStart = -1;
 
     if (m_caller) {
-        m_caller->keyboardEvent(input); // Restore real-time update for dialogs
+        m_caller->keyboardEvent(input);
         m_caller->cursorEvent(m_cursorPos);
     }
 
@@ -446,8 +437,7 @@ void InputChat::handleKeyStrokeForGB(int keyCode, int metaState)
 
     if (m_caller) m_caller->keyStrokeEvent(keyCode, metaState);
 
-    // Map Android KeyCodes to ImGui Keys for InputChat navigation
-    if (keyCode == 19) // KEYCODE_DPAD_UP
+    if (keyCode == 19)
     {
         if (m_historyIdx == m_history.size()) m_currentDraft = m_input;
         if (m_historyIdx > 0)
@@ -463,7 +453,7 @@ void InputChat::handleKeyStrokeForGB(int keyCode, int metaState)
             }
         }
     }
-    else if (keyCode == 20) // KEYCODE_DPAD_DOWN
+    else if (keyCode == 20)
     {
         if (m_historyIdx < m_history.size())
         {
@@ -479,14 +469,14 @@ void InputChat::handleKeyStrokeForGB(int keyCode, int metaState)
             }
         }
     }
-    else if (keyCode == 21) // KEYCODE_DPAD_LEFT
+    else if (keyCode == 21)
     {
         if (m_cursorPos > 0) m_cursorPos--;
         m_selectionStart = -1;
         if (pJavaWrapper) pJavaWrapper->SetKeyboardSelection(m_cursorPos, m_cursorPos);
         if (m_caller) m_caller->cursorEvent(m_cursorPos);
     }
-    else if (keyCode == 22) // KEYCODE_DPAD_RIGHT
+    else if (keyCode == 22)
     {
         if (m_cursorPos < m_input.length()) m_cursorPos++;
         m_selectionStart = -1;
@@ -494,18 +484,17 @@ void InputChat::handleKeyStrokeForGB(int keyCode, int metaState)
         if (m_caller) m_caller->cursorEvent(m_cursorPos);
     }
 
-    // Handle Ctrl shortcuts from Hacker's Keyboard
-    bool ctrl = (metaState & 0x1000) != 0 || (metaState & 0x2000) != 0; // META_CTRL_ON
+    bool ctrl = (metaState & 0x1000) != 0 || (metaState & 0x2000) != 0;
     if (ctrl)
     {
-        if (keyCode == 29) // KEYCODE_A
+        if (keyCode == 29)
         {
             m_selectionStart = 0;
             m_cursorPos = (int)m_input.length();
             if (pJavaWrapper) pJavaWrapper->SetKeyboardSelection(0, m_cursorPos);
             if (m_caller) m_caller->cursorEvent(m_cursorPos);
         }
-        else if (keyCode == 31) // KEYCODE_C
+        else if (keyCode == 31)
         {
             if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
             {
@@ -515,7 +504,7 @@ void InputChat::handleKeyStrokeForGB(int keyCode, int metaState)
                 ImGui::SetClipboardText(selected.c_str());
             }
         }
-        else if (keyCode == 50) // KEYCODE_V
+        else if (keyCode == 50)
         {
             const char* clipboard = ImGui::GetClipboardText();
             if (clipboard)
@@ -541,7 +530,7 @@ void InputChat::handleKeyStrokeForGB(int keyCode, int metaState)
                 }
             }
         }
-        else if (keyCode == 52) // KEYCODE_X
+        else if (keyCode == 52)
         {
             if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
             {

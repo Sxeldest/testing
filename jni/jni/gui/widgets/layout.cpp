@@ -15,7 +15,6 @@ void Layout::performLayout()
 	int itemCount = children().size();
 	ImVec2 itemSize = size() - ImVec2(m_paddingLeft + m_paddingRight, m_paddingTop + m_paddingBottom);
 
-	// ������������ ������� ���������, ��� ������� �� ������ ������
 	for (auto c : children())
 	{
 		if (m_orientation == Orientation::HORIZONTAL)
@@ -36,7 +35,6 @@ void Layout::performLayout()
 		}
 	}
 
-	// ������������ ������ ��������� � ������ spacing
 	if (m_orientation == Orientation::HORIZONTAL)
 	{
 		itemSize.x -= m_spacing * (children().size() - 1);
@@ -50,7 +48,6 @@ void Layout::performLayout()
 		else itemSize.y = 0;
 	}
 
-	// ��������� ������
 	ImVec2 curPos = ImVec2(m_paddingLeft, m_paddingTop);
 
 	for (auto c : children())

@@ -3,13 +3,14 @@
 #include "label.h"
 
 
-Label::Label(const std::string& text, const ImColor& color, bool outlined, float font_size)
+Label::Label(const std::string& text, const ImColor& color, bool outlined, float font_size, bool bold_outline)
 	: Widget()
 {
 	m_text = text;
 	m_color = color;
 	m_outlined = outlined;
 	m_fontSize = font_size;
+	m_boldOutline = bold_outline;
 }
 void Label::setText(const std::string& text)
 {
@@ -25,7 +26,7 @@ void Label::performLayout()
 
 void Label::draw(ImGuiRenderer* renderer)
 {
-	renderer->drawText(absolutePosition(), m_color, m_text, m_outlined, m_fontSize);
+	renderer->drawText(absolutePosition(), m_color, m_text, m_outlined, m_fontSize, nullptr, m_boldOutline);
 	Widget::draw(renderer);
 }
 
@@ -47,7 +48,6 @@ ImVec2 Label::calculateTextSize(const std::string& text) const
 		{
 			if (text_cur != text_start)
 			{
-				// текст до колор-кода
 				ImVec2 sz = calculateTextSize(text_start, text_cur);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -60,13 +60,11 @@ ImVec2 Label::calculateTextSize(const std::string& text) const
 		{
 			if (text_cur != text_start)
 			{
-				// текст до \n
 				ImVec2 sz = calculateTextSize(text_start, text_cur);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
 			}
 
-			// обновляем text_size
 			text_size.x = ImMax(text_size.x, cur_size.x);
 			cur_size.y += font_size;
 			cur_size.x = 0.0f;
@@ -77,7 +75,6 @@ ImVec2 Label::calculateTextSize(const std::string& text) const
 		{
 			if (text_cur != text_start)
 			{
-				// текст до \t
 				ImVec2 sz = calculateTextSize(text_start, text_cur);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -92,7 +89,6 @@ ImVec2 Label::calculateTextSize(const std::string& text) const
 
 	if (text_cur != text_start)
 	{
-		// текст без форматирования
 		ImVec2 sz = calculateTextSize(text_start, text_cur);
 		cur_size.x += sz.x;
 		if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -108,11 +104,7 @@ ImVec2 Label::calculateTextSize(const char* begin, const char* end) const
 	return font->CalcTextSizeA(m_fontSize == 0.0f ? font->FontSize : m_fontSize, FLT_MAX, 0.0f, begin, end);
 }
 
-
-
-//LabelImage
-
-LabelImage::LabelImage(const std::string& text, const ImColor& color, bool outlined, float font_size)
+LabelImage::LabelImage(const std::string& text, const ImColor& color, bool outlined, float font_size, bool bold_outline)
 	: Widget()
 {
 	//m_text = text;
@@ -121,6 +113,7 @@ LabelImage::LabelImage(const std::string& text, const ImColor& color, bool outli
 	m_color = color;
 	m_outlined = outlined;
 	m_fontSize = font_size;
+	m_boldOutline = bold_outline;
 }
 void LabelImage::setText(const std::string& text)
 {
@@ -136,7 +129,7 @@ void LabelImage::performLayout()
 
 void LabelImage::draw(ImGuiRenderer* renderer)
 {
-	renderer->drawText(absolutePosition(), m_color, m_text, m_outlined, m_fontSize);
+	renderer->drawText(absolutePosition(), m_color, m_text, m_outlined, m_fontSize, nullptr, m_boldOutline);
 	Widget::draw(renderer);
 }
 
@@ -158,7 +151,6 @@ ImVec2 LabelImage::calculateTextSize(const std::string& text) const
 		{
 			if (text_cur != text_start)
 			{
-				// текст до колор-кода
 				ImVec2 sz = calculateTextSize(text_start, text_cur);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -171,13 +163,11 @@ ImVec2 LabelImage::calculateTextSize(const std::string& text) const
 		{
 			if (text_cur != text_start)
 			{
-				// текст до \n
 				ImVec2 sz = calculateTextSize(text_start, text_cur);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
 			}
 
-			// обновляем text_size
 			text_size.x = ImMax(text_size.x, cur_size.x);
 			cur_size.y += font_size;
 			cur_size.x = 0.0f;
@@ -188,7 +178,6 @@ ImVec2 LabelImage::calculateTextSize(const std::string& text) const
 		{
 			if (text_cur != text_start)
 			{
-				// текст до \t
 				ImVec2 sz = calculateTextSize(text_start, text_cur);
 				cur_size.x += sz.x;
 				if (cur_size.y == 0.0f) cur_size.y = sz.y;
@@ -203,7 +192,6 @@ ImVec2 LabelImage::calculateTextSize(const std::string& text) const
 
 	if (text_cur != text_start)
 	{
-		// текст без форматирования
 		ImVec2 sz = calculateTextSize(text_start, text_cur);
 		cur_size.x += sz.x;
 		if (cur_size.y == 0.0f) cur_size.y = sz.y;

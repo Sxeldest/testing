@@ -29,6 +29,7 @@ public:
 	static ImVec2 chatPos() { return m_chatPos; }
 	static ImVec2 chatSize() { return m_chatSize; }
 	static ImVec2 chatItemSize() { return m_chatItemSize; }
+	static int chatDispMessages() { return m_chatDispMesssages; }
 	static int chatMaxMessages() { return m_chatMaxMessages; }
 
 	/* spawn */

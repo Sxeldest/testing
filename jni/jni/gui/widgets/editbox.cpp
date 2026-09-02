@@ -28,17 +28,11 @@ void EditBox::draw(ImGuiRenderer* renderer)
 		float tw = (float)UI::m_pSampGuiTexture->raster->width;
 		float th = (float)UI::m_pSampGuiTexture->raster->height;
 		p.x = floorf(p.x); p.y = floorf(p.y);
-
-		// UKURAN VISUAL DI LAYAR (Dibuat tipis: 2.5 pixel)
 		float v_lw = 5.5; float v_rw = 5.5f;
 		float v_th = 5.5; float v_bh = 5.5f;
-
-		// KOORDINAT MENTAH DI TEXTURE (PC DXUT)
 		ImVec4 rect = UI::rectEditBox;
 		float mtx = rect.x; float mty = rect.y;
 		float mtw = rect.z - rect.x; float mth = rect.w - rect.y;
-
-		// Slice asli texture
 		float t_lw = 6.0f; float t_rw = 5.0f;
 		float t_th = 8.0f; float t_bh = 8.0f;
 		float t_mw = mtw - t_lw - t_rw;
@@ -49,7 +43,6 @@ void EditBox::draw(ImGuiRenderer* renderer)
 				ImVec2(stx/tw, sty/th), ImVec2((stx+stw)/tw, (sty+sth)/th), (ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 200));
 		};
 
-		// 9-Slice Rendering dengan Border Tipis (2.5px)
 		drawPart(mtx, mty, t_lw, t_th, 0, 0, v_lw, v_th);
 		drawPart(mtx + t_lw, mty, t_mw, t_th, v_lw, 0, s.x - v_lw - v_rw, v_th);
 		drawPart(mtx + t_lw + t_mw, mty, t_rw, t_th, s.x - v_rw, 0, v_rw, v_th);
@@ -65,7 +58,6 @@ void EditBox::draw(ImGuiRenderer* renderer)
 
 	ImVec2 textPos = p + ImVec2(8.0f, (height() - font_sz) / 2);
 
-	// Draw selection
 	if (m_selectionStart != -1 && m_selectionStart != m_cursorPos)
 	{
 		int start = std::min(m_selectionStart, m_cursorPos);
@@ -84,7 +76,6 @@ void EditBox::draw(ImGuiRenderer* renderer)
 
 	renderer->drawText(textPos, ImColor(1.0f, 1.0f, 1.0f), m_caption, true, font_sz);
 
-	// Draw cursor
 	if (pUI->inputChat()->visible() && pUI->inputChat()->getCaller() == this)
 	{
 		std::string textBeforeCursor = m_input.substr(0, m_cursorPos);
@@ -127,7 +118,7 @@ void EditBox::cursorEvent(int pos)
 void EditBox::keyStrokeEvent(int keyCode, int metaState)
 {
 	bool ctrl = (metaState & 0x1000) != 0 || (metaState & 0x2000) != 0;
-	if (ctrl && keyCode == 29) // KEYCODE_A
+	if (ctrl && keyCode == 29)
 	{
 		m_selectionStart = 0;
 		m_cursorPos = (int)m_input.length();
@@ -140,7 +131,6 @@ void EditBox::keyStrokeEvent(int keyCode, int metaState)
 
 void EditBox::onSubmit()
 {
-	// Hierarchy: EditBox -> InputWidget -> CDialogContent -> CDialog
 	Widget* parent1 = parent();
 	if (!parent1) return;
 	Widget* parent2 = parent1->parent();

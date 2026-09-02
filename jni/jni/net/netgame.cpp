@@ -137,7 +137,7 @@ void CNetGame::InitializePools()
 	m_pPools->pTextDrawPool = new CTextDrawPool();
 	m_pPools->pActorPool = new CActorPool();
 	m_pPools->pMenuPool = new CMenuPool();
-	m_pPools->pPlayerBubblePool = new CPlayerBubblePool();
+	m_pPools->pPlayerBubblePool = new ChatBubble();
 }
 
 void CNetGame::UninitializePools()

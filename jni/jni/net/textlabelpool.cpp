@@ -36,9 +36,6 @@ void C3DTextLabelPool::NewLabel(uint16_t wLabelId, TEXT_LABEL* pLabel) {
 			m_bSlotUsed[wLabelId] = false;
 		}
 
-		//labelInfo.dwColor = (labelInfo.dwColor >> 8) | (labelInfo.dwColor << 24);
-		//pTextLabel->pszText = new char[strlen(pLabel->pszText) + 1];
-		//strcpy(pTextLabel->pszText, pLabel->pszText);
 		TEXT_LABEL* pTextLabel = new TEXT_LABEL;
 		pTextLabel->text = Encoding::cp2utf(pLabel->text);
 
@@ -180,11 +177,12 @@ void C3DTextLabelPool::Draw(ImGuiRenderer* renderer, TEXT_LABEL* label, VECTOR v
 			std::stringstream ss_data(text);
 			std::string s_row;
 			while (std::getline(ss_data, s_row, '\n')) {
-				ImVec2 sz = renderer->calculateTextSize(s_row, UISettings::smallFontSize());
+				float fontSize = UISettings::fontSize() * 0.875f;
+				ImVec2 sz = renderer->calculateTextSize(s_row, fontSize);
 				renderer->drawText(ImVec2(vecOut.X - (sz.x / 2), vecOut.Y),
 								   __builtin_bswap32(dwColor | (0x000000FF)), s_row, true,
-								   UISettings::smallFontSize());
-				vecOut.Y += UISettings::smallFontSize();
+								   fontSize);
+				vecOut.Y += fontSize;
 			}
 		}
 	}

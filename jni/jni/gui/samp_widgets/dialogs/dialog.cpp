@@ -105,7 +105,7 @@ void CDialog::performLayout()
 			}
 		}
 	}
-	else // MSGBOX
+	else
 	{
 		if (!pActive->children().empty()) {
 			Widget* pLabel = pActive->children()[0];

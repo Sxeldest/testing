@@ -62,7 +62,6 @@ void CDialogContent::SetActive(DialogStyle iStyle, const std::string& szInfo)
         TabListWidget* pTabList = new TabListWidget();
         this->addChild(pTabList);
 
-        // Tablist items
         std::vector<float> fOffsets = pTabList->assemble(szInfo, {}, true, UISettings::fontSize() + 2.0f, false);
         m_pActiveWidget = pTabList;
 

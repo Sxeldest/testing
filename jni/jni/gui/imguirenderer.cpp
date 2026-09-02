@@ -38,72 +38,46 @@ void ImGuiRenderer::drawConvexPolyFilled(ImVec2* points, int num_points, const I
 }
 
 void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color,
-							 const char* begin, const char* end, bool outline, float font_size)
+							 const char* begin, const char* end, bool outlined, float font_size, ImFont* font, bool bold_outline)
 {
 	float sz_font = font_size == 0.0f ? m_font->FontSize : font_size;
+	font = font == NULL ? m_font : font;
 
-	if (outline)
+	ImVec2 p = ImVec2(floorf(pos.x + 0.5f), floorf(pos.y + 0.5f));
+
+	if (outlined)
 	{
-		ImVec2 outlined = pos;
-		float outlineSize = UISettings::outlineSize();
+		ImColor outlineColor(0.0f, 0.0f, 0.0f, color.Value.w);
 
-		// right
-		outlined.x += outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x -= outlineSize;
-
-		// left
-		outlined.x -= outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x += outlineSize;
-
-		// bottom
-		outlined.y += outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.y -= outlineSize;
-
-		// top
-		outlined.y -= outlineSize;
-		m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.y += outlineSize;
-
-		// bottom-right
-		outlined.x += outlineSize;
-		outlined.y += outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x -= outlineSize;
-		outlined.y -= outlineSize;
-
-		// bottom-left
-		outlined.x -= outlineSize;
-		outlined.y += outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x += outlineSize;
-		outlined.y -= outlineSize;
-
-		// top-right
-		outlined.x += outlineSize;
-		outlined.y -= outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x -= outlineSize;
-		outlined.y += outlineSize;
-
-		// top-left
-		outlined.x -= outlineSize;
-		outlined.y -= outlineSize;
-		//m_drawList->AddText(m_font, sz_font, outlined, ImColor(0.0f, 0.0f, 0.0f), begin, end);
-		outlined.x += outlineSize;
-		outlined.y += outlineSize;
+		if (bold_outline)
+		{
+			m_drawList->AddText(font, sz_font, ImVec2(p.x - 2.0f, p.y), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x + 2.0f, p.y), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x, p.y - 2.0f), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x, p.y + 2.0f), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x - 1.0f, p.y - 1.0f), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x + 1.0f, p.y - 1.0f), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x - 1.0f, p.y + 1.0f), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x + 1.0f, p.y + 1.0f), outlineColor, begin, end);
+		}
+		else
+		{
+			m_drawList->AddText(font, sz_font, ImVec2(p.x - 1.0f, p.y), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x + 1.0f, p.y), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x, p.y - 1.0f), outlineColor, begin, end);
+			m_drawList->AddText(font, sz_font, ImVec2(p.x, p.y + 1.0f), outlineColor, begin, end);
+		}
 	}
 
-	m_drawList->AddText(m_font, sz_font, pos, color, begin, end);
+	m_drawList->AddText(font, sz_font, p, color, begin, end);
 }
 
-void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std::string& text, bool outlined, float font_size)
+void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std::string& text, bool outlined, float font_size, ImFont* font, bool bold_outline)
 {
 	if (text.empty()) return;
 
 	float sz_font = font_size == 0.0f ? m_font->FontSize : font_size;
+	font = font == NULL ? m_font : font;
 
 	const char* text_start = text.c_str();
 	const char* text_cur = text.c_str();
@@ -119,7 +93,7 @@ void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std:
 			// print accumulated text
 			if (text_cur != text_start)
 			{
-				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
+				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font, font, bold_outline);
 				ImVec2 sz = calculateTextSize(text_start, text_cur, sz_font);
 				pos_cur.x += sz.x;
 			}
@@ -138,7 +112,7 @@ void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std:
 			// print accumulated text
 			if (text_cur != text_start)
 			{
-				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
+				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font, font, bold_outline);
 			}
 
 			pos_cur.x = pos.x;
@@ -150,7 +124,7 @@ void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std:
 			// print accumulated text
 			if (text_cur != text_start)
 			{
-				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
+				drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font, font, bold_outline);
 				ImVec2 sz = calculateTextSize(text_start, text_cur, sz_font);
 				pos_cur.x += sz.x;
 			}
@@ -163,7 +137,7 @@ void ImGuiRenderer::drawText(const ImVec2& pos, const ImColor& color, const std:
 	}
 
 	if (text_cur != text_start) {
-		drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font);
+		drawText(pos_cur, color_cur, text_start, text_cur, outlined, sz_font, font, bold_outline);
 	}
 }
 

@@ -42,11 +42,9 @@ void ScrollPanel::performLayout()
 	float viewWidth = width();
 	if (m_showScrollBar)
 	{
-		// SAMP PC: Scrollbar (16px) + Padding (12px) gap from list items
 		viewWidth -= 28.5f;
 	}
 
-	// Force child to be at least the view width to prevent horizontal "jumping"
 	if (child->width() < viewWidth) child->setWidth(viewWidth);
 }
 
@@ -56,7 +54,6 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 
 	if (m_clipping) {
 		if (isChat) {
-			// Vertical clipping only for Chat, no horizontal clipping
 			renderer->pushClipRect(ImVec2(0.0f, absolutePosition().y), ImVec2(ImGui::GetIO().DisplaySize.x, absolutePosition().y + height()), true);
 		} else {
 			renderer->pushClipRect(absolutePosition(), absolutePosition() + size(), true);
@@ -68,7 +65,6 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 	if (children().empty()) return;
 	Widget* child = children()[0];
 
-	// SAMP PC: Scrollbar (Only for Dialog Lists/Tablists)
 	if (m_showScrollBar && m_scrollableY && UI::m_pSampGuiTexture)
 	{
 		float tw = (float)UI::m_pSampGuiTexture->raster->width;
@@ -78,26 +74,20 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 
 		ImVec2 sbPos;
 		if (isChat) {
-			// Left side for Chat (aligned with screen left edge)
-			// PC Style: Location(10, 40)
 			sbPos = ImVec2(10.0f, absolutePosition().y + 40.0f);
 		} else {
-			// Right side for Dialogs
 			sbPos = absolutePosition() + ImVec2(width() + 4.0f - sbWidth, -6.0f);
 		}
 
-		// Height: PC Style uses Size(20, (lines * font) - 60)
 		float sbHeightOffset = isChat ? -60.0f : 12.0f;
 		ImVec2 sbSize = ImVec2(sbWidth, height() + sbHeightOffset);
 
-		// 1. Draw Track (Always displayed in Dialog Lists)
 		ImVec4 rectTrack = UI::rectScrollTrack;
 		renderer->drawImageUV(sbPos, sbPos + sbSize,
 			ImVec2(rectTrack.x / tw, rectTrack.y / th),
 			ImVec2(rectTrack.z / tw, rectTrack.w / th),
 			(ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 255));
 
-		// 2. Draw Arrows (Always displayed in Dialog Lists)
 		float arrowHeight = 16.0f;
 		ImVec4 rectUp = UI::rectScrollUpArrow;
 		renderer->drawImageUV(sbPos, sbPos + ImVec2(sbWidth, arrowHeight),
@@ -111,7 +101,6 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 			ImVec2(rectDown.z / tw, rectDown.w / th),
 			(ImTextureID)UI::m_pSampGuiTexture->raster, ImColor(255, 255, 255, 255));
 
-		// 3. Draw Thumb (Only if content is actually scrollable)
 		if (child->height() > height())
 		{
 			float totalHeight = child->height();
@@ -121,7 +110,6 @@ void ScrollPanel::draw(ImGuiRenderer* renderer)
 			float thumbHeight = ImMax(20.0f, (windowHeight / totalHeight) * trackHeight);
 
 			float scrollableHeight = totalHeight - windowHeight;
-			// Child position is negative as it moves up
 			float scrollRatio = -child->position().y / scrollableHeight;
 			scrollRatio = ImSaturate(scrollRatio);
 

@@ -8,213 +8,110 @@
 extern CGame* pGame;
 extern CNetGame* pNetGame;
 
-CPlayerTags::CPlayerTags()
-{
-	FLog("Loading AFK icon..");
-	m_pAFKIconTexture = (RwTexture*)LoadTextureFromDB("samp", "afk_icon");
-	m_pMicroIconTexture = (RwTexture*)LoadTextureFromDB("samp", "icon_micro");
-}
-
+CPlayerTags::CPlayerTags() {}
 CPlayerTags::~CPlayerTags() {}
 
 void CPlayerTags::Render(ImGuiRenderer* renderer)
 {
-	VECTOR vecPos;
-	MATRIX4X4 matLocal, matPlayer;
-	int dwHitEntity;
-	char szNickBuf[64];
+	if (!pNetGame || !pNetGame->m_pNetSet->bShowNameTags) return;
 
-	if (pNetGame && pNetGame->m_pNetSet->bShowNameTags)
+	CPlayerPool* pPlayerPool = pNetGame->GetPlayerPool();
+	if (!pPlayerPool) return;
+
+	for (PLAYERID i = 0; i < MAX_PLAYERS; i++)
 	{
-		CPlayerPool* pPlayerPool = pNetGame->GetPlayerPool();
-		pGame->FindPlayerPed()->GetMatrix(&matLocal);
+		if (!pPlayerPool->GetSlotState(i)) continue;
 
-		for (PLAYERID playerId = 0; playerId < MAX_PLAYERS; playerId++)
-		{
-			if (pPlayerPool->GetSlotState(playerId) == true)
-			{
-				CRemotePlayer* pRemotePlayer = pPlayerPool->GetAt(playerId);
+		CRemotePlayer* pRemotePlayer = pPlayerPool->GetAt(i);
+		if (!pRemotePlayer || !pRemotePlayer->IsActive() || !pRemotePlayer->m_bShowNameTag || pRemotePlayer->IsNPC()) continue;
 
-				if (pRemotePlayer && pRemotePlayer->IsActive() && pRemotePlayer->m_bShowNameTag && !pRemotePlayer->IsNPC())
-				{
-					CPlayerPed* pPlayerPed = pRemotePlayer->GetPlayerPed();
+		CPlayerPed* pPlayerPed = pRemotePlayer->GetPlayerPed();
+		if (!pPlayerPed || !pPlayerPed->IsAdded()) continue;
 
-					if (pPlayerPed && pPlayerPed->GetDistanceFromCamera() <= pNetGame->m_pNetSet->fNameTagDrawDistance)
-					{
-						/*if (pRemotePlayer->GetState() == PLAYER_STATE_DRIVER &&
-							pRemotePlayer->m_pCurrentVehicle &&
-							pRemotePlayer->m_pCurrentVehicle->IsRCVehicle())
-						{
-							pRemotePlayer->m_pCurrentVehicle->GetMatrix(&matPlayer);
-							vecPos.X = matPlayer.pos.X;
-							vecPos.Y = matPlayer.pos.Y;
-							vecPos.Z = matPlayer.pos.Z;
-						}
-						else
-						{*/
-							if (!pPlayerPed->IsAdded()) continue;
-							vecPos.X = 0.0f;
-							vecPos.Y = 0.0f;
-							vecPos.Z = 0.0f;
-							pPlayerPed->GetBonePosition(8, &vecPos);
-						//}
+		float fDist = pPlayerPed->GetDistanceFromCamera();
+		if (fDist > pNetGame->m_pNetSet->fNameTagDrawDistance) continue;
+		if (fDist > 50.0f) continue;
 
-						CAMERA_AIM* pCam = GameGetInternalAim();
-						dwHitEntity = 0;
+		VECTOR vecPos;
+		pPlayerPed->GetBonePosition(8, &vecPos);
+		vecPos.Z += 0.25f + (fDist * 0.025f);
 
-						if (pNetGame->m_pNetSet->bNameTagLOS)
-						{
-							dwHitEntity = ScriptCommand(&get_line_of_sight, vecPos.X, vecPos.Y, vecPos.Z,
-								pCam->pos1x, pCam->pos1y, pCam->pos1z, 1, 0, 0, 1, 0);
-						}
-
-						if (!pNetGame->m_pNetSet->bNameTagLOS || dwHitEntity && !pRemotePlayer->IsNPC())
-						{
-							sprintf(szNickBuf, "%s (%d)", pPlayerPool->GetPlayerName(playerId), playerId);
-							this->Draw(renderer,&vecPos, szNickBuf,
-								pRemotePlayer->GetPlayerColor(),
-								pPlayerPed->GetDistanceFromCamera(),
-								pRemotePlayer->m_fReportedHealth,
-								pRemotePlayer->m_fReportedArmour,
-								pRemotePlayer->m_bIsAFK,
-								false);
-						}
-					}
-				}
-			}
-		}
+		this->Draw(renderer, i, pRemotePlayer, &vecPos, fDist);
 	}
 }
 
-void CPlayerTags::Draw(ImGuiRenderer* renderer, VECTOR* vec, const char* szNick, uint32_t dwColor, float fDist, float fHealth, float fArmour, bool bAfk, bool bMicro)
+void CPlayerTags::Draw(ImGuiRenderer* renderer, PLAYERID playerId, CRemotePlayer* pPlayer, VECTOR* pos, float fDist)
 {
-	VECTOR vecTagPos;
-
-	vecTagPos.X = vec->X;
-	vecTagPos.Y = vec->Y;
-	vecTagPos.Z = vec->Z;
-	vecTagPos.Z += 0.25f + (fDist * 0.0475f);
-
-	VECTOR vecOut;
-	// CSprite::CalcScreenCoors
-	((void (*)(VECTOR*, VECTOR*, float*, float*, bool, bool))(g_libGTASA + 0x5C5798 + 1))(&vecTagPos, &vecOut, 0, 0, 0, 0);
-
-	if (vecOut.Z < 1.0f) return;
-
-	// name (id)
-	ImVec2 pos = ImVec2(vecOut.X, vecOut.Y);
-	//pos.x -= ImGui::CalcTextSize(szNick).x / 2;
-	//ImGuiEx::AddOutlinedText(ImGui::GetBackgroundDrawList(), pos, __builtin_bswap32(dwColor | (0x000000FF)), true, szNick);
-	pos.x -= renderer->calculateTextSize(szNick, UISettings::smallFontSize()).x / 2;
-	renderer->drawText(pos, __builtin_bswap32(dwColor | (0x000000FF)), std::string(szNick), true, UISettings::smallFontSize());
-
-
-	// Health bar
-	if (fHealth < 0.0f) return;
-	vecOut.X = (float)((int)vecOut.X);
-	vecOut.Y = (float)((int)vecOut.Y);
-
-	ImColor HealthBarBDRColor = ImColor(0x00, 0x00, 0x00, 0xFF);
-	ImColor HealthBarColor = ImColor(0xB9, 0x22, 0x28, 0xFF);
-	ImColor HealthBarBGColor = ImColor(0x4B, 0x0B, 0x14, 0xFF);
-
-	//float fWidth = (UISettings::fontSize() / 2) * 3;
-	//float fHeight = (UISettings::fontSize() / 2) * 0.f;
-	//float fOutline = 2.0f;
-
-	float fWidth = UISettings::nametagBarSize().x;
-	float fHeight = UISettings::nametagBarSize().y;
-	float fOutline = UISettings::outlineSize();
-
-
-	ImVec2 HealthBarBDR1;
-	ImVec2 HealthBarBDR2;
-	ImVec2 HealthBarBG1;
-	ImVec2 HealthBarBG2;
-	ImVec2 HealthBar1;
-	ImVec2 HealthBar2;
-
-	// top left
-	HealthBarBDR1.x = vecOut.X - ((fWidth / 2) + fOutline);
-	HealthBarBDR1.y = vecOut.Y + (UISettings::smallFontSize() * 1.2f);
-	// bottom right
-	HealthBarBDR2.x = vecOut.X + ((fWidth / 2) + fOutline);
-	HealthBarBDR2.y = vecOut.Y + (UISettings::smallFontSize() * 1.2f) + fHeight;
-
-	// top left
-	HealthBarBG1.x = HealthBarBDR1.x + fOutline;
-	HealthBarBG1.y = HealthBarBDR1.y + fOutline;
-	// bottom right
-	HealthBarBG2.x = HealthBarBDR2.x - fOutline;
-	HealthBarBG2.y = HealthBarBDR2.y - fOutline;
-	// top left
-	HealthBar1.x = HealthBarBG1.x;
-	HealthBar1.y = HealthBarBG1.y;
-	// bottom right
-	HealthBar2.y = HealthBarBG2.y;
-
-	if (fHealth > 100.0f)
-		fHealth = 100.0f;
-
-	fHealth *= fWidth / 100.0f;
-	fHealth -= (fWidth / 2);
-	HealthBar2.x = vecOut.X + fHealth;
-
-	float offsetY = 13.0f;//fHeight / 3;
-
-	if (fArmour > 0.0f)
+	if (pNetGame->m_pNetSet->bNameTagLOS)
 	{
-		HealthBarBDR1.y += offsetY;//13.0f;
-		HealthBarBDR2.y += offsetY;//13.0f;
-		HealthBarBG1.y += offsetY;//13.0f;
-		HealthBarBG2.y += offsetY;//13.0f;
-		HealthBar1.y += offsetY;//13.0f;
-		HealthBar2.y += offsetY;//13.0f;
+		VECTOR camPos;
+		camPos.X = *(float*)(g_libGTASA + 0x9528D4);
+		camPos.Y = *(float*)(g_libGTASA + 0x9528D8);
+		camPos.Z = *(float*)(g_libGTASA + 0x9528DC);
+
+		bool bClear = ((bool (*)(VECTOR*, VECTOR*, bool, bool, bool, bool, bool, bool, bool)) (g_libGTASA + 0x423418 + 1))(&camPos, pos, true, true, false, true, true, false, false);
+
+		if (!bClear) return;
 	}
 
-	ImGui::GetBackgroundDrawList()->AddRectFilled(HealthBarBDR1, HealthBarBDR2, HealthBarBDRColor);
-	ImGui::GetBackgroundDrawList()->AddRectFilled(HealthBarBG1, HealthBarBG2, HealthBarBGColor);
-	ImGui::GetBackgroundDrawList()->AddRectFilled(HealthBar1, HealthBar2, HealthBarColor);
+	VECTOR Out;
+	bool bVisible = ((bool (*)(VECTOR*, VECTOR*, float*, float*, bool, bool))(g_libGTASA + 0x5C5798 + 1))(pos, &Out, nullptr, nullptr, false, false);
 
-	// Armour Bar
-	if (fArmour > 0.0f)
-	{
-		HealthBarBDR1.y -= offsetY;//13.0f;
-		HealthBarBDR2.y -= offsetY;//13.0f;
-		HealthBarBG1.y -= offsetY;//13.0f;
-		HealthBarBG2.y -= offsetY;//13.0f;
-		HealthBar1.y -= offsetY;//13.0f;
-		HealthBar2.y -= offsetY;//13.0f;
+	if (!bVisible || Out.Z < 1.0f) return;
 
-		HealthBarColor = ImColor(200, 200, 200, 255);
-		HealthBarBGColor = ImColor(40, 40, 40, 255);
+	Out.X = (float)((int)Out.X);
+	Out.Y = (float)((int)Out.Y);
 
-		if (fArmour > 100.0f)
-			fArmour = 100.0f;
+	float fontSize = UISettings::fontSize() * 0.875f;
 
-		fArmour *= fWidth / 100.0f;
-		fArmour -= (fWidth / 2);
-		HealthBar2.x = vecOut.X + fArmour;
+	char szTag[64];
+	sprintf(szTag, "%s (%d)", pNetGame->GetPlayerPool()->GetPlayerName(playerId), playerId);
 
-		ImGui::GetBackgroundDrawList()->AddRectFilled(HealthBarBDR1, HealthBarBDR2, HealthBarBDRColor);
-		ImGui::GetBackgroundDrawList()->AddRectFilled(HealthBarBG1, HealthBarBG2, HealthBarBGColor);
-		ImGui::GetBackgroundDrawList()->AddRectFilled(HealthBar1, HealthBar2, HealthBarColor);
+	ImVec2 textSize = renderer->calculateTextSize(szTag, fontSize);
+	ImVec2 textPos = ImVec2(Out.X - (textSize.x * 0.5f), Out.Y - textSize.y);
+
+	renderer->drawText(textPos, UI::fixcolor(pPlayer->GetPlayerColor()), szTag, true, fontSize);
+
+	ImColor colorHealthBar    = ImColor(185, 34, 40, 255);
+	ImColor colorHealthBarBG  = ImColor(75, 11, 20, 255);
+	ImColor colorArmourBar    = ImColor(200, 200, 200, 255);
+	ImColor colorArmourBarBG  = ImColor(40, 40, 40, 255);
+	ImColor colorBorder       = ImColor(0, 0, 0, 255);
+
+	float innerWidth   = 38.0f;
+	float barHeight    = 4.0f;
+
+	ImVec2 barPos = ImVec2(Out.X - 19.0f, (float)((int)(Out.Y + 3.0f)));
+
+	float health = pPlayer->m_fReportedHealth;
+	float armour = pPlayer->m_fReportedArmour;
+	float healthOffset = (armour > 0.0f) ? 8.0f : 0.0f;
+
+	if (armour > 0.0f) {
+		if (armour > 100.0f) armour = 100.0f;
+		float aProgress = (armour / 100.0f) * innerWidth;
+
+		renderer->drawRect(
+				ImVec2(barPos.x - 1.0f, barPos.y - 1.0f),
+				ImVec2(barPos.x + innerWidth + 2.0f, barPos.y + barHeight + 1.0f),
+				colorBorder, true);
+
+		renderer->drawRect(barPos, ImVec2(barPos.x + innerWidth, barPos.y + barHeight), colorArmourBarBG, true);
+		renderer->drawRect(barPos, ImVec2(barPos.x + aProgress, barPos.y + barHeight), colorArmourBar, true);
 	}
 
-	ImVec2 a = ImVec2(HealthBarBDR1.x - (UISettings::smallFontSize() * 1.4f), HealthBarBDR1.y);
-	ImVec2 b = ImVec2(a.x + (UISettings::smallFontSize() * 1.3f), a.y + (UISettings::smallFontSize() * 1.3f));
+	ImVec2 hBarPos = ImVec2(barPos.x, barPos.y + healthOffset);
 
-	// micro icon
-	if (bMicro)
-	{
-		ImGui::GetBackgroundDrawList()->AddImage((ImTextureID)m_pMicroIconTexture->raster, a, b);
-	}
+	renderer->drawRect(
+			ImVec2(hBarPos.x - 1.0f, hBarPos.y - 1.0f),
+			ImVec2(hBarPos.x + innerWidth + 2.0f, hBarPos.y + barHeight + 1.0f),
+			colorBorder, true);
 
-	// AFK icon
-	if (bAfk)
-	{
-		ImVec2 a = ImVec2(HealthBarBDR1.x - (UISettings::smallFontSize() * 1.4f), HealthBarBDR1.y);
-		ImVec2 b = ImVec2(a.x + (UISettings::smallFontSize() * 1.3f), a.y + (UISettings::smallFontSize() * 1.3f));
-		ImGui::GetBackgroundDrawList()->AddImage((ImTextureID)m_pAFKIconTexture->raster, a, b);
+	renderer->drawRect(hBarPos, ImVec2(hBarPos.x + innerWidth, hBarPos.y + barHeight), colorHealthBarBG, true);
+
+	if (health > 0.0f) {
+		if (health > 100.0f) health = 100.0f;
+		float hProgress = (health / 100.0f) * innerWidth;
+		renderer->drawRect(hBarPos, ImVec2(hBarPos.x + hProgress, hBarPos.y + barHeight), colorHealthBar, true);
 	}
 }

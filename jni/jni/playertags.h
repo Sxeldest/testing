@@ -1,5 +1,10 @@
 #pragma once
 
+#include "game/common.h"
+
+class CRemotePlayer;
+class ImGuiRenderer;
+
 class CPlayerTags
 {
 public:
@@ -9,8 +14,5 @@ public:
 	void Render(ImGuiRenderer* renderer);
 
 private:
-	void Draw(ImGuiRenderer* renderer, VECTOR* vec, const char* szNick, uint32_t dwColor, float fDist, float fHealth, float fArmour, bool bAfk, bool bMicro);
-
-	RwTexture* m_pAFKIconTexture;
-	RwTexture* m_pMicroIconTexture;
+	void Draw(ImGuiRenderer* renderer, PLAYERID playerId, CRemotePlayer* pPlayer, VECTOR* pos, float fDist);
 };

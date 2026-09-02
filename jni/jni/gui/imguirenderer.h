@@ -22,7 +22,7 @@ public:
 		const ImColor& col_bot_right, const ImColor& col_bot_left);
 	void drawTriangle(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImColor& color, bool fill = false, float thickness = 1.0f);
 	void drawConvexPolyFilled(ImVec2* points, int num_points	, const ImColor& color);
-	void drawText(const ImVec2& pos, const ImColor& color, const std::string& text, bool outlined = false, float font_size = 0.0f);
+	void drawText(const ImVec2& pos, const ImColor& color, const std::string& text, bool outlined = false, float font_size = 0.0f, ImFont* font = NULL, bool bold_outline = false);
 	void drawImage(const ImVec2& a, const ImVec2& b, ImTextureID texture);
 	void drawImageUV(const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, ImTextureID texture, const ImColor& color = ImColor(255, 255, 255));
 
@@ -37,7 +37,7 @@ public:
 private:
 	// low-level
 	ImVec2 calculateTextSize(const char* begin, const char* end, float font_size = 0.0f);
-	void drawText(const ImVec2& pos, const ImColor& color, const char* begin, const char* end = nullptr, bool outlined = false, float font_size = 0.0f);
+	void drawText(const ImVec2& pos, const ImColor& color, const char* begin, const char* end = nullptr, bool outlined = false, float font_size = 0.0f, ImFont* font = NULL, bool bold_outline = false);
 	bool processInlineHexColor(const char* start, const char* end, ImVec4& color);
 
 private:
