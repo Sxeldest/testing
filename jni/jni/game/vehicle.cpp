@@ -173,6 +173,10 @@ CVehicle::~CVehicle()
 				pGame->RemoveModel(iModel, true);
 			}
 		}
+
+		m_pVehicle = nullptr;
+		m_pEntity = nullptr;
+		m_dwGTAId = 0;
 	}
 }
 // 0.3.7

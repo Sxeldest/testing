@@ -150,12 +150,12 @@ int OS_FileOpen_hook(int r0, uintptr_t handle, char* name, int r3)
 		goto ret;
 	}
 
-    if (!strncmp(name, "DATA\\HANDLING.CFG", 18)) {
-        FLog("Loading handling.cfg..");
-        sprintf(path, "SAMP\\handling.cfg");
-        name = path;
-        goto ret;
-    }
+	if (!strncmp(name, "DATA\\HANDLING.CFG", 18)) {
+		FLog("Loading handling.cfg..");
+		sprintf(path, "SAMP\\handling.cfg");
+		name = path;
+		goto ret;
+	}
 
 	//
 	/*if (!strncmp(name, "data\\paths\\tracks2.dat", 22))
@@ -653,9 +653,9 @@ __attribute__((naked)) void PickupPickUp_hook()
 			"pop {lr}\n\t"
 			"push {r1}\n\t");
 
-	// 
+	//
 	__asm__ volatile("push {r0-r11, lr}\n\t"
-					 "mov %0, r10" : "=r" (dwParam1));
+	                 "mov %0, r10" : "=r" (dwParam1));
 	__asm__ volatile("blx pickup_pickedup\n\t");
 	__asm__ volatile("blx pickup_orig\n\t");
 	__asm__ volatile("pop {r0-r11, lr}\n\t");
@@ -719,9 +719,9 @@ void CObject_Render_hook(uintptr_t thiz)
 		}
 	}
 
-    ((void (*)(void))(g_libGTASA + 0x5D1F48 + 1))();
+	((void (*)(void))(g_libGTASA + 0x5D1F48 + 1))();
 	CObject_Render(thiz);
-    ((void (*)(void))(g_libGTASA + 0x5D1F5C + 1))();
+	((void (*)(void))(g_libGTASA + 0x5D1F5C + 1))();
 }
 
 /*((void (*)(void))(g_libGTASA + 0x5D1F48 + 1))();
@@ -817,15 +817,15 @@ void __attribute__((naked)) TaskEnterVehicle_hook(uintptr_t thiz, uintptr_t pVeh
 {
 	// 2.0
 	__asm__ volatile("push {r1-r11, lr}\n\t"
-					 "mov r0, r8\n\t"
-					 "adds r1, r6, #4\n\t"
-					 "blx TaskEnterVehicle\n\t"
-					 "pop {r1-r11, lr}\n\t"
-					 "blx get_lib\n\t"
-					 "add r0, #0x400000\n\t"
-					 "add r0, #0xAC00\n\t"
-					 "add r0, #0x41\n\t"
-					 "mov pc, r0\n\t");
+	                 "mov r0, r8\n\t"
+	                 "adds r1, r6, #4\n\t"
+	                 "blx TaskEnterVehicle\n\t"
+	                 "pop {r1-r11, lr}\n\t"
+	                 "blx get_lib\n\t"
+	                 "add r0, #0x400000\n\t"
+	                 "add r0, #0xAC00\n\t"
+	                 "add r0, #0x41\n\t"
+	                 "mov pc, r0\n\t");
 }
 
 void (*CTaskComplexLeaveCar)(uintptr_t** thiz, VEHICLE_TYPE* pVehicle, int iTargetDoor, int iDelayTime, bool bSensibleLeaveCar, bool bForceGetOut);
@@ -931,39 +931,39 @@ void AND_TouchEvent_hook(int type, int num, int posX, int posY)
 		}
 	}
 
-    // CamStatic Integration
-    static void (*ApplyCamLook)(float, float) = nullptr;
-    static bool bCamLookupAttempted = false;
-    static float s_lastX[15], s_lastY[15];
-    static bool s_isDown[15];
+	// CamStatic Integration
+	static void (*ApplyCamLook)(float, float) = nullptr;
+	static bool bCamLookupAttempted = false;
+	static float s_lastX[15], s_lastY[15];
+	static bool s_isDown[15];
 
-    if (num >= 0 && num < 15)
-    {
-        if (type == 2) { // DOWN
-            s_isDown[num] = true;
-            s_lastX[num] = (float)posX;
-            s_lastY[num] = (float)posY;
-        }
-        else if (type == 3 && s_isDown[num]) { // MOVE
-            float dx = (float)posX - s_lastX[num];
-            float dy = (float)posY - s_lastY[num];
+	if (num >= 0 && num < 15)
+	{
+		if (type == 2) { // DOWN
+			s_isDown[num] = true;
+			s_lastX[num] = (float)posX;
+			s_lastY[num] = (float)posY;
+		}
+		else if (type == 3 && s_isDown[num]) { // MOVE
+			float dx = (float)posX - s_lastX[num];
+			float dy = (float)posY - s_lastY[num];
 
-            if (posX > (RsGlobal->maximumWidth * 0.45f))
-            {
-                if (!ApplyCamLook && !bCamLookupAttempted) {
-                    void* handle = dlopen("libCameraStatic.so", RTLD_LAZY);
-                    if (handle) ApplyCamLook = (void(*)(float, float))dlsym(handle, "ApplyCustomCameraLook");
-                    bCamLookupAttempted = true;
-                }
-                if (ApplyCamLook) ApplyCamLook(dx, dy);
-            }
-            s_lastX[num] = (float)posX;
-            s_lastY[num] = (float)posY;
-        }
-        else if (type == 1) { // UP
-            s_isDown[num] = false;
-        }
-    }
+			if (posX > (RsGlobal->maximumWidth * 0.45f))
+			{
+				if (!ApplyCamLook && !bCamLookupAttempted) {
+					void* handle = dlopen("libCameraStatic.so", RTLD_LAZY);
+					if (handle) ApplyCamLook = (void(*)(float, float))dlsym(handle, "ApplyCustomCameraLook");
+					bCamLookupAttempted = true;
+				}
+				if (ApplyCamLook) ApplyCamLook(dx, dy);
+			}
+			s_lastX[num] = (float)posX;
+			s_lastY[num] = (float)posY;
+		}
+		else if (type == 1) { // UP
+			s_isDown[num] = false;
+		}
+	}
 
 	if (pGame->IsGameInputEnabled())
 		AND_TouchEvent(type, num, posX, posY);
@@ -1158,7 +1158,7 @@ void CPed__ProcessControl_hook(PED_TYPE* thiz)
 		//WriteMemory(g_libGTASA + 0x439B7A, (uintptr_t)"\xFA\xF7\x1D\xF8", 4);
 		ARMHook::writeMemory(g_libGTASA + 0x4A2A22, (uintptr_t)"\xF0\xF4\x42\xEB", 4);
 
-        GameSetLocalPlayerSkills();
+		GameSetLocalPlayerSkills();
 		*pbyteCameraMode = byteSavedCameraMode;
 		*wCameraMode2 = wSavedCameraMode2;
 		GameSetLocalPlayerCameraExtZoomAndAspect();
@@ -1180,7 +1180,7 @@ void CPed__ProcessControl_hook(PED_TYPE* thiz)
 		ARMHook::makeNOP(g_libGTASA + 0x539BA6, 2);
 	}
 
-    return;
+	return;
 }
 
 uint32_t (*CPed__GetWeaponSkill)(PED_TYPE *thiz);
@@ -1280,7 +1280,7 @@ void AllVehicles__ProcessControl_hook(uintptr_t thiz)
 	byteInternalPlayer = *pbyteCurrentPlayer;
 
 	if (pVehicle->pDriver && pVehicle->pDriver->dwPedType == 0 &&
-		pVehicle->pDriver != GamePool_FindPlayerPed() && byteInternalPlayer == 0) // CWorld::PlayerInFocus
+	    pVehicle->pDriver != GamePool_FindPlayerPed() && byteInternalPlayer == 0) // CWorld::PlayerInFocus
 	{
 		byteCurPlayer = FindPlayerNumFromPedPtr(pVehicle->pDriver);
 
@@ -1298,7 +1298,7 @@ void AllVehicles__ProcessControl_hook(uintptr_t thiz)
 		GameSetRemotePlayerAim(byteCurPlayer);
 
 		if (pVehicle && pVehicle->pDriver && pVehicle->pDriver->dwPedType == 0 &&
-			GamePool_FindPlayerPed() == pVehicle->pDriver)
+		    GamePool_FindPlayerPed() == pVehicle->pDriver)
 		{
 			if (pVehicle->byteFlags & 0x10)
 			{
@@ -1372,7 +1372,7 @@ void AllVehicles__ProcessControl_hook(uintptr_t thiz)
 	else
 	{
 		if (pVehicle && pVehicle->pDriver && pVehicle->pDriver->dwPedType == 0 &&
-			GamePool_FindPlayerPed() == pVehicle->pDriver)
+		    GamePool_FindPlayerPed() == pVehicle->pDriver)
 		{
 			if (pVehicle->byteFlags & 0x10)
 			{
@@ -1418,63 +1418,63 @@ extern int g_iLagCompensationMode;
 
 void SendBulletSync(VECTOR* vecOrigin, VECTOR* a2, VECTOR* vecPos, ENTITY_TYPE** ppEntity)
 {
-    MATRIX4X4 mat1, mat2;
+	MATRIX4X4 mat1, mat2;
 
-    static BULLET_DATA bulletData;
-    memset(&bulletData, 0, sizeof(BULLET_DATA));
+	static BULLET_DATA bulletData;
+	memset(&bulletData, 0, sizeof(BULLET_DATA));
 
-    bulletData.vecOrigin.X = vecOrigin->X;
-    bulletData.vecOrigin.Y = vecOrigin->Y;
-    bulletData.vecOrigin.Z = vecOrigin->Z;
+	bulletData.vecOrigin.X = vecOrigin->X;
+	bulletData.vecOrigin.Y = vecOrigin->Y;
+	bulletData.vecOrigin.Z = vecOrigin->Z;
 
-    bulletData.vecPos.X = vecPos->X;
-    bulletData.vecPos.Y = vecPos->Y;
-    bulletData.vecPos.Z = vecPos->Z;
+	bulletData.vecPos.X = vecPos->X;
+	bulletData.vecPos.Y = vecPos->Y;
+	bulletData.vecPos.Z = vecPos->Z;
 
-    if (ppEntity)
-    {
-        ENTITY_TYPE* pEntity = *ppEntity;
-        if (pEntity && pEntity->mat)
-        {
-            if (g_iLagCompensationMode != 0)
-            {
-                bulletData.vecOffset.X = vecPos->X - pEntity->mat->pos.X;
-                bulletData.vecOffset.Y = vecPos->Y - pEntity->mat->pos.Y;
-                bulletData.vecOffset.Z = vecPos->Z - pEntity->mat->pos.Z;
-            }
-            else
-            {
-                memset(&mat1, 0, sizeof(MATRIX4X4));
-                memset(&mat2, 0, sizeof(MATRIX4X4));
-                // RwMatrixOrthoNormalize
-                ((void (*)(MATRIX4X4*, MATRIX4X4*))(g_libGTASA + 0x1E34A0 + 1))(&mat2, pEntity->mat);
-                // RwMatrixInvert
-                ((void (*)(MATRIX4X4*, MATRIX4X4*))(g_libGTASA + 0x1E3A28 + 1))(&mat1, &mat2);
-                ProjectMatrix(&bulletData.vecOffset, &mat1, vecPos);
-            }
+	if (ppEntity)
+	{
+		ENTITY_TYPE* pEntity = *ppEntity;
+		if (pEntity && pEntity->mat)
+		{
+			if (g_iLagCompensationMode != 0)
+			{
+				bulletData.vecOffset.X = vecPos->X - pEntity->mat->pos.X;
+				bulletData.vecOffset.Y = vecPos->Y - pEntity->mat->pos.Y;
+				bulletData.vecOffset.Z = vecPos->Z - pEntity->mat->pos.Z;
+			}
+			else
+			{
+				memset(&mat1, 0, sizeof(MATRIX4X4));
+				memset(&mat2, 0, sizeof(MATRIX4X4));
+				// RwMatrixOrthoNormalize
+				((void (*)(MATRIX4X4*, MATRIX4X4*))(g_libGTASA + 0x1E34A0 + 1))(&mat2, pEntity->mat);
+				// RwMatrixInvert
+				((void (*)(MATRIX4X4*, MATRIX4X4*))(g_libGTASA + 0x1E3A28 + 1))(&mat1, &mat2);
+				ProjectMatrix(&bulletData.vecOffset, &mat1, vecPos);
+			}
 
-            bulletData.pEntity = pEntity;
-        }
-    }
+			bulletData.pEntity = pEntity;
+		}
+	}
 
-    pGame->FindPlayerPed()->ProcessBulletData(&bulletData);
+	pGame->FindPlayerPed()->ProcessBulletData(&bulletData);
 }
 
 extern bool g_customFire;
 /* 0.3.7 */
 uint32_t(*CWeapon_FireInstantHit)(WEAPON_SLOT_TYPE* thiz, PED_TYPE* pFiringEntity, VECTOR* vecOrigin, VECTOR* muzzlePosn, ENTITY_TYPE* targetEntity,
-								  VECTOR* target, VECTOR* originForDriveBy, bool arg6, bool muzzle);
+                                  VECTOR* target, VECTOR* originForDriveBy, bool arg6, bool muzzle);
 uint32_t CWeapon_FireInstantHit_hook(WEAPON_SLOT_TYPE* thiz, PED_TYPE* pFiringEntity, VECTOR* vecOrigin, VECTOR* muzzlePosn, ENTITY_TYPE* targetEntity,
-									 VECTOR* target, VECTOR* originForDriveBy, bool arg6, bool muzzle)
+                                     VECTOR* target, VECTOR* originForDriveBy, bool arg6, bool muzzle)
 {
 	uintptr_t dwRetAddr = 0;
 	__asm__ volatile ("mov %0, lr" : "=r" (dwRetAddr));
 	dwRetAddr -= g_libGTASA;
 
 	if (dwRetAddr == 0x5DBB6E + 1 ||	// CWeapon::Fire
-		dwRetAddr == 0x5DBBC6 + 1)		// CWeapon::Fire
-    {
-       	if(pFiringEntity != GamePool_FindPlayerPed())
+	    dwRetAddr == 0x5DBBC6 + 1)		// CWeapon::Fire
+	{
+		if(pFiringEntity != GamePool_FindPlayerPed())
 			return muzzle;
 
 		if(pNetGame)
@@ -1499,15 +1499,15 @@ uint32_t CWeapon_FireInstantHit_hook(WEAPON_SLOT_TYPE* thiz, PED_TYPE* pFiringEn
 		}
 
 		return muzzle;
-    }
+	}
 
-    return CWeapon_FireInstantHit(thiz, pFiringEntity, vecOrigin, muzzlePosn, targetEntity,
-                                  target, originForDriveBy, arg6, muzzle);
+	return CWeapon_FireInstantHit(thiz, pFiringEntity, vecOrigin, muzzlePosn, targetEntity,
+	                              target, originForDriveBy, arg6, muzzle);
 }
 
 uint32_t(*CWorld_ProcessLineOfSight)(VECTOR*, VECTOR*, VECTOR*, ENTITY_TYPE**, bool, bool, bool, bool, bool, bool, bool, bool);
 uint32_t CWorld_ProcessLineOfSight_hook(VECTOR* vecOrigin, VECTOR* vecEnd, VECTOR* vecPos, ENTITY_TYPE** ppEntity,
-										bool b1, bool b2, bool b3, bool b4, bool b5, bool b6, bool b7, bool b8)
+                                        bool b1, bool b2, bool b3, bool b4, bool b5, bool b6, bool b7, bool b8)
 {
 	uintptr_t dwRetAddr = 0;
 	__asm__ volatile ("mov %0, lr" : "=r" (dwRetAddr));
@@ -1517,11 +1517,11 @@ uint32_t CWorld_ProcessLineOfSight_hook(VECTOR* vecOrigin, VECTOR* vecEnd, VECTO
 	LOGW("dwRetAddr 0x%X", dwRetAddr);
 
 	if (dwRetAddr == 0x5DC468 + 1 || // true
-		dwRetAddr == 0x5DC5D0 + 1 ||
-		dwRetAddr == 0x5DC7A0 + 1 || //
-		dwRetAddr == 0x5DCD06 + 1 || //
-		dwRetAddr == 0x5DD060 + 1 || // true
-		dwRetAddr == 0x5D7294 + 1)	// CBulletInfo::Update
+	    dwRetAddr == 0x5DC5D0 + 1 ||
+	    dwRetAddr == 0x5DC7A0 + 1 || //
+	    dwRetAddr == 0x5DCD06 + 1 || //
+	    dwRetAddr == 0x5DD060 + 1 || // true
+	    dwRetAddr == 0x5D7294 + 1)	// CBulletInfo::Update
 	{
 		LOGI("CWorld_ProcessLineOfSight iLagCompensationMode: %d", g_iLagCompensationMode);
 		ENTITY_TYPE* pEntity = nullptr;
@@ -1578,7 +1578,7 @@ uint32_t CWorld_ProcessLineOfSight_hook(VECTOR* vecOrigin, VECTOR* vecEnd, VECTO
 					{
 						PED_TYPE* pLocalPed = GamePool_FindPlayerPed();
 						if (*ppEntity == (ENTITY_TYPE*)GamePool_FindPlayerPed() ||
-							IN_VEHICLE(pLocalPed) && *ppEntity == (ENTITY_TYPE*)pLocalPed->pVehicle)
+						    IN_VEHICLE(pLocalPed) && *ppEntity == (ENTITY_TYPE*)pLocalPed->pVehicle)
 						{
 							result = 0;
 							*ppEntity = nullptr;
@@ -1668,9 +1668,9 @@ bool ComputeDamageResponse(CPedDamageResponseCalculator* calculator, PED_TYPE* p
 	{
 		PlayerID = FindPlayerIDFromGtaPtr(&pDamager->entity);
 		pLocalPlayer->SendTakeDamageEvent(PlayerID,
-										  calculator->m_fDamageFactor,
-										  calculator->m_weaponType,
-										  calculator->m_pedPieceType);
+		                                  calculator->m_fDamageFactor,
+		                                  calculator->m_weaponType,
+		                                  calculator->m_pedPieceType);
 	}
 	else
 	{
@@ -1678,9 +1678,9 @@ bool ComputeDamageResponse(CPedDamageResponseCalculator* calculator, PED_TYPE* p
 		if (PlayerID != INVALID_PLAYER_ID)
 		{
 			pLocalPlayer->SendGiveDamageEvent(PlayerID,
-											  calculator->m_fDamageFactor,
-											  calculator->m_weaponType,
-											  calculator->m_pedPieceType);
+			                                  calculator->m_fDamageFactor,
+			                                  calculator->m_weaponType,
+			                                  calculator->m_pedPieceType);
 			if (pPlayerPool->GetAt(PlayerID)->IsNPC())
 				return true;
 		}
@@ -1689,9 +1689,9 @@ bool ComputeDamageResponse(CPedDamageResponseCalculator* calculator, PED_TYPE* p
 			PLAYERID ActorID = FindActorIDFromGtaPtr(pPed);
 			if (ActorID != INVALID_PLAYER_ID) {
 				pLocalPlayer->SendGiveDamageEvent(ActorID,
-												  calculator->m_fDamageFactor,
-												  calculator->m_weaponType,
-												  calculator->m_pedPieceType);
+				                                  calculator->m_fDamageFactor,
+				                                  calculator->m_weaponType,
+				                                  calculator->m_pedPieceType);
 				return true;
 			}
 		}
@@ -1703,8 +1703,8 @@ bool ComputeDamageResponse(CPedDamageResponseCalculator* calculator, PED_TYPE* p
 		return false;
 	uint8_t byteTeam = pPlayerPool->GetLocalPlayer()->m_byteTeam;
 	if (byteTeam == NO_TEAM ||
-		PlayerID == INVALID_PLAYER_ID ||
-		pPlayerPool->GetAt(PlayerID)->m_byteTeam != byteTeam) {
+	    PlayerID == INVALID_PLAYER_ID ||
+	    pPlayerPool->GetAt(PlayerID)->m_byteTeam != byteTeam) {
 		return false;
 	}
 
@@ -2018,7 +2018,7 @@ uint32_t CWorld__FindPlayerSlotWithPedPointer_hook(unsigned int a1)
 	uint32_t *dwWorldPlayers = (uint32_t*)WORLD_PLAYERS;
 	while(*dwWorldPlayers != a1)
 	{
-        ++result;
+		++result;
 		dwWorldPlayers += 101;
 		if(result > 210)
 			return 0;
@@ -2219,16 +2219,16 @@ int CAnimManager_UncompressAnimation_hook(int result)
 void (*CStreaming__MakeSpaceFor)(uintptr_t *thiz, size_t memoryToCleanInBytes);
 void CStreaming__MakeSpaceFor_hook(uintptr_t *thiz, size_t memoryToCleanInBytes)
 {
-    size_t ms_memoryUsed = *(size_t*)(g_libGTASA+0x00792B74);
-    size_t ms_memoryAvailable = *(size_t*)(g_libGTASA+0x00685FA0);
-    auto lastmemused = ms_memoryUsed;
-    while (ms_memoryUsed >= ms_memoryAvailable - memoryToCleanInBytes) {
-        lastmemused = ms_memoryUsed;
-        if (!((int (*)(uintptr_t*, unsigned int))(g_libGTASA + 0x2D549C+1))(thiz, 0) || lastmemused == ms_memoryUsed) {
-            //  DeleteRwObjectsBehindCamera(ms_memoryAvailable - memoryToCleanInBytes);
-            return;
-        }
-    }
+	size_t ms_memoryUsed = *(size_t*)(g_libGTASA+0x00792B74);
+	size_t ms_memoryAvailable = *(size_t*)(g_libGTASA+0x00685FA0);
+	auto lastmemused = ms_memoryUsed;
+	while (ms_memoryUsed >= ms_memoryAvailable - memoryToCleanInBytes) {
+		lastmemused = ms_memoryUsed;
+		if (!((int (*)(uintptr_t*, unsigned int))(g_libGTASA + 0x2D549C+1))(thiz, 0) || lastmemused == ms_memoryUsed) {
+			//  DeleteRwObjectsBehindCamera(ms_memoryAvailable - memoryToCleanInBytes);
+			return;
+		}
+	}
 }
 
 void (*CStreaming_Init2)();
@@ -2335,13 +2335,13 @@ void InstallSAMPHooks()
 	ARMHook::installPLTHook(g_libGTASA + 0x66FE58, (uintptr_t)CGame_Process_hook, (uintptr_t*)& CGame_Process);
 	// enter vehicle as driver
 	ARMHook::codeInject(g_libGTASA + 0x40AC28, (uintptr_t)TaskEnterVehicle_hook, 0);
-    //ARMHook::installPLTHook(g_libGTASA+0x6733F0, (uintptr_t)TaskEnterVehicle_hook, (uintptr_t*)&TaskEnterVehicle);
+	//ARMHook::installPLTHook(g_libGTASA+0x6733F0, (uintptr_t)TaskEnterVehicle_hook, (uintptr_t*)&TaskEnterVehicle);
 	// radar color
 	ARMHook::installPLTHook(g_libGTASA + 0x673950, (uintptr_t)CHudColours__GetIntColour_hook, (uintptr_t*)& CHudColours__GetIntColour);
 	// exit vehicle
 	ARMHook::installPLTHook(g_libGTASA + 0x671984, (uintptr_t)CTaskComplexLeaveCar_hook, (uintptr_t*)& CTaskComplexLeaveCar);
-    ARMHook::installPLTHook(g_libGTASA + 0x675320, (uintptr_t)CTaskComplexLeaveCar_hook, (uintptr_t*)& CTaskComplexLeaveCar);
-    // attach obj to ped
+	ARMHook::installPLTHook(g_libGTASA + 0x675320, (uintptr_t)CTaskComplexLeaveCar_hook, (uintptr_t*)& CTaskComplexLeaveCar);
+	// attach obj to ped
 	ARMHook::installPLTHook(g_libGTASA + 0x675C68, (uintptr_t)CWorld_ProcessPedsAfterPreRender_Hook, (uintptr_t*)&CWorld_ProcessPedsAfterPreRender);
 	// game pause
 	// ARMHook::installPLTHook(g_libGTASA + 0x672644, (uintptr_t)CTimer_StartUserPause_hook, (uintptr_t*)&CTimer_StartUserPause);
@@ -2383,7 +2383,7 @@ void InstallSAMPHooks()
 
 	ARMHook::installHook(g_libGTASA + 0x4DD5E8, (uintptr_t)CTaskSimpleUseGun__SetMoveAnim_hook, (uintptr_t*)&CTaskSimpleUseGun__SetMoveAnim);
 
-    // hueta ne rabotaet no pust budet (tipo ne kak v 1.08)
+	// hueta ne rabotaet no pust budet (tipo ne kak v 1.08)
 	ARMHook::installPLTHook(g_libGTASA + 0x674280, (uintptr_t) CVehicleModelInfo__SetupCommonData_hook, (uintptr_t*)&CVehicleModelInfo__SetupCommonData);
 	ARMHook::installPLTHook(g_libGTASA + 0x06D008, (uintptr_t) CAEVehicleAudioEntity__GetVehicleAudioSettings_hook, (uintptr_t*)&CAEVehicleAudioEntity__GetVehicleAudioSettings);
 
@@ -2392,7 +2392,7 @@ void InstallSAMPHooks()
 	// skills
 	ARMHook::installPLTHook(g_libGTASA + 0x6749D0, (uintptr_t)CPed__GetWeaponSkill_hook, (uintptr_t*)&CPed__GetWeaponSkill);
 
-    //InstallHuaweiCrashFixHooks();
+	//InstallHuaweiCrashFixHooks();
 	InstallCrashFixHooks();
 	InstallWeaponFireHooks();
 	HookCPad();

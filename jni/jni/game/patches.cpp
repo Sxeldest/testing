@@ -208,14 +208,15 @@ void ApplyGlobalPatches()
 	ARMHook::makeRET(g_libGTASA + 0x2E82CC);
 
 	//  CPlayerInfo::KillPlayer -> CMessages::AddBigMessage
-	ARMHook::makeNOP(g_libGTASA + 0x40BED6, 2);
+	//ARMHook::makeNOP(g_libGTASA + 0x40BED6, 2);
 
-	// CRealTimeShadowManager::ReturnRealTimeShadow
-	ARMHook::makeNOP(g_libGTASA + 0x3FCD34, 2);
-	ARMHook::makeNOP(g_libGTASA + 0x3FCD74, 2);
-
-	// CRealTimeShadowManager::Update
-	ARMHook::makeRET(g_libGTASA + 0x5B83FC);
+	// RealtimeShadow Fix
+	static const uint8_t ReturnRealTimeShadow[] = {
+		0x00, 0x78, 0x28, 0xB1, 0x08, 0x68, 0x18, 0xB1,
+		0x00, 0x22, 0xC0, 0xF8, 0x38, 0x21, 0x0A, 0x60,
+		0x70, 0x47
+	};
+	ARMHook::writeMemory(g_libGTASA + 0x5B85F8, (uintptr_t)ReturnRealTimeShadow, sizeof(ReturnRealTimeShadow));
 
 	// RpWorldAddLight direct
 	//ARMHook::makeNOP(g_libGTASA + 0x46FC54, 2);

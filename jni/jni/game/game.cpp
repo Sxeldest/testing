@@ -387,8 +387,12 @@ bool CGame::RemovePlayer(CPlayerPed* pPed)
 {
 	if (!pPed) return false;
 
+	// The wrapper is freed below; retain the slot before deleting it.  Reading
+	// m_bytePlayerNumber after delete corrupts the slot table during remote-ped
+	// despawn/respawn and can lead to reuse while GTA still processes cleanup.
+	const uint8_t bytePedSlot = pPed->m_bytePlayerNumber;
 	delete pPed;
-	bUsedPlayerSlots[pPed->m_bytePlayerNumber] = false;
+	bUsedPlayerSlots[bytePedSlot] = false;
 	return true;
 }
 // 0.3.7

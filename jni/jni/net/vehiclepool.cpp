@@ -96,12 +96,13 @@ bool CVehiclePool::Delete(VEHICLEID VehicleID)
     if(!GetSlotState(VehicleID) || !m_pVehicles[VehicleID])
         return false;
 
+	CVehicle* pVehicle = m_pVehicles[VehicleID];
     m_bIsActive[VehicleID] = false;
     m_bIsMarker[VehicleID] = 0;
     m_bVehicleSlotState[VehicleID] = false;
-    delete m_pVehicles[VehicleID];
     m_pVehicles[VehicleID] = nullptr;
     m_pGTAVehicles[VehicleID] = nullptr;
+	delete pVehicle;
 
     //CountVehicles();
 
