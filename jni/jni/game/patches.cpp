@@ -217,6 +217,8 @@ void ApplyGlobalPatches()
 		0x70, 0x47
 	};
 	ARMHook::writeMemory(g_libGTASA + 0x5B85F8, (uintptr_t)ReturnRealTimeShadow, sizeof(ReturnRealTimeShadow));
+	ARMHook::writeMemory(g_libGTASA + 0x5B8758, (uintptr_t)"\x00\x21", 2); // GetRealTimeShadow
+	ARMHook::writeMemory(g_libGTASA + 0x5B86FE, (uintptr_t)"\x00\x22", 2); // DoShadowThisFrame
 
 	// RpWorldAddLight direct
 	//ARMHook::makeNOP(g_libGTASA + 0x46FC54, 2);
