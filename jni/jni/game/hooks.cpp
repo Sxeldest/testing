@@ -891,18 +891,15 @@ uint32_t Idle_hook(uint32_t r0, uint32_t r1)
 }
 
 void (*AND_TouchEvent)(int type, int num, int posX, int posY);
-void AND_TouchEvent_hook(int type, int num, int posX, int posY)
-{
+void AND_TouchEvent_hook(int type, int num, int posX, int posY) {
     // imgui
     //bool bRet = pUI->OnTouchEvent(type, num, posX, posY);
 
     if (pGame->IsGamePaused())
         return AND_TouchEvent(type, num, posX, posY);
 
-    if (pUI != nullptr)
-    {
-        switch (type)
-        {
+    if (pUI != nullptr) {
+        switch (type) {
             case 2: // push
                 pUI->touchEvent(ImVec2(posX, posY), TouchType::push);
                 break;
@@ -919,56 +916,14 @@ void AND_TouchEvent_hook(int type, int num, int posX, int posY)
         if (pUI->inputChat()->visible() || pUI->dialog()->visible()) {
             AND_TouchEvent(1, 0, 0, 0);
             return;
-        }
-        else
-        {
-            if (pNetGame && pNetGame->GetTextDrawPool())
-            {
+        } else {
+            if (pNetGame && pNetGame->GetTextDrawPool()) {
                 if (!pNetGame->GetTextDrawPool()->onTouchEvent(type, num, posX, posY)) {
                     return AND_TouchEvent(1, 0, 0, 0);
                 }
             }
         }
     }
-
-    // CamStatic Integration
-    static void (*ApplyCamLook)(float, float) = nullptr;
-    static bool bCamLookupAttempted = false;
-    static float s_lastX[15], s_lastY[15];
-    static bool s_isDown[15];
-
-    if (num >= 0 && num < 15)
-    {
-        if (type == 2) { // DOWN
-            s_isDown[num] = true;
-            s_lastX[num] = (float)posX;
-            s_lastY[num] = (float)posY;
-        }
-        else if (type == 3 && s_isDown[num]) { // MOVE
-            float dx = (float)posX - s_lastX[num];
-            float dy = (float)posY - s_lastY[num];
-
-            if (posX > (RsGlobal->maximumWidth * 0.45f))
-            {
-                if (!ApplyCamLook && !bCamLookupAttempted) {
-                    void* handle = dlopen("libCameraStatic.so", RTLD_LAZY);
-                    if (handle) ApplyCamLook = (void(*)(float, float))dlsym(handle, "ApplyCustomCameraLook");
-                    bCamLookupAttempted = true;
-                }
-                if (ApplyCamLook) ApplyCamLook(dx, dy);
-            }
-            s_lastX[num] = (float)posX;
-            s_lastY[num] = (float)posY;
-        }
-        else if (type == 1) { // UP
-            s_isDown[num] = false;
-        }
-    }
-
-    if (pGame->IsGameInputEnabled())
-        AND_TouchEvent(type, num, posX, posY);
-    else
-        AND_TouchEvent(1, 0, 0, 0);
 }
 
 /* =============================================================================== */
