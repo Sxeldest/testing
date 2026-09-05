@@ -339,6 +339,7 @@ private:
 	struct {
 		uint32_t dwLastMoney;
 		uint32_t dwLastDrunkLevel;
+		uint32_t dwLastAmmo;
 	} m_statsData;
 
 	void SendUnoccupiedData(VEHICLEID vehicleId, CVehicle *pVehicle);

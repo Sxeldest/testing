@@ -988,16 +988,23 @@ void CLocalPlayer::SendAimSyncData()
 
 void CLocalPlayer::SendStatsUpdate()
 {
-	if(m_statsData.dwLastMoney != pGame->GetLocalMoney() ||
-	   m_statsData.dwLastDrunkLevel != m_pPlayerPed->GetDrunkLevel())
+	uint32_t dwMoney = pGame->GetLocalMoney();
+	uint32_t dwDrunkLevel = m_pPlayerPed->GetDrunkLevel();
+	uint32_t dwAmmo = m_pPlayerPed->GetAmmo();
+
+	if(m_statsData.dwLastMoney != dwMoney ||
+	   m_statsData.dwLastDrunkLevel != dwDrunkLevel ||
+	   m_statsData.dwLastAmmo != dwAmmo)
 	{
-		m_statsData.dwLastMoney = pGame->GetLocalMoney();
-		m_statsData.dwLastDrunkLevel = m_pPlayerPed->GetDrunkLevel();
+		m_statsData.dwLastMoney = dwMoney;
+		m_statsData.dwLastDrunkLevel = dwDrunkLevel;
+		m_statsData.dwLastAmmo = dwAmmo;
 
 		RakNet::BitStream bsStats;
 		bsStats.Write((uint8_t)ID_STATS_UPDATE);
-		bsStats.Write(m_statsData.dwLastMoney);
-		bsStats.Write(m_statsData.dwLastDrunkLevel);
+		bsStats.Write(dwMoney);
+		bsStats.Write(dwDrunkLevel);
+		bsStats.Write((uint16_t)dwAmmo);
 		pNetGame->GetRakClient()->Send(&bsStats, HIGH_PRIORITY, UNRELIABLE, 0);
 	}
 }

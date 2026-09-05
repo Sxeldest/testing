@@ -123,6 +123,7 @@ public:
 	void SetAimZ(float fAimZ);
 
 	WEAPON_SLOT_TYPE* GetCurrentWeaponSlot();
+	uint32_t GetAmmo();
 
 	void SetKeys(uint16_t lrAnalog, uint16_t udAnalog, uint16_t wKeys);
 	uint16_t GetKeys(uint16_t *lrAnalog, uint16_t *udAnalog, bool clear = true);

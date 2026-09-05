@@ -924,6 +924,11 @@ void AND_TouchEvent_hook(int type, int num, int posX, int posY) {
             }
         }
     }
+
+    if (pGame->IsGameInputEnabled())
+        AND_TouchEvent(type, num, posX, posY);
+    else
+        AND_TouchEvent(1, 0, 0, 0);
 }
 
 /* =============================================================================== */

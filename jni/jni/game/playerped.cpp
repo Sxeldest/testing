@@ -912,6 +912,16 @@ WEAPON_SLOT_TYPE* CPlayerPed::GetCurrentWeaponSlot()
 	}
 	return nullptr;
 }
+
+uint32_t CPlayerPed::GetAmmo()
+{
+	WEAPON_SLOT_TYPE* pSlot = GetCurrentWeaponSlot();
+	if (pSlot)
+	{
+		return pSlot->dwAmmo;
+	}
+	return 0;
+}
 // 0.3.7
 void CPlayerPed::SetCameraMode(uint8_t byteCameraMode)
 {

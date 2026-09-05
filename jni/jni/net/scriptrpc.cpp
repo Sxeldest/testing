@@ -1590,6 +1590,26 @@ void ScrSetPlayerArmour(RPCParameters* rpcParams)
 	bsData.Read(fArmour);
 	pLocalPlayer->GetPlayerPed()->SetArmour(fArmour);
 }
+
+void ScrSetPlayerDrunkLevel(RPCParameters* rpcParams)
+{
+	unsigned char* Data = reinterpret_cast<unsigned char*>(rpcParams->input);
+	int iBitLength = rpcParams->numberOfBitsOfData;
+
+	uint32_t dwDrunkLevel;
+	RakNet::BitStream bsData(Data, (iBitLength / 8) + 1, false);
+	bsData.Read(dwDrunkLevel);
+
+	CLocalPlayer* pLocalPlayer = pNetGame->GetPlayerPool()->GetLocalPlayer();
+	if (pLocalPlayer)
+	{
+		CPlayerPed* pPlayerPed = pLocalPlayer->GetPlayerPed();
+		if (pPlayerPed)
+		{
+			pPlayerPed->SetDrunkLevel(dwDrunkLevel);
+		}
+	}
+}
 // 0.3.7
 void ScrSetArmedWeapon(RPCParameters* rpcParams)
 {
@@ -1960,9 +1980,7 @@ void RegisterScriptRPCs(RakClientInterface *pRakClient)
 	// RPC_64 - unused
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ScrLinkVehicle, ScrLinkVehicleToInterior);
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ScrSetPlayerArmour, ScrSetPlayerArmour);
-	// RPC_ScrSendDeathMessage
-	// RPC_ScrSetShopName
-	// RPC_ScrSetPlayerDrunkLevel
+	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ScrSetPlayerDrunkLevel, ScrSetPlayerDrunkLevel);
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ScrSetArmedWeapon, ScrSetArmedWeapon);
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ScrSetPlayerAttachedObject, ScrSetPlayerAttachedObject);
 	pRakClient->RegisterAsRemoteProcedureCall(&RPC_ScrPlayAudioStream, ScrPlayAudioStream);
@@ -2009,4 +2027,5 @@ void UnregisterScriptRPCs(RakClientInterface *pRakClient)
 	pRakClient->UnregisterAsRemoteProcedureCall(&RPC_ScrRemoveBuilding);
 
 	pRakClient->UnregisterAsRemoteProcedureCall(&RPC_ScrInterpolateCamera);
+	pRakClient->UnregisterAsRemoteProcedureCall(&RPC_ScrSetPlayerDrunkLevel);
 }
