@@ -74,6 +74,10 @@ extern RwImage* 	(*RtPNGImageRead)(const RwChar* imageName);
 extern RwTexture* (*RwTextureRead)(const char*, const char*);
 extern void		(*RwTextureDestroy)(RwTexture* texture);
 
+extern RpGeometry* (*RpGeometryClone)(RpGeometry* geometry);
+extern RwBool      (*RpGeometryDestroy)(RpGeometry* geometry);
+extern RpAtomic*   (*RpAtomicSetGeometry)(RpAtomic* atomic, RpGeometry* geometry, RwUInt32 flags);
+
 extern RpGeometry *(*RpGeometryForAllMaterials)(RpGeometry* geometry, RpMaterialCallBack fpCallBack, void* pData);
 extern RwFrame* (*RwFrameForAllObjects)(RwFrame* frame, RwObjectCallBack callBack, void* data);
 

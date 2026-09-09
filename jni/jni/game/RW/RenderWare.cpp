@@ -60,6 +60,10 @@ RwImage* 	(*RtPNGImageRead)(const RwChar* imageName);
 RwTexture* (*RwTextureRead)(const char*, const char*);
 void		(*RwTextureDestroy)(RwTexture* texture);
 
+RpGeometry* (*RpGeometryClone)(RpGeometry* geometry);
+RwBool      (*RpGeometryDestroy)(RpGeometry* geometry);
+RpAtomic*   (*RpAtomicSetGeometry)(RpAtomic* atomic, RpGeometry* geometry, RwUInt32 flags);
+
 RpGeometry *(*RpGeometryForAllMaterials)(RpGeometry* geometry, RpMaterialCallBack fpCallBack, void* pData);
 RwFrame* (*RwFrameForAllObjects)(RwFrame* frame, RwObjectCallBack callBack, void* data);
 
@@ -126,6 +130,10 @@ void InitializeRenderWare()
 
 	*(void**)(&RwTextureRead)					= (void*)(g_libGTASA + 0x1DBABC + 1);
 	*(void **)(&RwTextureDestroy)				= (void*)(g_libGTASA + 0x001DB764 + 1);
+
+    *(void**)(&RpGeometryClone)                 = (void*)(g_libGTASA + 0x215988 + 1);
+    *(void**)(&RpGeometryDestroy)               = (void*)(g_libGTASA + 0x215880 + 1);
+    *(void**)(&RpAtomicSetGeometry)             = (void*)(g_libGTASA + 0x214154 + 1);
 
 	*(void**)(&RpGeometryForAllMaterials)					= (void*)(g_libGTASA + 0x215FB0 + 1);
 	*(void **)(&RwFrameForAllObjects)				= (void*)(g_libGTASA + 0x001D88D8 + 1);

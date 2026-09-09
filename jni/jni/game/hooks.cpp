@@ -699,29 +699,22 @@ void CObject_Render_hook(uintptr_t thiz)
         CObject *pObject = pNetGame->GetObjectPool()->FindObjectFromGtaPtr(object);
         if(pObject)
         {
-            RwObject* rwObject = (RwObject*)pObject->GetRWObject();
-            if(rwObject)
+            // Apply materials if they are dirty or using cloned geometry
+            if(pObject->m_bHasMaterial)
             {
-                // SetObjectMaterial
-                if(pObject->m_bHasMaterial)
-                {
-                    ((void (*)(void))(g_libGTASA + 0x5D1F48 + 1))();
-                    //RwFrameForAllObjects((RwFrame*)rwObject->parent, (RwObject *(*)(RwObject *, void *))ObjectMaterialCallBack, pObject);
-                    RpAtomic* atomic = (RpAtomic*)object->pRpAtomic;
+                RpAtomic* atomic = (RpAtomic*)object->pRpAtomic;
+                if (atomic && atomic->geometry) {
                     RpGeometryForAllMaterials(atomic->geometry, ObjectMaterialCallBack, (void*)pObject);
                 }
-                // SetObjectMaterialText
-                if(pObject->m_bHasMaterialText)
-                    RwFrameForAllObjects((RwFrame*)rwObject->parent, (RwObject *(*)(RwObject *, void *))ObjectMaterialTextCallBack, pObject);
             }
 
-
+            if(pObject->m_bHasMaterialText) {
+                 RwFrameForAllObjects((RwFrame*)object->pRwObject, (RwObject *(*)(RwObject *, void *))ObjectMaterialTextCallBack, pObject);
+            }
         }
     }
 
-    ((void (*)(void))(g_libGTASA + 0x5D1F48 + 1))();
     CObject_Render(thiz);
-    ((void (*)(void))(g_libGTASA + 0x5D1F5C + 1))();
 }
 
 /*((void (*)(void))(g_libGTASA + 0x5D1F48 + 1))();
@@ -1901,10 +1894,14 @@ uintptr_t CTxdStore__TxdStoreFindCB_hook(const char *a1)
         // TextureDatabaseRuntime::GetTexture
         uintptr_t tex = ((uintptr_t (*)(const char *))(g_libGTASA+0x1E9CE4+1))(a1);
 
+        if(tex) {
+            // Increment ref count manually to prevent immediate destruction
+            *(int*)(tex + 0x54) += 1;
+            return tex;
+        }
+
         // TextureDatabaseRuntime::Unregister
         ((void (*)(int))(g_libGTASA+0x1E9C80+1))(db_handle);
-
-        if(tex) return tex;
     }
 
     // RwTexDictionaryGetCurrent
@@ -2203,7 +2200,8 @@ void CStreaming_Init2_hook()
 {
     CStreaming_Init2();
     ARMHook::unprotect(g_libGTASA + 0x685FA0);
-    *(uint32_t *)(g_libGTASA + 0x685FA0) *= 3;
+    // Increase streaming memory multiplier from 3x to 5x for better stability with heavy mapping
+    *(uint32_t *)(g_libGTASA + 0x685FA0) *= 5;
 }
 
 void readVehiclesAudioSettings();

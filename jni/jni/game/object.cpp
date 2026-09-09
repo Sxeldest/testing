@@ -72,6 +72,7 @@ CObject::CObject(int iModel, VECTOR vecPos, VECTOR vecRot, float fDrawDistance, 
 	}
 	m_bHasMaterial = false;
 	m_bHasMaterialText = false;
+    m_pClonedGeometry = 0;
 
 	m_bAttachedToPed = bAttached;
 
@@ -103,6 +104,11 @@ CObject::~CObject()
 			m_szMaterialText[i] = nullptr;
 		}
 	}
+
+    if (m_pClonedGeometry) {
+        RpGeometryDestroy((RpGeometry*)m_pClonedGeometry);
+        m_pClonedGeometry = 0;
+    }
 }
 
 void CObject::Process(float fElapsedTime)
@@ -343,10 +349,16 @@ void CObject::SetMaterial(int iModel, int iMaterialIndex, char* txdname, char* t
 {
 	FLog("SetMaterial: model: %d, %s, %s", iModel, txdname, texturename);
 
-	int iTryCount = 0;
-
 	if (iMaterialIndex < 16)
 	{
+        if (!m_pClonedGeometry && m_pEntity && m_pEntity->pRpAtomic) {
+            RpAtomic* atomic = (RpAtomic*)m_pEntity->pRpAtomic;
+            if (atomic->geometry) {
+                m_pClonedGeometry = (uintptr_t)RpGeometryClone(atomic->geometry);
+                RpAtomicSetGeometry(atomic, (RpGeometry*)m_pClonedGeometry, 0);
+            }
+        }
+
 		if (m_MaterialTexture[iMaterialIndex]) {
 			DeleteRwTexture(m_MaterialTexture[iMaterialIndex]);
 			m_MaterialTexture[iMaterialIndex] = 0;

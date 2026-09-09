@@ -52,6 +52,7 @@ public:
 	int			m_iMaterialType[16];
 	bool		m_bHasMaterial;
 	bool		m_bHasMaterialText;
+    uintptr_t   m_pClonedGeometry;
 	/* materialText */
 	char* m_szMaterialText[16];
 	int			m_iMaterialSize[16];
